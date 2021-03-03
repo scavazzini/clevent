@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="dev.scavazzini.clevent.utilities.extensions.LocaleExtensionsKt" />
+        <import type="android.view.View"/>
+
+        <variable
+            name="product"
+            type="dev.scavazzini.clevent.data.models.Product" />
+
+        <variable
+            name="quantity"
+            type="int" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp">
+
+        <TextView
+            android:id="@+id/textview_product_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text='@{ product.name }'
+            tools:text="Mojito"
+            android:textSize="18sp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/textview_product_price"
+            app:layout_constraintEnd_toStartOf="@id/button_minus"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constrainedWidth="true"
+            />
+
+        <TextView
+            android:id="@+id/textview_product_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text='@{ LocaleExtensionsKt.toCurrency(product.price) }'
+            tools:text="R$ 22,90"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            app:layout_constraintTop_toBottomOf="@id/textview_product_name"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/view_product_separator"
+            app:layout_constraintEnd_toStartOf="@id/button_minus"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constrainedWidth="true"
+            />
+
+        <Button
+            android:id="@+id/button_minus"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:drawableStart="@drawable/ic_remove_circle_24"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/textview_product_quantity"
+            app:layout_constraintBottom_toTopOf="@id/view_product_separator"
+            android:visibility="@{ quantity > 0 ? View.VISIBLE : View.GONE }"
+            />
+
+        <TextView
+            android:id="@+id/textview_product_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/colorAccentDark"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/button_plus"
+            app:layout_constraintBottom_toTopOf="@id/view_product_separator"
+            android:text="@{ String.valueOf(quantity) }"
+            android:visibility="@{ quantity > 0 ? View.VISIBLE : View.GONE }"
+            tools:text="1"
+            />
+
+        <Button
+            android:id="@+id/button_plus"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:drawableStart="@drawable/ic_add_circle_24"
+            android:background="@android:color/transparent"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/view_product_separator"
+            />
+
+        <View
+            android:id="@+id/view_product_separator"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#CCC"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@id/textview_product_price"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

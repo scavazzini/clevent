@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_order">
+
+    <fragment
+        android:id="@+id/navigation_order"
+        android:name="dev.scavazzini.clevent.ui.order.OrderFragment"
+        android:label="@string/title_order"
+        tools:layout="@layout/fragment_order">
+
+        <action
+            android:id="@+id/action_order_to_settings"
+            app:destination="@id/navigation_settings"
+            />
+
+        <action
+            android:id="@+id/action_order_to_recharge"
+            app:destination="@id/navigation_recharge"
+            />
+
+        <action
+            android:id="@+id/action_order_to_receipt"
+            app:destination="@id/navigation_receipt"
+            />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_recharge"
+        android:name="dev.scavazzini.clevent.ui.recharge.RechargeFragment"
+        android:label="@string/title_recharge"
+        tools:layout="@layout/fragment_recharge">
+
+        <action
+            android:id="@+id/action_recharge_to_receipt"
+            app:destination="@id/navigation_receipt"
+            />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_receipt"
+        android:name="dev.scavazzini.clevent.ui.receipt.ReceiptFragment"
+        android:label="@string/title_receipt"
+        tools:layout="@layout/fragment_receipt">
+        <argument
+            android:name="customer"
+            app:argType="dev.scavazzini.clevent.data.models.Customer"
+            app:nullable="true"
+            android:defaultValue="@null" />
+
+        <deepLink
+            android:id="@+id/deepLink"
+            app:action="android.nfc.action.NDEF_DISCOVERED"
+            app:uri="clevent://receipt" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="dev.scavazzini.clevent.ui.settings.SettingsFragment"
+        android:label="@string/title_settings" />
+
+</navigation>

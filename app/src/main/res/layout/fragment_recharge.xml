@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/fragment_recharge"
+        tools:context=".ui.recharge.RechargeFragment">
+
+        <TextView
+            android:id="@+id/recharge_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/how_much_to_recharge"
+            style="@style/subTitleText"
+            android:background="@color/colorPrimaryLight"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+
+        <EditText
+            android:id="@+id/recharge_value"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:maxLength="7"
+            android:textAlignment="center"
+            android:inputType="numberDecimal"
+            android:textSize="100sp"
+            app:layout_constraintTop_toBottomOf="@id/recharge_description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/recharge_button"
+            app:layout_constraintStart_toStartOf="parent"
+            android:importantForAutofill="no"
+            tools:text="$"
+            />
+
+        <Button
+            android:id="@+id/recharge_button"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="@string/title_recharge"
+            style="@style/mainButton"
+            android:enabled="false"
+            android:layout_marginBottom="58dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
