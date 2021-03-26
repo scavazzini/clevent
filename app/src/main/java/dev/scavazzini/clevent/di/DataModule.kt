@@ -6,27 +6,19 @@ import androidx.preference.PreferenceManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import dev.scavazzini.clevent.data.database.CleventDatabase
 import dev.scavazzini.clevent.data.database.ProductDAO
-import dev.scavazzini.clevent.utilities.Preferences
 import javax.inject.Singleton
 
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 object DataModule {
-
     @Singleton
     @Provides
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
         return PreferenceManager.getDefaultSharedPreferences(context)
-    }
-
-    @Singleton
-    @Provides
-    fun providePreferences(sharedPreferences: SharedPreferences): Preferences {
-        return Preferences(sharedPreferences)
     }
 
     @Singleton
@@ -39,5 +31,4 @@ object DataModule {
     fun provideProductDao(cleventDatabase: CleventDatabase): ProductDAO {
         return cleventDatabase.productDao()
     }
-
 }

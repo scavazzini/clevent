@@ -6,6 +6,7 @@ import dev.scavazzini.clevent.exceptions.DeserializationException
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
 import java.nio.ByteBuffer
+import javax.inject.Inject
 import kotlin.math.ceil
 
 /**
@@ -23,7 +24,7 @@ import kotlin.math.ceil
  *   - Region 3 (3 bytes per item): Each item uses 3B, 2B for item ID (short) and 1B for quantity.
  *
  */
-class CustomerNFCSerializer : CustomerSerializer {
+class CustomerNFCSerializer @Inject constructor() : CustomerSerializer {
 
     override fun serialize(customer: Customer): ByteArray {
         val productEntriesQuantity = customer.products.map {

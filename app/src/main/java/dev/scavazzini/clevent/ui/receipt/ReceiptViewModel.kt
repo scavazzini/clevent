@@ -2,15 +2,17 @@ package dev.scavazzini.clevent.ui.receipt
 
 import android.content.Intent
 import android.graphics.Bitmap
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
-import dev.scavazzini.clevent.data.repositories.ProductRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.scavazzini.clevent.data.models.Customer
 import dev.scavazzini.clevent.data.models.Product
+import dev.scavazzini.clevent.data.repositories.ProductRepository
 import dev.scavazzini.clevent.io.NFCReader
 import dev.scavazzini.clevent.io.QRCodeGenerator
+import javax.inject.Inject
 
-class ReceiptViewModel @ViewModelInject constructor(
+@HiltViewModel
+class ReceiptViewModel @Inject constructor(
         private val productRepository: ProductRepository,
         private val qrCodeGenerator: QRCodeGenerator,
         private val nfcReader: NFCReader,

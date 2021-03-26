@@ -1,6 +1,8 @@
 package dev.scavazzini.clevent.utilities.crypto
 
-class FakeEncryptor : Encryptor {
+import javax.inject.Inject
+
+class FakeEncryptor @Inject constructor() : Encryptor {
     override fun encrypt(data: ByteArray, keySalt: ByteArray?): ByteArray {
         return data
     }

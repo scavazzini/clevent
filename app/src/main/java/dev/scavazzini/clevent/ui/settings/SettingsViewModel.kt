@@ -1,11 +1,11 @@
 package dev.scavazzini.clevent.ui.settings
 
 import android.nfc.Tag
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.scavazzini.clevent.data.repositories.ProductRepository
 import dev.scavazzini.clevent.io.NFCWriter
 import dev.scavazzini.clevent.utilities.Preferences
@@ -13,8 +13,10 @@ import dev.scavazzini.clevent.utilities.extensions.formatted
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
+import javax.inject.Inject
 
-class SettingsViewModel @ViewModelInject constructor(
+@HiltViewModel
+class SettingsViewModel @Inject constructor(
         private val productRepository: ProductRepository,
         private val nfcWriter: NFCWriter,
         preferences: Preferences,

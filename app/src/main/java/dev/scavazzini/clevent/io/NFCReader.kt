@@ -7,9 +7,12 @@ import android.nfc.Tag
 import dev.scavazzini.clevent.data.models.Customer
 import dev.scavazzini.clevent.utilities.crypto.Encryptor
 import dev.scavazzini.clevent.utilities.serializers.CustomerSerializer
+import javax.inject.Inject
 
-class NFCReader constructor(private val serializer: CustomerSerializer,
-                            private val encryptor: Encryptor) {
+class NFCReader @Inject constructor(
+        private val serializer: CustomerSerializer,
+        private val encryptor: Encryptor,
+) {
 
     fun extract(intent: Intent): Pair<Tag, Customer> {
         val tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG) ?: throw IllegalArgumentException()

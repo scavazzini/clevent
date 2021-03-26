@@ -1,15 +1,17 @@
 package dev.scavazzini.clevent.ui.order
 
 import android.nfc.Tag
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import dev.scavazzini.clevent.data.repositories.ProductRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.scavazzini.clevent.data.models.Customer
 import dev.scavazzini.clevent.data.models.Product
+import dev.scavazzini.clevent.data.repositories.ProductRepository
 import dev.scavazzini.clevent.io.NFCWriter
+import javax.inject.Inject
 
-class OrderViewModel @ViewModelInject constructor(
+@HiltViewModel
+class OrderViewModel @Inject constructor(
         private val productRepository: ProductRepository,
         private val nfcWriter: NFCWriter,
 ) : ViewModel() {
