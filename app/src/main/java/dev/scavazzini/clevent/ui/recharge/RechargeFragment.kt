@@ -16,9 +16,11 @@ import dev.scavazzini.clevent.data.models.Customer
 import dev.scavazzini.clevent.databinding.FragmentRechargeBinding
 import dev.scavazzini.clevent.io.NFCListener
 import dev.scavazzini.clevent.ui.dialogs.NFCDialog
+import dev.scavazzini.clevent.ui.recharge.RechargeViewModel.RechargeUiState.Error
+import dev.scavazzini.clevent.ui.recharge.RechargeViewModel.RechargeUiState.Success
 import dev.scavazzini.clevent.utilities.extensions.toCurrency
 import dev.scavazzini.clevent.utilities.extensions.toIntCurrency
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collect
 import java.util.*
 
 @AndroidEntryPoint
@@ -57,6 +59,19 @@ class RechargeFragment : Fragment(), NFCListener {
                 disableRechargeButton()
             }
         }
+
+        lifecycleScope.launchWhenCreated {
+            viewModel.rechargeUiState.collect {
+                when (it) {
+                    is Success -> showRechargeSuccess(it.customer)
+                    is Error -> {
+                        val title = getString(R.string.recharge_failed_title)
+                        val message = it.message ?: getString(R.string.recharge_failed_description)
+                        mNFCDialog.showError(title, message)
+                    }
+                }
+            }
+        }
     }
 
     private fun enableRechargeButton() {
@@ -69,19 +84,9 @@ class RechargeFragment : Fragment(), NFCListener {
         binding.rechargeButton.isEnabled = false
     }
 
-    private fun performRecharge(customer: Customer, tag: Tag) = lifecycleScope.launch {
-        try {
-            val value = binding.rechargeValue.text.toString().toIntCurrency()
-            viewModel.recharge(tag, customer, value)
-            showRechargeSuccess(customer)
-
-        } catch (e: IllegalArgumentException) {
-            e.message?.let { mNFCDialog.showError(getString(R.string.recharge_failed_title), it) }
-
-        } catch (e: Exception) {
-            mNFCDialog.showError(getString(R.string.recharge_failed_title),
-                    getString(R.string.recharge_failed_description))
-        }
+    private fun performRecharge(customer: Customer, tag: Tag) {
+        val value = binding.rechargeValue.text.toString().toIntCurrency()
+        viewModel.recharge(tag, customer, value)
     }
 
     private fun showRechargeSuccess(customer: Customer) {
