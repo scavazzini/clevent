@@ -12,11 +12,12 @@ import dagger.hilt.android.AndroidEntryPoint
 import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.models.Customer
 import dev.scavazzini.clevent.databinding.FragmentOrderBinding
-import dev.scavazzini.clevent.exceptions.InsufficientBalanceException
 import dev.scavazzini.clevent.io.NFCListener
 import dev.scavazzini.clevent.ui.dialogs.NFCDialog
+import dev.scavazzini.clevent.ui.order.OrderViewModel.OrderUiState.Error
+import dev.scavazzini.clevent.ui.order.OrderViewModel.OrderUiState.Success
 import dev.scavazzini.clevent.utilities.extensions.toCurrency
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class OrderFragment : Fragment(), NFCListener, View.OnClickListener, SearchView.OnQueryTextListener {
@@ -43,6 +44,25 @@ class OrderFragment : Fragment(), NFCListener, View.OnClickListener, SearchView.
         viewModel.getProducts().observe(viewLifecycleOwner) { products ->
             mAdapter.setProducts(products)
             binding.productsEmptyList.visibility = if (products.isEmpty()) View.VISIBLE else View.GONE
+        }
+
+        lifecycleScope.launchWhenCreated {
+            viewModel.orderUiState.collect {
+                when (it) {
+                    is Success -> showPurchaseSuccess(it.customer)
+                    is Error -> {
+                        mNFCDialog.apply {
+                            if (it.messageId != null && it.messageId == R.string.not_enough_credits) {
+                                withActionButton(getString(R.string.make_a_recharge)) {
+                                    navController.navigate(OrderFragmentDirections.actionOrderToRecharge())
+                                }
+                            }
+                            val messageRes = it.messageId ?: R.string.purchase_error_description
+                            showError(getString(R.string.purchase_error), getString(messageRes))
+                        }
+                    }
+                }
+            }
         }
 
         return binding.root
@@ -110,27 +130,6 @@ class OrderFragment : Fragment(), NFCListener, View.OnClickListener, SearchView.
                         productCount, productCount, orderPrice.toCurrency()))
     }
 
-    private fun performPurchase(customer: Customer, tag: Tag) = lifecycleScope.launch {
-        try {
-            viewModel.performPurchase(customer, tag)
-            showPurchaseSuccess(customer)
-
-        } catch (e: InsufficientBalanceException) {
-            mNFCDialog.apply {
-                withActionButton(getString(R.string.make_a_recharge)) {
-                    navController.navigate(OrderFragmentDirections.actionOrderToRecharge())
-                }
-                showError(getString(R.string.purchase_error),
-                        getString(R.string.not_enough_credits))
-            }
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            mNFCDialog.showError(getString(R.string.purchase_error),
-                    getString(R.string.purchase_error_description))
-        }
-    }
-
     private fun showPurchaseSuccess(customer: Customer) {
         clearSearchView()
         mAdapter.clearSelected()
@@ -154,7 +153,7 @@ class OrderFragment : Fragment(), NFCListener, View.OnClickListener, SearchView.
 
     override fun onTagRead(tag: Tag, customer: Customer) {
         if (!mNFCDialog.isWaitingForRead()) return
-        performPurchase(customer, tag)
+        viewModel.performPurchase(customer, tag)
     }
 
     override fun onInvalidTagRead() {
