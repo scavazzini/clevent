@@ -156,7 +156,7 @@ class OrderFragment : Fragment(), NFCListener, View.OnClickListener, SearchView.
         viewModel.performPurchase(customer, tag)
     }
 
-    override fun onInvalidTagRead() {
+    override fun onInvalidTagRead(tag: Tag?) {
         if (!mNFCDialog.isWaitingForRead()) return
         mNFCDialog.showError(getString(R.string.purchase_error),
                 getString(R.string.invalid_tag_error))

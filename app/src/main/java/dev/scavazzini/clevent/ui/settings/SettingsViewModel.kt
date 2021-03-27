@@ -11,7 +11,10 @@ import dev.scavazzini.clevent.io.NFCWriter
 import dev.scavazzini.clevent.utilities.Preferences
 import dev.scavazzini.clevent.utilities.extensions.formatted
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import java.util.*
 import javax.inject.Inject
 
@@ -21,6 +24,9 @@ class SettingsViewModel @Inject constructor(
         private val nfcWriter: NFCWriter,
         preferences: Preferences,
 ) : ViewModel() {
+
+    private val _eraseUiState: MutableStateFlow<EraseUiState> = MutableStateFlow(EraseUiState.Empty)
+    val eraseUiState: StateFlow<EraseUiState> = _eraseUiState
 
     val lastSync: LiveData<String>
         get() = _lastSync
@@ -35,8 +41,23 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    suspend fun eraseTag(tag: Tag) {
-        nfcWriter.erase(tag)
+    fun eraseTag(tag: Tag) = viewModelScope.launch {
+        _eraseUiState.value = EraseUiState.Loading
+
+        try {
+            nfcWriter.erase(tag)
+            _eraseUiState.value = EraseUiState.Success
+
+        } catch (e: Exception) {
+            _eraseUiState.value = EraseUiState.Error
+        }
+    }
+
+    sealed class EraseUiState {
+        object Loading : EraseUiState()
+        object Success : EraseUiState()
+        object Error : EraseUiState()
+        object Empty : EraseUiState()
     }
 
     private fun Long.parse(): String {

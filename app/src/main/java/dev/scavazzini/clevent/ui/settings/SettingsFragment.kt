@@ -11,7 +11,9 @@ import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.models.Customer
 import dev.scavazzini.clevent.io.NFCListener
 import dev.scavazzini.clevent.ui.dialogs.NFCDialog
-import kotlinx.coroutines.launch
+import dev.scavazzini.clevent.ui.settings.SettingsViewModel.EraseUiState.Error
+import dev.scavazzini.clevent.ui.settings.SettingsViewModel.EraseUiState.Success
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class SettingsFragment : PreferenceFragmentCompat(), NFCListener {
@@ -36,6 +38,19 @@ class SettingsFragment : PreferenceFragmentCompat(), NFCListener {
             showEraseDialog()
             true
         }
+
+        lifecycleScope.launchWhenCreated {
+            viewModel.eraseUiState.collect {
+                when (it) {
+                    is Success -> nfcDialog.apply {
+                        withActionButton(getString(R.string.erase_another_one), ::showEraseDialog)
+                        showSuccess(getString(R.string.tag_erased), getString(R.string.tag_successfully_erased))
+                    }
+                    is Error -> nfcDialog.showError(getString(R.string.erase_failed),
+                            getString(R.string.erase_failed_description))
+                }
+            }
+        }
     }
 
     private fun updateLastSync(message: String) {
@@ -50,20 +65,18 @@ class SettingsFragment : PreferenceFragmentCompat(), NFCListener {
     }
 
     override fun onTagRead(tag: Tag, customer: Customer) {
-        if (!nfcDialog.isWaitingForRead()) return
-
-        lifecycleScope.launch {
-            viewModel.eraseTag(tag)
-            nfcDialog.apply {
-                withActionButton(getString(R.string.erase_another_one), ::showEraseDialog)
-                showSuccess(getString(R.string.tag_erased), getString(R.string.tag_successfully_erased))
-            }
-        }
+        if (nfcDialog.isWaitingForRead()) viewModel.eraseTag(tag)
     }
 
-    override fun onInvalidTagRead() {
+    override fun onInvalidTagRead(tag: Tag?) {
         if (!nfcDialog.isWaitingForRead()) return
-        nfcDialog.showError(getString(R.string.erase_failed),
-                getString(R.string.erase_failed_description))
+
+        if (tag !is Tag) {
+            nfcDialog.showError(getString(R.string.erase_failed),
+                    getString(R.string.erase_failed_description))
+            return
+        }
+
+        viewModel.eraseTag(tag)
     }
 }

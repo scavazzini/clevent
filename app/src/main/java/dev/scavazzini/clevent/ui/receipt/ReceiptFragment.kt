@@ -143,7 +143,7 @@ class ReceiptFragment : Fragment(), NFCListener, DialogInterface.OnDismissListen
         binding.customer = viewModel.customer
     }
 
-    override fun onInvalidTagRead() {
+    override fun onInvalidTagRead(tag: Tag?) {
         if (!mNFCDialog.isWaitingForRead()) return
 
         mNFCDialog.showError(getString(R.string.receipt_error),

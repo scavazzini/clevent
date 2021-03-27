@@ -3,6 +3,7 @@ package dev.scavazzini.clevent.ui
 import android.app.PendingIntent
 import android.content.Intent
 import android.nfc.NfcAdapter
+import android.nfc.Tag
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -63,7 +64,7 @@ class MainActivity : AppCompatActivity() {
             fragment.onTagRead(tag, customer)
 
         } catch (e: Exception) {
-            fragment.onInvalidTagRead()
+            fragment.onInvalidTagRead(intent.getParcelableExtra(NfcAdapter.EXTRA_TAG))
         }
     }
 

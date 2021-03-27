@@ -106,7 +106,7 @@ class RechargeFragment : Fragment(), NFCListener {
         performRecharge(customer, tag)
     }
 
-    override fun onInvalidTagRead() {
+    override fun onInvalidTagRead(tag: Tag?) {
         if (!mNFCDialog.isWaitingForRead()) return
         mNFCDialog.showError(getString(R.string.recharge_failed_description),
                 getString(R.string.invalid_tag_error))
