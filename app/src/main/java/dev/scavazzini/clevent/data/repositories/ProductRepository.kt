@@ -2,7 +2,7 @@ package dev.scavazzini.clevent.data.repositories
 
 import dev.scavazzini.clevent.data.database.ProductDAO
 import dev.scavazzini.clevent.data.models.Product
-import dev.scavazzini.clevent.data.webservice.CleventRetrofit
+import dev.scavazzini.clevent.data.webservice.ProductService
 import dev.scavazzini.clevent.utilities.Preferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -13,13 +13,14 @@ import javax.inject.Singleton
 @Singleton
 class ProductRepository @Inject constructor(
         private val productDAO: ProductDAO,
+        private val productService: ProductService,
         private val preferences: Preferences,
 ) {
     fun getProducts() = productDAO.getAll()
 
     suspend fun sync(): Long? {
         try {
-            val response = CleventRetrofit.productService.getProducts(preferences.endpoint)
+            val response = productService.getProducts(preferences.endpoint)
             val products = response.body()
 
             if (response.isSuccessful && products != null) {
