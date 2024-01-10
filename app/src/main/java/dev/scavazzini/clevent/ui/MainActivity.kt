@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
     private fun initializeNFCAdapter() {
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this) ?: return
         mPendingIntent = PendingIntent.getActivity(this, 0, Intent(this,
-                javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0)
+                javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), PendingIntent.FLAG_IMMUTABLE)
     }
 
     public override fun onResume() {
