@@ -48,6 +48,7 @@ class SettingsFragment : PreferenceFragmentCompat(), NFCListener {
                     }
                     is Error -> nfcDialog.showError(getString(R.string.erase_failed),
                             getString(R.string.erase_failed_description))
+                    else -> {}
                 }
             }
         }

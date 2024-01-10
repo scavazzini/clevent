@@ -69,6 +69,7 @@ class RechargeFragment : Fragment(), NFCListener {
                         val message = it.message ?: getString(R.string.recharge_failed_description)
                         mNFCDialog.showError(title, message)
                     }
+                    else -> {}
                 }
             }
         }

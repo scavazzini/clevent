@@ -61,6 +61,7 @@ class OrderFragment : Fragment(), NFCListener, View.OnClickListener, SearchView.
                             showError(getString(R.string.purchase_error), getString(messageRes))
                         }
                     }
+                    else -> {}
                 }
             }
         }
