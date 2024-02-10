@@ -9,16 +9,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -156,11 +153,10 @@ private fun ReceiptList(
         )
         Spacer(modifier = Modifier.height(8.dp))
         LazyColumn {
-            itemsIndexed(products.entries.toList()) { index, item ->
+            items(products.entries.toList()) { item ->
                 ReceiptItem(
                     quantity = item.value,
                     product = item.key,
-                    drawSeparator = index < products.size - 1,
                 )
             }
         }
@@ -171,31 +167,11 @@ private fun ReceiptList(
 private fun ReceiptItem(
     quantity: Int,
     product: Product,
-    drawSeparator: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val dividerModifier = Modifier.drawBehind {
-        if (!drawSeparator) {
-            return@drawBehind
-        }
-        val thickness = 1.dp.toPx()
-        val spacing = 4.dp.toPx()
-        val y = size.height - thickness / 2
-
-        drawLine(
-            color = Color.LightGray,
-            start = Offset(x = 0f, y = y),
-            end = Offset(x = size.width, y = y),
-            strokeWidth = thickness,
-            pathEffect = PathEffect.dashPathEffect(floatArrayOf(spacing, spacing))
-        )
-    }
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .then(dividerModifier)
-            .padding(vertical = 8.dp),
+        modifier = modifier.padding(vertical = 8.dp),
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
