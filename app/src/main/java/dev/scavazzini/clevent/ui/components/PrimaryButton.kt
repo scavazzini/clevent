@@ -1,18 +1,26 @@
 package dev.scavazzini.clevent.ui.components
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.scavazzini.clevent.ui.components.PrimaryButtonState.*
+import dev.scavazzini.clevent.ui.components.PrimaryButtonState.DISABLED
+import dev.scavazzini.clevent.ui.components.PrimaryButtonState.ENABLED
+import dev.scavazzini.clevent.ui.components.PrimaryButtonState.LOADING
 
 @Composable
 fun PrimaryButton(
@@ -20,13 +28,13 @@ fun PrimaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     state: PrimaryButtonState = ENABLED,
+    colors: ButtonColors = ButtonDefaults.buttonColors(),
 ) {
     Button(
         onClick = onClick,
-        shape = RectangleShape,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(60.dp),
+        shape = RoundedCornerShape(50),
+        modifier = modifier.height(48.dp),
+        colors = colors,
         enabled = when (state) {
             ENABLED -> true
             else -> false
@@ -46,8 +54,8 @@ fun PrimaryButton(
             }
             if (text.isNotBlank()) {
                 Text(
-                    text = text.uppercase(),
-                    fontSize = 16.sp,
+                    text = text,
+                    fontSize = 14.sp,
                 )
             }
         }
@@ -62,7 +70,7 @@ enum class PrimaryButtonState {
 
 @Preview("Enabled")
 @Composable
-fun PrimaryButtonEnabledPreview() {
+private fun PrimaryButtonEnabledPreview() {
     PrimaryButton(
         text = "Place order",
         onClick = { },
@@ -72,7 +80,7 @@ fun PrimaryButtonEnabledPreview() {
 
 @Preview("Disabled")
 @Composable
-fun PrimaryButtonDisabledPreview() {
+private fun PrimaryButtonDisabledPreview() {
     PrimaryButton(
         text = "Place order",
         onClick = { },
@@ -82,7 +90,7 @@ fun PrimaryButtonDisabledPreview() {
 
 @Preview("Loading with text")
 @Composable
-fun PrimaryButtonLoadingWithTextPreview() {
+private fun PrimaryButtonLoadingWithTextPreview() {
     PrimaryButton(
         text = "Placing order",
         onClick = { },
@@ -92,7 +100,7 @@ fun PrimaryButtonLoadingWithTextPreview() {
 
 @Preview("Loading without text")
 @Composable
-fun PrimaryButtonLoadingWithoutTextPreview() {
+private fun PrimaryButtonLoadingWithoutTextPreview() {
     PrimaryButton(
         text = "",
         onClick = { },
