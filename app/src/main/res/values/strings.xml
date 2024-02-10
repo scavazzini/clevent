@@ -50,4 +50,9 @@
     <string name="tags_header">Tags</string>
     <string name="erase_tag_title">Erase an NFC tag</string>
     <string name="erase_tag_summary">Erase the content of an NFC tag for a new use.</string>
+
+    <string name="receipt_available_balance">Available balance</string>
+    <string name="receipt_share_button">Share</string>
+    <string name="receipt_qrcode_button">QR code</string>
+    <string name="receipt_transaction_list_title">Transaction History</string>
 </resources>
