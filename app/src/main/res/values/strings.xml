@@ -57,4 +57,6 @@
     <string name="receipt_transaction_list_title">Transaction History</string>
 
     <string name="order_confirm_order_button">Confirm Order</string>
+
+    <string name="recharge_confirm_button">Recharge</string>
 </resources>
