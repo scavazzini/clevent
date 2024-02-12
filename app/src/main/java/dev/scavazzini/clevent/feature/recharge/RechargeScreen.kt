@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.recharge
+package dev.scavazzini.clevent.feature.recharge
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

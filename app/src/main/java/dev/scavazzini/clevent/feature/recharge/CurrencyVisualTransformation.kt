@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.recharge
+package dev.scavazzini.clevent.feature.recharge
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping

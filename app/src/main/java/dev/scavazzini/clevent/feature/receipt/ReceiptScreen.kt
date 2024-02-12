@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.receipt
+package dev.scavazzini.clevent.feature.receipt
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

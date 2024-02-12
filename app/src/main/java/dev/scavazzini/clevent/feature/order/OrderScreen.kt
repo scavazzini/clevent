@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.order
+package dev.scavazzini.clevent.feature.order
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
