@@ -119,24 +119,7 @@ fun ReceiptBalanceText(
     Text(
         textAlign = TextAlign.Center,
         modifier = modifier,
-        text = buildAnnotatedString {
-            withStyle(
-                style = SpanStyle(
-                    color = Color(0xff55624C),
-                    fontWeight = FontWeight.Bold,
-                ),
-            ) {
-                withStyle(style = SpanStyle(fontSize = 24.sp)) {
-                    append(value.symbol)
-                }
-                withStyle(style = SpanStyle(fontSize = 64.sp)) {
-                    append(value.wholeUnit)
-                }
-                withStyle(style = SpanStyle(fontSize = 24.sp)) {
-                    append("${value.fractionalSeparator}${value.fractionalUnit}")
-                }
-            }
-        },
+        text = value.toAnnotatedString(),
     )
 }
 
