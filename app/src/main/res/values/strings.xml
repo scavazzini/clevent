@@ -55,6 +55,7 @@
     <string name="receipt_share_button">Share</string>
     <string name="receipt_qrcode_button">QR code</string>
     <string name="receipt_transaction_list_title">Transaction History</string>
+    <string name="receipt_transaction_list_total">Total</string>
 
     <string name="order_confirm_order_button">Confirm Order</string>
 

@@ -3,10 +3,12 @@ package dev.scavazzini.clevent.data.models
 import dev.scavazzini.clevent.exceptions.BalanceLimitExceededException
 import dev.scavazzini.clevent.exceptions.InsufficientBalanceException
 import java.io.Serializable
-import java.util.*
+import java.util.Objects
 
-class Customer(balance: Int = 0,
-               products: Map<Product, Int> = mapOf()) : Serializable {
+class Customer(
+    balance: Int = 0,
+    products: Map<Product, Int> = mapOf(),
+) : Serializable {
 
     private val _products: MutableMap<Product, Int> = products.toMutableMap()
 
@@ -89,3 +91,8 @@ class Customer(balance: Int = 0,
         return Objects.hash(_products, balance)
     }
 }
+
+val EMPTY_CUSTOMER = Customer(
+    balance = 0,
+    products = emptyMap(),
+)
