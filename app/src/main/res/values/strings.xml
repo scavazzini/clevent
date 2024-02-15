@@ -60,4 +60,8 @@
     <string name="order_confirm_order_button">Confirm Order</string>
 
     <string name="recharge_confirm_button">Recharge</string>
+
+    <string name="nfc_modal_waiting_message">Hold the NFC tag near to this device</string>
+    <string name="nfc_modal_error_message">Something went wrong. Please, try again</string>
+    <string name="nfc_modal_cancel_button">Cancel</string>
 </resources>
