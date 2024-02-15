@@ -12,7 +12,7 @@ import java.util.Locale
 import kotlin.math.absoluteValue
 
 class CurrencyValue(
-    private val rawValue: Int,
+    val rawValue: Int,
     locale: Locale = Locale.getDefault(),
 ) {
     private val decimalFormat = DecimalFormat.getInstance(locale) as DecimalFormat
