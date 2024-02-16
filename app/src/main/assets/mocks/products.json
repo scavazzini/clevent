@@ -2,91 +2,109 @@
     {
         "id": 1,
         "name": "Guinness Draught",
-        "price": 1990
+        "price": 1990,
+        "category": "Beer"
     },
     {
         "id": 2,
         "name": "Rochefort Trappistes 10",
-        "price": 3990
+        "price": 3990,
+        "category": "Beer"
     },
     {
         "id": 3,
         "name": "Duvel",
-        "price": 3490
+        "price": 3490,
+        "category": "Beer"
     },
     {
         "id": 4,
         "name": "Fuller's London Pride",
-        "price": 2990
+        "price": 2990,
+        "category": "Cocktail"
     },
     {
         "id": 5,
         "name": "Colorado Indica",
-        "price": 1690
+        "price": 1690,
+        "category": "Beer"
     },
     {
         "id": 6,
         "name": "BrewDog Punk IPA",
-        "price": 2290
+        "price": 2290,
+        "category": "Beer"
     },
     {
         "id": 7,
         "name": "Chimay Blue",
-        "price": 3790
+        "price": 3790,
+        "category": "Cocktail"
     },
     {
         "id": 8,
         "name": "Delirium Tremens",
-        "price": 8600
+        "price": 8600,
+        "category": "Beer"
     },
     {
         "id": 9,
         "name": "St Bernardus Tripel",
-        "price": 3190
+        "price": 3190,
+        "category": "Food"
     },
     {
         "id": 10,
         "name": "Newcastle Brown Ale",
-        "price": 2999
+        "price": 2999,
+        "category": "Beer"
     },
     {
         "id": 11,
         "name": "Paulaner Hefeweissbier",
-        "price": 2550
+        "price": 2550,
+        "category": "Beer"
     },
     {
         "id": 12,
         "name": "Blue Moon Belgian White",
-        "price": 1990
+        "price": 1990,
+        "category": "Beer"
     },
     {
         "id": 13,
         "name": "Brooklyn East India Pale Ale",
-        "price": 1990
+        "price": 1990,
+        "category": "Beer"
     },
     {
         "id": 14,
         "name": "Brooklyn Lager",
-        "price": 1990
+        "price": 1990,
+        "category": "Beer"
     },
     {
         "id": 15,
         "name": "Sierra Nevada Hazy Little Thing",
-        "price": 2390
+        "price": 2390,
+        "category": "Beer"
     },
     {
         "id": 16,
         "name": "BrewDog Indie Pale Ale",
-        "price": 1690
+        "price": 1690,
+        "category": "Beer"
     },
     {
         "id": 17,
         "name": "Vedett Extra White",
-        "price": 2290
+        "price": 2290,
+        "category": "Beer"
     },
     {
         "id": 18,
         "name": "Westmalle Dubbel",
-        "price": 2690
+        "price": 2690,
+        "category": "Beer"
     }
 ]
