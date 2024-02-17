@@ -71,7 +71,7 @@ private fun ReceiptScreenContent(
             customer = customer,
             onShareButtonTapped = onShareButtonTapped,
             onQrCodeButtonTapped = onQrCodeButtonTapped,
-            modifier = modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
         )
         ReceiptList(
             customer = customer,
