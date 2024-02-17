@@ -41,8 +41,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun initializeNFCAdapter() {
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this) ?: return
-        mPendingIntent = PendingIntent.getActivity(this, 0, Intent(this,
-                javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), PendingIntent.FLAG_IMMUTABLE)
+
+        val intent = Intent(this, javaClass).apply {
+            addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        }
+
+        mPendingIntent = PendingIntent.getActivity(
+            /* context = */ this,
+            /* requestCode = */ 0,
+            /* intent = */ intent,
+            /* flags = */ PendingIntent.FLAG_MUTABLE,
+        )
     }
 
     public override fun onResume() {
