@@ -183,7 +183,7 @@ private fun ProductListItem(product: Pair<Product, Int>, modifier: Modifier) {
             .fillMaxWidth(),
     ) {
         val leftText = "${product.second}x ${product.first.name}"
-        val rightText = product.first.price.toCurrency()
+        val rightText = (product.first.price * product.second).toCurrency()
 
         Text(leftText, modifier = Modifier.weight(1f))
         Text(

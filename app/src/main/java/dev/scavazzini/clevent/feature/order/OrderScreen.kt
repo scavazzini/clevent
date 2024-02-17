@@ -17,9 +17,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SecondaryTabRow
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -38,42 +41,89 @@ import androidx.compose.ui.unit.sp
 import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.models.CurrencyValue
 import dev.scavazzini.clevent.data.models.Product
+import dev.scavazzini.clevent.ui.OnNewIntentHandler
+import dev.scavazzini.clevent.ui.components.BottomSheetProductListContent
+import dev.scavazzini.clevent.ui.components.NfcModalBottomSheet
 import dev.scavazzini.clevent.ui.components.PrimaryButton
+import dev.scavazzini.clevent.ui.components.PrimaryButtonState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderScreen(
-    products: Map<Product, Int>,
-    categories: List<String>,
-    selectedCategory: Int,
+    viewModel: OrderViewModel,
     modifier: Modifier = Modifier,
 ) {
+    OnNewIntentHandler { viewModel.performPurchase(it) }
+
+    val state by viewModel.orderUiState.collectAsState()
+    val categories by viewModel.categories.collectAsState()
+    val products = viewModel.products
+
+    var selectedCategory by remember(categories) { mutableIntStateOf(0) }
+
     OrderScreenContent(
         products = products,
         categories = categories,
         selectedCategory = selectedCategory,
-        onConfirmOrderButtonTapped = { },
+        onIncreaseQuantity = viewModel::increase,
+        onDecreaseQuantity = viewModel::decrease,
+        onConfirmOrderButtonTapped = viewModel::confirmOrder,
         modifier = modifier.fillMaxWidth(),
+        state = state,
+        onCategoryClick = { selectedCategory = it },
+        onDismiss = viewModel::cancelOrder,
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun OrderScreenContent(
     products: Map<Product, Int>,
     categories: List<String>,
     selectedCategory: Int,
+    onIncreaseQuantity: (product: Product) -> Unit,
+    onDecreaseQuantity: (product: Product) -> Unit,
     onConfirmOrderButtonTapped: () -> Unit,
     modifier: Modifier = Modifier,
+    onDismiss: () -> Unit = { },
+    state: OrderViewModel.OrderUiState = OrderViewModel.OrderUiState(),
+    sheetState: SheetState = rememberModalBottomSheetState(),
+    onCategoryClick: (Int) -> Unit = { },
 ) {
     Column(modifier.fillMaxWidth()) {
         CategoryTabs(
             categories = categories,
             selected = selectedCategory,
-            onSelectedCategoryChange = { },
+            onSelectedCategoryChange = onCategoryClick,
         )
         ProductList(
             products = products,
+            category = categories[selectedCategory],
+            onIncreaseQuantity = onIncreaseQuantity,
+            onDecreaseQuantity = onDecreaseQuantity,
             onConfirmOrderButtonTapped = onConfirmOrderButtonTapped,
+            buttonState = state.confirmOrderButtonState,
+            buttonValue = state.orderValue,
             modifier = Modifier.weight(1f),
+        )
+    }
+
+    if (state.showSheet) {
+        val title = state.title?.let { titleRes ->
+            stringResource(titleRes, *state.titleArgs.toTypedArray())
+        }
+
+        val description = state.description?.let { descriptionRes ->
+            stringResource(descriptionRes, *state.descriptionArgs.toTypedArray())
+        }
+
+        NfcModalBottomSheet(
+            onDismiss = onDismiss,
+            title = title ?: "",
+            description = description ?: "",
+            sheetState = sheetState,
+            nfcReadingState = state.sheetState,
+            content = { BottomSheetProductListContent(products.filter { it.value > 0 }) },
         )
     }
 }
@@ -121,8 +171,13 @@ private fun CategoryTabs(
 @Composable
 private fun ProductList(
     products: Map<Product, Int>,
+    category: String,
+    onIncreaseQuantity: (product: Product) -> Unit,
+    onDecreaseQuantity: (product: Product) -> Unit,
     onConfirmOrderButtonTapped: () -> Unit,
     modifier: Modifier = Modifier,
+    buttonState: PrimaryButtonState = PrimaryButtonState.ENABLED,
+    buttonValue: Int = 0,
 ) {
     val localDensity = LocalDensity.current
     var listBottomPadding by remember { mutableIntStateOf(0) }
@@ -141,12 +196,28 @@ private fun ProductList(
             modifier = Modifier.fillMaxSize(),
         ) {
             items(products.entries.toList()) { item ->
-                ListItem(item.key)
+                if (item.key.category == category || category == "All") {
+                    ListItem(
+                        product = item.key,
+                        quantity = item.value,
+                        onIncreaseQuantity = { onIncreaseQuantity(item.key) },
+                        onDecreaseQuantity = { onDecreaseQuantity(item.key) },
+                    )
+                }
             }
         }
+        val buttonText = if (buttonValue <= 0)
+            stringResource(R.string.order_confirm_order_button)
+        else
+            stringResource(
+                R.string.order_confirm_order_with_value_button,
+                CurrencyValue(buttonValue).toString()
+            )
+
         PrimaryButton(
-            text = stringResource(R.string.order_confirm_order_button),
+            text = buttonText,
             onClick = onConfirmOrderButtonTapped,
+            state = buttonState,
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth()
@@ -158,6 +229,9 @@ private fun ProductList(
 @Composable
 private fun ListItem(
     product: Product,
+    quantity: Int,
+    onIncreaseQuantity: () -> Unit,
+    onDecreaseQuantity: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -183,16 +257,16 @@ private fun ListItem(
             ChangeQuantityButton(
                 image = Icons.Filled.RemoveCircle,
                 contentDescription = "-1",
-                onClick = { },
+                onClick = onDecreaseQuantity,
             )
             Text(
-                text = 0.toString(),
+                text = quantity.toString(),
                 fontSize = 16.sp,
             )
             ChangeQuantityButton(
                 image = Icons.Filled.AddCircle,
                 contentDescription = "+1",
-                onClick = { },
+                onClick = onIncreaseQuantity,
             )
         }
     }
@@ -216,6 +290,7 @@ private fun ChangeQuantityButton(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 private fun OrderScreenContentPreview() {
@@ -228,6 +303,8 @@ private fun OrderScreenContentPreview() {
         products = products,
         categories = listOf("All", "Beer", "Food"),
         selectedCategory = 0,
+        onIncreaseQuantity = { },
+        onDecreaseQuantity = { },
         onConfirmOrderButtonTapped = { },
     )
 }
