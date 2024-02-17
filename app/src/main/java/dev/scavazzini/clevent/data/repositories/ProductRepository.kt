@@ -18,6 +18,8 @@ class ProductRepository @Inject constructor(
 ) {
     fun getProducts() = productDAO.getAll()
 
+    fun getProductsAsFlow() = productDAO.getAllAsFlow()
+
     suspend fun sync(): Long? {
         try {
             val response = productService.getProducts(preferences.endpoint)

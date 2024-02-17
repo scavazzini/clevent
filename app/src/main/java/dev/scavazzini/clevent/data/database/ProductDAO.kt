@@ -6,11 +6,15 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import dev.scavazzini.clevent.data.models.Product
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProductDAO {
     @Query("SELECT * FROM Product")
     fun getAll(): LiveData<List<Product>>
+
+    @Query("SELECT * FROM Product")
+    fun getAllAsFlow(): Flow<List<Product>>
 
     @Query("SELECT * FROM Product WHERE id IN (:ids)")
     suspend fun getProducts(ids: List<Short>): List<Product>
