@@ -3,7 +3,6 @@ package dev.scavazzini.clevent.ui
 import android.app.PendingIntent
 import android.content.Intent
 import android.nfc.NfcAdapter
-import android.nfc.Tag
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -17,8 +16,9 @@ import dev.scavazzini.clevent.io.NFCReader
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
-    @Inject lateinit var nfcReader: NFCReader
+class LegacyMainActivity : AppCompatActivity() {
+    @Inject
+    lateinit var nfcReader: NFCReader
     private val navController by lazy { findNavController(R.id.nav_host_fragment) }
     private var mNfcAdapter: NfcAdapter? = null
     private var mPendingIntent: PendingIntent? = null
@@ -33,7 +33,8 @@ class MainActivity : AppCompatActivity() {
     private fun initializeBottomNavigation() {
         val navView = findViewById<BottomNavigationView>(R.id.nav_view)
         val appBarConfiguration = AppBarConfiguration.Builder(
-                R.id.navigation_order, R.id.navigation_recharge, R.id.navigation_receipt).build()
+            R.id.navigation_order, R.id.navigation_recharge, R.id.navigation_receipt
+        ).build()
 
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
         NavigationUI.setupWithNavController(navView, navController)
