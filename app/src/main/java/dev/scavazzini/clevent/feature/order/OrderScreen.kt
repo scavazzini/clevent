@@ -254,15 +254,17 @@ private fun ListItem(
             )
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            ChangeQuantityButton(
-                image = Icons.Filled.RemoveCircle,
-                contentDescription = "-1",
-                onClick = onDecreaseQuantity,
-            )
-            Text(
-                text = quantity.toString(),
-                fontSize = 16.sp,
-            )
+            if (quantity > 0) {
+                ChangeQuantityButton(
+                    image = Icons.Filled.RemoveCircle,
+                    contentDescription = "-1",
+                    onClick = onDecreaseQuantity,
+                )
+                Text(
+                    text = quantity.toString(),
+                    fontSize = 16.sp,
+                )
+            }
             ChangeQuantityButton(
                 image = Icons.Filled.AddCircle,
                 contentDescription = "+1",
