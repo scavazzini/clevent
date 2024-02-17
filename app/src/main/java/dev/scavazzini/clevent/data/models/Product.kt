@@ -5,4 +5,9 @@ import androidx.room.PrimaryKey
 import java.io.Serializable
 
 @Entity
-data class Product(@PrimaryKey val id: Short, var name: String, var price: Int) : Serializable
+data class Product(
+    @PrimaryKey val id: Short,
+    var name: String,
+    var price: Int,
+    var category: String,
+) : Serializable

@@ -8,8 +8,8 @@ import org.junit.Test
 class CustomerTest {
 
     private val customer: Customer = Customer()
-    private val product1 = Product(1.toShort(), "p1", 1000)
-    private val product2 = Product(50.toShort(), "p2", 2000)
+    private val product1 = Product(1.toShort(), "p1", 1000, "Beer")
+    private val product2 = Product(50.toShort(), "p2", 2000, "Beer")
 
     @Test
     fun shouldRechargeBalance() {

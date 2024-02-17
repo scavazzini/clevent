@@ -68,7 +68,7 @@ class CustomerNFCSerializer @Inject constructor() : CustomerSerializer {
             val productId = byteBuffer.short
             val quantity = byteBuffer.get().toInt()
             if (productId > 0) {
-                val product = Product(productId, "", 0)
+                val product = Product(productId, "", 0, "")
                 products[product] = products[product]?.plus(quantity) ?: quantity
                 productEntriesQuantity++
             }

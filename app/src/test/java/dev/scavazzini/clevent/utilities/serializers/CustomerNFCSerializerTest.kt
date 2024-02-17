@@ -10,8 +10,8 @@ import org.junit.Test
 class CustomerNFCSerializerTest {
 
     private val customer: Customer = Customer()
-    private val product1 = Product(1.toShort(), "p1", 2500)
-    private val product2 = Product(50.toShort(), "p2", 1000)
+    private val product1 = Product(1.toShort(), "p1", 2500, "cat1")
+    private val product2 = Product(50.toShort(), "p2", 1000, "cat2")
     private val customerSerializer = CustomerNFCSerializer()
 
     @Before

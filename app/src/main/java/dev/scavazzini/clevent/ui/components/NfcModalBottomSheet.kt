@@ -297,11 +297,11 @@ private fun NfcModalBottomSheetContentWithListPreview() {
         ) {
             BottomSheetProductListContent(
                 products = mapOf(
-                    Pair(Product(1, "Product 1", 600), 3),
-                    Pair(Product(2, "Product 2", 650), 1),
-                    Pair(Product(3, "Product 3", 350), 2),
-                    Pair(Product(4, "Product 4", 800), 2),
-                    Pair(Product(5, "Product 5", 1000), 5),
+                    Pair(Product(1, "Product 1", 600, ""), 3),
+                    Pair(Product(2, "Product 2", 650, ""), 1),
+                    Pair(Product(3, "Product 3", 350, ""), 2),
+                    Pair(Product(4, "Product 4", 800, ""), 2),
+                    Pair(Product(5, "Product 5", 1000, ""), 5),
                 ),
             )
         }

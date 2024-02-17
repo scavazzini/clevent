@@ -231,9 +231,9 @@ private fun ReceiptScreenContentPreview() {
     val customer = Customer(
         balance = 12050,
         products = mapOf(
-            Product(1, "Irish Stout, 568ml", 600) to 3,
-            Product(2, "India Pale Ale (IPA), 330ml", 450) to 1,
-            Product(3, "Imperial Porter, 568ml", 650) to 2,
+            Product(1, "Irish Stout, 568ml", 600, "Beer") to 3,
+            Product(2, "India Pale Ale (IPA), 330ml", 450, "Beer") to 1,
+            Product(3, "Imperial Porter, 568ml", 650, "Beer") to 2,
         )
     )
     ReceiptScreenContent(

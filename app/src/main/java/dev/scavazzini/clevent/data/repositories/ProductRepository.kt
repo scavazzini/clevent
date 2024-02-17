@@ -42,6 +42,7 @@ class ProductRepository @Inject constructor(
                 if (product.id != filledProduct.id) continue
                 product.name = filledProduct.name
                 product.price = filledProduct.price
+                product.category = filledProduct.category
                 break
             }
         }
