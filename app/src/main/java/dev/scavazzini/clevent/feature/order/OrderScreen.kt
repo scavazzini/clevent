@@ -10,16 +10,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SecondaryTabRow
+import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -33,8 +39,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,12 +65,15 @@ fun OrderScreen(
 
     val state by viewModel.orderUiState.collectAsState()
     val categories by viewModel.categories.collectAsState()
-    val products = viewModel.products
+    val searchFieldValue by viewModel.searchFieldValue.collectAsState()
+    val products by viewModel.products.collectAsState()
+    val productsOnCart by viewModel.productsOnCart.collectAsState()
 
     var selectedCategory by remember(categories) { mutableIntStateOf(0) }
 
     OrderScreenContent(
         products = products,
+        productsOnCart = productsOnCart,
         categories = categories,
         selectedCategory = selectedCategory,
         onIncreaseQuantity = viewModel::increase,
@@ -72,6 +83,8 @@ fun OrderScreen(
         state = state,
         onCategoryClick = { selectedCategory = it },
         onDismiss = viewModel::cancelOrder,
+        searchFieldValue = searchFieldValue,
+        onSearchFieldValueChange = viewModel::onSearchFieldValueChange,
     )
 }
 
@@ -79,6 +92,7 @@ fun OrderScreen(
 @Composable
 private fun OrderScreenContent(
     products: Map<Product, Int>,
+    productsOnCart: Map<Product, Int>,
     categories: List<String>,
     selectedCategory: Int,
     onIncreaseQuantity: (product: Product) -> Unit,
@@ -89,6 +103,8 @@ private fun OrderScreenContent(
     state: OrderViewModel.OrderUiState = OrderViewModel.OrderUiState(),
     sheetState: SheetState = rememberModalBottomSheetState(),
     onCategoryClick: (Int) -> Unit = { },
+    searchFieldValue: String = "",
+    onSearchFieldValueChange: (String) -> Unit = { },
 ) {
     Column(modifier.fillMaxWidth()) {
         CategoryTabs(
@@ -105,6 +121,8 @@ private fun OrderScreenContent(
             buttonState = state.confirmOrderButtonState,
             buttonValue = state.orderValue,
             modifier = Modifier.weight(1f),
+            searchFieldValue = searchFieldValue,
+            onSearchFieldValueChange = onSearchFieldValueChange,
         )
     }
 
@@ -123,7 +141,7 @@ private fun OrderScreenContent(
             description = description ?: "",
             sheetState = sheetState,
             nfcReadingState = state.sheetState,
-            content = { BottomSheetProductListContent(products.filter { it.value > 0 }) },
+            content = { BottomSheetProductListContent(productsOnCart) },
         )
     }
 }
@@ -178,6 +196,8 @@ private fun ProductList(
     modifier: Modifier = Modifier,
     buttonState: PrimaryButtonState = PrimaryButtonState.ENABLED,
     buttonValue: Int = 0,
+    searchFieldValue: String = "",
+    onSearchFieldValueChange: (String) -> Unit = { },
 ) {
     val localDensity = LocalDensity.current
     var listBottomPadding by remember { mutableIntStateOf(0) }
@@ -195,15 +215,19 @@ private fun ProductList(
             ),
             modifier = Modifier.fillMaxSize(),
         ) {
+            item {
+                SearchBar(
+                    value = searchFieldValue,
+                    onValueChange = onSearchFieldValueChange,
+                )
+            }
             items(products.entries.toList()) { item ->
-                if (item.key.category == category || category == "All") {
-                    ListItem(
-                        product = item.key,
-                        quantity = item.value,
-                        onIncreaseQuantity = { onIncreaseQuantity(item.key) },
-                        onDecreaseQuantity = { onDecreaseQuantity(item.key) },
-                    )
-                }
+                ListItem(
+                    product = item.key,
+                    quantity = item.value,
+                    onIncreaseQuantity = { onIncreaseQuantity(item.key) },
+                    onDecreaseQuantity = { onDecreaseQuantity(item.key) },
+                )
             }
         }
         val buttonText = if (buttonValue <= 0)
@@ -224,6 +248,59 @@ private fun ProductList(
                 .onGloballyPositioned { listBottomPadding = it.size.height },
         )
     }
+}
+
+@Composable
+private fun SearchBar(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val focusManager = LocalFocusManager.current
+
+    val clearInput = {
+        focusManager.clearFocus()
+        onValueChange("")
+    }
+
+    TextField(
+        value = value,
+        onValueChange = onValueChange,
+        shape = ShapeDefaults.Medium,
+        label = {
+            Text(stringResource(R.string.order_search_field_label))
+        },
+        trailingIcon = {
+            if (value.isNotEmpty()) {
+                IconButton(
+                    onClick = clearInput,
+                    modifier = modifier,
+                    content = {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = stringResource(R.string.order_search_field_clear_button),
+                        )
+                    }
+                )
+            }
+        },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(
+            onSearch = { focusManager.clearFocus() }
+        ),
+        singleLine = true,
+        colors = TextFieldDefaults.colors(
+            unfocusedContainerColor = Color(0xfff4f4f4),
+            disabledContainerColor = Color(0xfff4f4f4),
+            errorContainerColor = Color(0xfff4f4f4),
+            focusedContainerColor = Color(0xfff4f4f4),
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent,
+            errorIndicatorColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent,
+        ),
+        modifier = modifier.fillMaxWidth(),
+    )
 }
 
 @Composable
@@ -303,6 +380,7 @@ private fun OrderScreenContentPreview() {
     )
     OrderScreenContent(
         products = products,
+        productsOnCart = products,
         categories = listOf("All", "Beer", "Food"),
         selectedCategory = 0,
         onIncreaseQuantity = { },

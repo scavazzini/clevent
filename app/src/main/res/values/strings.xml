@@ -57,6 +57,8 @@
     <string name="receipt_transaction_list_title">Transaction History</string>
     <string name="receipt_transaction_list_total">Total</string>
 
+    <string name="order_search_field_label">Search</string>
+    <string name="order_search_field_clear_button">Clear</string>
     <string name="order_confirm_order_button">Confirm Order</string>
     <string name="order_confirm_order_with_value_button">Confirm Order (%s)</string>
     <string name="order_confirm_title">Confirm your Order</string>

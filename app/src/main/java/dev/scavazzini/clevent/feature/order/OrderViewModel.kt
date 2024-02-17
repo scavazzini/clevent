@@ -1,15 +1,11 @@
 package dev.scavazzini.clevent.feature.order
 
 import android.content.Intent
-import android.nfc.Tag
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.models.CurrencyValue
-import dev.scavazzini.clevent.data.models.Customer
 import dev.scavazzini.clevent.data.models.Product
 import dev.scavazzini.clevent.data.repositories.ProductRepository
 import dev.scavazzini.clevent.exceptions.InsufficientBalanceException
@@ -19,8 +15,12 @@ import dev.scavazzini.clevent.ui.components.NfcBottomSheetReadingState
 import dev.scavazzini.clevent.ui.components.PrimaryButtonState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,16 +41,30 @@ class OrderViewModel @Inject constructor(
     private val _categories: MutableStateFlow<List<String>> = MutableStateFlow(listOf("All"))
     val categories: StateFlow<List<String>> = _categories
 
-    private val _products: SnapshotStateMap<Product, Int> = mutableStateMapOf()
-    val products: SnapshotStateMap<Product, Int> = _products
+    private val _searchFieldValue = MutableStateFlow("")
+    val searchFieldValue: StateFlow<String> = _searchFieldValue
+
+    private val _products: MutableStateFlow<Map<Product, Int>> = MutableStateFlow(emptyMap())
+
+    val products: StateFlow<Map<Product, Int>> = _products
+        .combine(_searchFieldValue) { products, term ->
+            products.filter { it.key.name.contains(term, ignoreCase = true) }
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+
+    val productsOnCart: StateFlow<Map<Product, Int>> = _products
+        .transform { products -> emit(products.filter { it.value > 0 }) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     init {
         viewModelScope.launch {
-            productRepository.getProductsAsFlow().collectLatest { products ->
-                _products.clear()
-                _products.putAll(products.associateWith { 0 })
+            productRepository.getProductsAsFlow().collectLatest {
+                _products.value = it.associateWith { 0 }
             }
         }
+    }
+
+    fun onSearchFieldValueChange(value: String) {
+        _searchFieldValue.value = value
     }
 
     fun performPurchase(intent: Intent) = viewModelScope.launch {
@@ -61,8 +75,9 @@ class OrderViewModel @Inject constructor(
         try {
             val (tag, customer) = nfcReader.extract(intent)
 
-            _products.filter { it.value > 0 }
-                .forEach { customer.addProduct(it.key, it.value) }
+            productsOnCart.value.forEach {
+                customer.addProduct(it.key, it.value)
+            }
 
             nfcWriter.write(tag, customer)
 
@@ -115,25 +130,27 @@ class OrderViewModel @Inject constructor(
     }
 
     private fun incrementQuantity(product: Product, value: Int) {
-        _products[product] = _products[product]
-            ?.plus(value)
-            ?.coerceIn(0..100)
-            ?: 0
+        _products.value = _products.value.toMutableMap().apply {
+            this[product] = this[product]
+                ?.plus(value)
+                ?.coerceIn(0..100)
+                ?: 0
+        }
 
         _orderUiState.value = _orderUiState.value.copy(
-            confirmOrderButtonState = _products.evaluateButtonState(),
-            orderValue = _products.total(),
+            confirmOrderButtonState = _products.value.evaluateButtonState(),
+            orderValue = _products.value.total(),
         )
     }
 
-    private fun SnapshotStateMap<Product, Int>.evaluateButtonState(): PrimaryButtonState {
+    private fun Map<Product, Int>.evaluateButtonState(): PrimaryButtonState {
         if (any { it.value > 0 }) {
             return PrimaryButtonState.ENABLED
         }
         return PrimaryButtonState.DISABLED
     }
 
-    private fun SnapshotStateMap<Product, Int>.total(): Int {
+    private fun Map<Product, Int>.total(): Int {
         return map { it.key.price * it.value }.sum()
     }
 
