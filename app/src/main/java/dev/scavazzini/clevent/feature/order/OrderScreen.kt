@@ -69,19 +69,16 @@ fun OrderScreen(
     val products by viewModel.products.collectAsState()
     val productsOnCart by viewModel.productsOnCart.collectAsState()
 
-    var selectedCategory by remember(categories) { mutableIntStateOf(0) }
-
     OrderScreenContent(
         products = products,
         productsOnCart = productsOnCart,
         categories = categories,
-        selectedCategory = selectedCategory,
         onIncreaseQuantity = viewModel::increase,
         onDecreaseQuantity = viewModel::decrease,
         onConfirmOrderButtonTapped = viewModel::confirmOrder,
         modifier = modifier.fillMaxWidth(),
         state = state,
-        onCategoryClick = { selectedCategory = it },
+        onCategoryClick = viewModel::onCategoryChange,
         onDismiss = viewModel::cancelOrder,
         searchFieldValue = searchFieldValue,
         onSearchFieldValueChange = viewModel::onSearchFieldValueChange,
@@ -93,8 +90,7 @@ fun OrderScreen(
 private fun OrderScreenContent(
     products: Map<Product, Int>,
     productsOnCart: Map<Product, Int>,
-    categories: List<String>,
-    selectedCategory: Int,
+    categories: List<Pair<String, Boolean>>,
     onIncreaseQuantity: (product: Product) -> Unit,
     onDecreaseQuantity: (product: Product) -> Unit,
     onConfirmOrderButtonTapped: () -> Unit,
@@ -102,19 +98,17 @@ private fun OrderScreenContent(
     onDismiss: () -> Unit = { },
     state: OrderViewModel.OrderUiState = OrderViewModel.OrderUiState(),
     sheetState: SheetState = rememberModalBottomSheetState(),
-    onCategoryClick: (Int) -> Unit = { },
+    onCategoryClick: (String?) -> Unit = { },
     searchFieldValue: String = "",
     onSearchFieldValueChange: (String) -> Unit = { },
 ) {
     Column(modifier.fillMaxWidth()) {
         CategoryTabs(
             categories = categories,
-            selected = selectedCategory,
             onSelectedCategoryChange = onCategoryClick,
         )
         ProductList(
             products = products,
-            category = categories[selectedCategory],
             onIncreaseQuantity = onIncreaseQuantity,
             onDecreaseQuantity = onDecreaseQuantity,
             onConfirmOrderButtonTapped = onConfirmOrderButtonTapped,
@@ -149,36 +143,43 @@ private fun OrderScreenContent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CategoryTabs(
-    categories: List<String>,
-    selected: Int,
-    onSelectedCategoryChange: (selected: Int) -> Unit,
+    categories: List<Pair<String, Boolean>>,
+    onSelectedCategoryChange: (selected: String?) -> Unit,
 ) {
-    require(categories.isNotEmpty()) {
-        "Categories must not be empty."
-    }
-
-    require(categories.indices.contains(selected)) {
-        "Selected parameter must be within categories range."
-    }
+    val selected = categories.find { it.second }
+    val selectedIndex = categories.indexOf(selected) + 1
 
     SecondaryTabRow(
-        selectedTabIndex = selected,
+        selectedTabIndex = selectedIndex,
         containerColor = Color.White,
     ) {
-        categories.forEachIndexed { index, category ->
-            val isSelected = index == selected
+        Tab(
+            selected = selected == null,
+            onClick = {
+                if (selected != null) {
+                    onSelectedCategoryChange(null)
+                }
+            },
+        ) {
+            Text(
+                text = stringResource(R.string.order_category_all),
+                fontWeight = if (selected == null) FontWeight.Bold else FontWeight.Normal,
+                modifier = Modifier.padding(vertical = 16.dp),
+            )
+        }
 
+        categories.forEach { category ->
             Tab(
-                selected = isSelected,
+                selected = category.second,
                 onClick = {
-                    if (selected != index) {
-                        onSelectedCategoryChange(index)
+                    if (category != selected) {
+                        onSelectedCategoryChange(category.first)
                     }
                 },
             ) {
                 Text(
-                    text = category,
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                    text = category.first,
+                    fontWeight = if (category.second) FontWeight.Bold else FontWeight.Normal,
                     modifier = Modifier.padding(vertical = 16.dp),
                 )
             }
@@ -189,7 +190,6 @@ private fun CategoryTabs(
 @Composable
 private fun ProductList(
     products: Map<Product, Int>,
-    category: String,
     onIncreaseQuantity: (product: Product) -> Unit,
     onDecreaseQuantity: (product: Product) -> Unit,
     onConfirmOrderButtonTapped: () -> Unit,
@@ -381,8 +381,7 @@ private fun OrderScreenContentPreview() {
     OrderScreenContent(
         products = products,
         productsOnCart = products,
-        categories = listOf("All", "Beer", "Food"),
-        selectedCategory = 0,
+        categories = listOf("Beer" to false, "Food" to false),
         onIncreaseQuantity = { },
         onDecreaseQuantity = { },
         onConfirmOrderButtonTapped = { },

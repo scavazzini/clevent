@@ -38,8 +38,10 @@ class OrderViewModel @Inject constructor(
     private val _orderUiState: MutableStateFlow<OrderUiState> = MutableStateFlow(OrderUiState())
     val orderUiState: StateFlow<OrderUiState> = _orderUiState
 
-    private val _categories: MutableStateFlow<List<String>> = MutableStateFlow(listOf("All"))
-    val categories: StateFlow<List<String>> = _categories
+    private val _categories: MutableStateFlow<List<Pair<String, Boolean>>> = MutableStateFlow(
+        emptyList(),
+    )
+    val categories: StateFlow<List<Pair<String, Boolean>>> = _categories
 
     private val _searchFieldValue = MutableStateFlow("")
     val searchFieldValue: StateFlow<String> = _searchFieldValue
@@ -49,7 +51,14 @@ class OrderViewModel @Inject constructor(
     val products: StateFlow<Map<Product, Int>> = _products
         .combine(_searchFieldValue) { products, term ->
             products.filter { it.key.name.contains(term, ignoreCase = true) }
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+        }
+        .combine(_categories) { products, categories ->
+            val category = categories.firstOrNull { it.second }?.first
+                ?: return@combine products
+
+            products.filter { it.key.category == category }
+        }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     val productsOnCart: StateFlow<Map<Product, Int>> = _products
         .transform { products -> emit(products.filter { it.value > 0 }) }
@@ -57,14 +66,25 @@ class OrderViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            productRepository.getProductsAsFlow().collectLatest {
-                _products.value = it.associateWith { 0 }
+            productRepository.getProductsAsFlow().collectLatest { products ->
+                _products.value = products.associateWith { 0 }
+                _categories.value = products
+                    .map { it.category }
+                    .distinct()
+                    .associateWith { false }
+                    .toList()
             }
         }
     }
 
     fun onSearchFieldValueChange(value: String) {
         _searchFieldValue.value = value
+    }
+
+    fun onCategoryChange(category: String?) {
+        _categories.value = _categories.value.map {
+            it.copy(second = it.first == category)
+        }
     }
 
     fun performPurchase(intent: Intent) = viewModelScope.launch {
