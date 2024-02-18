@@ -18,17 +18,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import dev.scavazzini.clevent.data.repositories.ProductRepository
@@ -84,18 +81,8 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             val navController = rememberNavController()
-            var visibleScreen by remember { mutableStateOf(Screens.OrderScreen) }
-
-            val screens = listOf(
-                Screens.OrderScreen,
-                Screens.RechargeScreen,
-                Screens.ReceiptScreen,
-                Screens.SettingsScreen,
-            )
-
-            LaunchedEffect(visibleScreen) {
-                navController.navigate(visibleScreen.name)
-            }
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentScreen = navBackStackEntry?.destination?.route
 
             Column(Modifier.safeDrawingPadding()) {
                 NavHost(
@@ -103,7 +90,9 @@ class MainActivity : AppCompatActivity() {
                     startDestination = Screens.OrderScreen.name,
                     modifier = Modifier.weight(1f),
                 ) {
-                    val modifier = Modifier.fillMaxWidth().weight(1f)
+                    val modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
 
                     composable(Screens.OrderScreen.name) {
                         OrderScreen(
@@ -132,12 +121,24 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 NavigationBar {
+                    val screens = listOf(
+                        Screens.OrderScreen,
+                        Screens.RechargeScreen,
+                        Screens.ReceiptScreen,
+                        Screens.SettingsScreen,
+                    )
+
                     screens.forEach { screen ->
                         NavigationBarItem(
                             icon = { Icon(screen.image, contentDescription = null) },
                             label = { Text(screen.label) },
-                            selected = visibleScreen == screen,
-                            onClick = { visibleScreen = screen }
+                            selected = currentScreen == screen.name,
+                            onClick = {
+                                navController.navigate(screen.name) {
+                                    popUpTo(navController.graph.startDestinationId)
+                                    launchSingleTop = true
+                                }
+                            }
                         )
                     }
                 }
