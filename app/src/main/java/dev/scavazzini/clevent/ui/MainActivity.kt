@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Receipt
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingBasket
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -37,6 +38,8 @@ import dev.scavazzini.clevent.feature.receipt.ReceiptScreen
 import dev.scavazzini.clevent.feature.receipt.ReceiptViewModel
 import dev.scavazzini.clevent.feature.recharge.RechargeScreen
 import dev.scavazzini.clevent.feature.recharge.RechargeViewModel
+import dev.scavazzini.clevent.feature.settings.SettingsScreen
+import dev.scavazzini.clevent.feature.settings.SettingsViewModel
 import dev.scavazzini.clevent.io.NFCReader
 import javax.inject.Inject
 
@@ -55,6 +58,10 @@ private enum class Screens(
     ReceiptScreen(
         label = "Receipt",
         image = Icons.Filled.Receipt,
+    ),
+    SettingsScreen(
+        label = "Settings",
+        image = Icons.Filled.Settings,
     ),
 }
 
@@ -83,6 +90,7 @@ class MainActivity : AppCompatActivity() {
                 Screens.OrderScreen,
                 Screens.RechargeScreen,
                 Screens.ReceiptScreen,
+                Screens.SettingsScreen,
             )
 
             LaunchedEffect(visibleScreen) {
@@ -112,6 +120,12 @@ class MainActivity : AppCompatActivity() {
                     composable(Screens.ReceiptScreen.name) {
                         ReceiptScreen(
                             viewModel = hiltViewModel<ReceiptViewModel>(),
+                            modifier = modifier,
+                        )
+                    }
+                    composable(Screens.SettingsScreen.name) {
+                        SettingsScreen(
+                            viewModel = hiltViewModel<SettingsViewModel>(),
                             modifier = modifier,
                         )
                     }
