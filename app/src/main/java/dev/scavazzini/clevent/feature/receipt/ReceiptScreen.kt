@@ -20,6 +20,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -27,16 +29,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.models.CurrencyValue
 import dev.scavazzini.clevent.data.models.Customer
-import dev.scavazzini.clevent.data.models.EMPTY_CUSTOMER
 import dev.scavazzini.clevent.data.models.Product
 import dev.scavazzini.clevent.ui.OnNewIntentHandler
 import dev.scavazzini.clevent.ui.components.PrimaryButton
-import dev.scavazzini.clevent.ui.components.PrimaryButtonState
+import dev.scavazzini.clevent.ui.components.QrCodeModalBottomSheet
 import kotlinx.coroutines.launch
 
 @Composable
@@ -44,60 +46,74 @@ fun ReceiptScreen(
     viewModel: ReceiptViewModel,
     modifier: Modifier = Modifier,
 ) {
-    val customer by viewModel.customer.collectAsState()
+    val state by viewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
+
+    val density = LocalDensity.current
+    val qrCodeSize = 240.dp
+    val qrCodeSizePx = with(density) { qrCodeSize.toPx().toInt() }
 
     OnNewIntentHandler {
         coroutineScope.launch { viewModel.onNfcTagRead(it) }
     }
 
     ReceiptScreenContent(
-        customer = customer,
+        state = state,
         onShareButtonTapped = viewModel::share,
-        onQrCodeButtonTapped = viewModel::generateQrCode,
+        onQrCodeButtonTapped = { viewModel.showQrCode(qrCodeSizePx) },
         modifier = modifier.fillMaxWidth(),
+        qrCodeSize = qrCodeSize,
+        onDismissQrCode = viewModel::dismissQrCode,
     )
 }
 
 @Composable
 private fun ReceiptScreenContent(
-    customer: Customer,
+    state: ReceiptViewModel.ReceiptUiState,
     onShareButtonTapped: () -> Unit,
     onQrCodeButtonTapped: () -> Unit,
     modifier: Modifier = Modifier,
+    qrCodeSize: Dp = 240.dp,
+    onDismissQrCode: () -> Unit = { },
 ) {
     Column(modifier.fillMaxWidth()) {
         ReceiptHeader(
-            customer = customer,
+            state = state,
             onShareButtonTapped = onShareButtonTapped,
             onQrCodeButtonTapped = onQrCodeButtonTapped,
             modifier = Modifier.fillMaxWidth(),
         )
         ReceiptList(
-            customer = customer,
+            customer = state.customer,
             modifier = Modifier.weight(1f),
+        )
+    }
+
+    if (state.showQrCodeSheet && state.qrCode != null) {
+        QrCodeModalBottomSheet(
+            qrCode = state.qrCode.asImageBitmap(),
+            qrCodeSize = qrCodeSize,
+            title = stringResource(R.string.receipt_qrcode_modal_title),
+            description = stringResource(R.string.receipt_qrcode_modal_description),
+            close = stringResource(R.string.receipt_qrcode_modal_close),
+            onDismiss = onDismissQrCode,
         )
     }
 }
 
 @Composable
 private fun ReceiptHeader(
-    customer: Customer,
+    state: ReceiptViewModel.ReceiptUiState,
     onShareButtonTapped: () -> Unit,
     onQrCodeButtonTapped: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val buttonState = if (customer == EMPTY_CUSTOMER)
-        PrimaryButtonState.DISABLED
-    else
-        PrimaryButtonState.ENABLED
-
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.padding(vertical = 24.dp),
     ) {
         ReceiptBalanceText(
-            value = CurrencyValue(customer.balance),
+            value = CurrencyValue(state.customer.balance),
         )
         Text(
             text = stringResource(R.string.receipt_available_balance),
@@ -119,14 +135,14 @@ private fun ReceiptHeader(
                 onClick = onShareButtonTapped,
                 text = stringResource(R.string.receipt_share_button),
                 colors = buttonColors,
-                state = buttonState,
+                state = state.shareButtonState,
                 modifier = Modifier.size(width = 125.dp, height = 40.dp),
             )
             PrimaryButton(
                 onClick = onQrCodeButtonTapped,
                 text = stringResource(R.string.receipt_qrcode_button),
                 colors = buttonColors,
-                state = buttonState,
+                state = state.qrCodeButtonState,
                 modifier = Modifier.size(width = 125.dp, height = 40.dp),
             )
         }
@@ -237,7 +253,7 @@ private fun ReceiptScreenContentPreview() {
         )
     )
     ReceiptScreenContent(
-        customer = customer,
+        state = ReceiptViewModel.ReceiptUiState(customer = customer),
         onShareButtonTapped = { },
         onQrCodeButtonTapped = { },
     )
