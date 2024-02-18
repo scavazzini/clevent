@@ -3,9 +3,12 @@ package dev.scavazzini.clevent.utilities.extensions
 import android.content.Context
 import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.models.Customer
-import java.util.*
+import java.util.Calendar
 
-fun Customer.toReceiptString(calendar: Calendar, context: Context? = null) = buildString {
+fun Customer.toReceiptString(
+    calendar: Calendar = Calendar.getInstance(),
+    context: Context? = null,
+) = buildString {
     val receiptTitle = context?.getString(R.string.title_receipt) ?: "Receipt"
     val totalLabel = context?.getString(R.string.label_total) ?: "Total:"
     val balanceLabel = context?.getString(R.string.label_current_balance) ?: "Current Balance:"
