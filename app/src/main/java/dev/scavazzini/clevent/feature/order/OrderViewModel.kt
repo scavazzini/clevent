@@ -88,7 +88,7 @@ class OrderViewModel @Inject constructor(
     }
 
     fun performPurchase(intent: Intent) = viewModelScope.launch {
-        if (_orderUiState.value.sheetState !== NfcBottomSheetReadingState.WAITING) {
+        if (!_orderUiState.value.isReadyToOrder()) {
             return@launch
         }
 
@@ -183,7 +183,11 @@ class OrderViewModel @Inject constructor(
         val descriptionArgs: List<String> = emptyList(),
         val confirmOrderButtonState: PrimaryButtonState = PrimaryButtonState.DISABLED,
         val orderValue: Int = 0,
-    )
+    ) {
+        fun isReadyToOrder(): Boolean {
+            return sheetState == NfcBottomSheetReadingState.WAITING && showSheet
+        }
+    }
 
     private fun OrderUiState.updateSheetToWaiting() {
         _orderUiState.value = copy(

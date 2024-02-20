@@ -43,7 +43,7 @@ class RechargeViewModel @Inject constructor(
     fun recharge(intent: Intent) = viewModelScope.launch {
         val value = _fieldValue.value?.rawValue ?: return@launch
 
-        if (_rechargeUiState.value.sheetState !== NfcBottomSheetReadingState.WAITING) {
+        if (!_rechargeUiState.value.isReadyToRecharge()) {
             return@launch
         }
 
@@ -102,5 +102,9 @@ class RechargeViewModel @Inject constructor(
         val titleArgs: List<String> = emptyList(),
         val description: Int? = null,
         val descriptionArgs: List<String> = emptyList(),
-    )
+    ) {
+        fun isReadyToRecharge(): Boolean {
+            return sheetState == NfcBottomSheetReadingState.WAITING && showSheet
+        }
+    }
 }

@@ -81,9 +81,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun eraseTag(intent: Intent) = viewModelScope.launch {
-        if (_uiState.value.sheetState !== NfcBottomSheetReadingState.WAITING
-            || !_uiState.value.showSheet
-        ) {
+        if (!_uiState.value.isReadyToErase()) {
             return@launch
         }
 
@@ -131,6 +129,10 @@ class SettingsViewModel @Inject constructor(
         val descriptionArgs: List<String> = emptyList(),
         val lastSync: Int? = null,
         val lastSyncArgs: List<String> = emptyList(),
-    )
+    ) {
+        fun isReadyToErase(): Boolean {
+            return sheetState == NfcBottomSheetReadingState.WAITING && showSheet
+        }
+    }
 
 }
