@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -108,7 +109,12 @@ class OrderViewModel @Inject constructor(
                 descriptionArgs = listOf(CurrencyValue(customer.balance).toString()),
             )
             delay(MODAL_CHANGE_STATE_DELAY)
-            _orderUiState.value = _orderUiState.value.copy(showSheet = false)
+            _products.update { it.keys.associateWith { 0 } }
+            _orderUiState.value = _orderUiState.value.copy(
+                showSheet = false,
+                confirmOrderButtonState = PrimaryButtonState.DISABLED,
+                orderValue = 0,
+            )
 
         } catch (e: InsufficientBalanceException) {
             _orderUiState.value = _orderUiState.value.copy(
