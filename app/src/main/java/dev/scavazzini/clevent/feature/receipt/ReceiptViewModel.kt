@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.scavazzini.clevent.data.models.Customer
 import dev.scavazzini.clevent.data.models.EMPTY_CUSTOMER
+import dev.scavazzini.clevent.data.models.Product
 import dev.scavazzini.clevent.data.repositories.ProductRepository
 import dev.scavazzini.clevent.io.NFCReader
 import dev.scavazzini.clevent.io.QRCodeGenerator
@@ -14,6 +15,7 @@ import dev.scavazzini.clevent.ui.components.PrimaryButtonState
 import dev.scavazzini.clevent.utilities.extensions.toReceiptString
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,14 +30,37 @@ class ReceiptViewModel @Inject constructor(
     private var _uiState = MutableStateFlow(ReceiptUiState())
     val uiState: StateFlow<ReceiptUiState> = _uiState
 
-    suspend fun onNfcTagRead(intent: Intent) {
+    private val products: MutableMap<Short, Product> = mutableMapOf()
+
+    init {
+        viewModelScope.launch {
+            productRepository.getProductsAsFlow().collectLatest { p ->
+                products.clear()
+                products.putAll(p.associateBy { it.id })
+            }
+        }
+    }
+
+    fun onNfcTagRead(intent: Intent) {
         try {
             val customer = nfcReader.extract(intent).second
-            productRepository.loadData(customer.products.keys.toList())
+
+            val enrichedProducts = customer.products.mapKeys {
+                val enrichedProduct = products[it.key.id] ?: it.key
+
+                it.key.copy(
+                    name = enrichedProduct.name,
+                    price = enrichedProduct.price,
+                    category = enrichedProduct.category,
+                )
+            }
 
             _uiState.update {
                 it.copy(
-                    customer = customer,
+                    customer = Customer(
+                        balance = customer.balance,
+                        products = enrichedProducts,
+                    ),
                     qrCode = null,
                     showQrCodeSheet = false,
                     qrCodeButtonState = PrimaryButtonState.ENABLED,

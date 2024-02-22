@@ -35,6 +35,7 @@ class ProductRepository @Inject constructor(
         return null
     }
 
+    @Deprecated("Will be deleted when old Recharge feature get deleted")
     suspend fun loadData(products: List<Product>) = withContext(Dispatchers.IO) {
         val filledProducts = productDAO.getProducts(products.map { it.id })
         for (product in products) {
