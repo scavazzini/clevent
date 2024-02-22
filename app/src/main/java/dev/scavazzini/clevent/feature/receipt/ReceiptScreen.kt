@@ -40,7 +40,7 @@ import dev.scavazzini.clevent.data.models.Customer
 import dev.scavazzini.clevent.data.models.Product
 import dev.scavazzini.clevent.ui.OnNewIntentHandler
 import dev.scavazzini.clevent.ui.components.PrimaryButton
-import dev.scavazzini.clevent.ui.components.QrCodeModalBottomSheet
+import dev.scavazzini.clevent.feature.receipt.components.QrCodeModalBottomSheet
 import dev.scavazzini.clevent.ui.theme.CleventTheme
 import kotlinx.coroutines.launch
 
