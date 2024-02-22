@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.SheetState
@@ -45,7 +46,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.models.CurrencyValue
 import dev.scavazzini.clevent.data.models.Product
@@ -54,6 +54,7 @@ import dev.scavazzini.clevent.ui.components.BottomSheetProductListContent
 import dev.scavazzini.clevent.ui.components.NfcModalBottomSheet
 import dev.scavazzini.clevent.ui.components.PrimaryButton
 import dev.scavazzini.clevent.ui.components.PrimaryButtonState
+import dev.scavazzini.clevent.ui.theme.CleventTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -151,7 +152,7 @@ private fun CategoryTabs(
 
     SecondaryTabRow(
         selectedTabIndex = selectedIndex,
-        containerColor = Color.White,
+        containerColor = MaterialTheme.colorScheme.surface,
     ) {
         Tab(
             selected = selected == null,
@@ -219,6 +220,7 @@ private fun ProductList(
                 SearchBar(
                     value = searchFieldValue,
                     onValueChange = onSearchFieldValueChange,
+                    modifier = Modifier.padding(bottom = 8.dp),
                 )
             }
             items(products.entries.toList()) { item ->
@@ -268,13 +270,16 @@ private fun SearchBar(
         onValueChange = onValueChange,
         shape = ShapeDefaults.Medium,
         label = {
-            Text(stringResource(R.string.order_search_field_label))
+            Text(
+                text = stringResource(R.string.order_search_field_label),
+                style = MaterialTheme.typography.bodySmall,
+            )
         },
         trailingIcon = {
             if (value.isNotEmpty()) {
                 IconButton(
                     onClick = clearInput,
-                    modifier = modifier,
+                    modifier = Modifier,
                     content = {
                         Icon(
                             imageVector = Icons.Filled.Close,
@@ -290,10 +295,10 @@ private fun SearchBar(
         ),
         singleLine = true,
         colors = TextFieldDefaults.colors(
-            unfocusedContainerColor = Color(0xfff4f4f4),
-            disabledContainerColor = Color(0xfff4f4f4),
-            errorContainerColor = Color(0xfff4f4f4),
-            focusedContainerColor = Color(0xfff4f4f4),
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            errorContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
             unfocusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent,
             errorIndicatorColor = Color.Transparent,
@@ -321,13 +326,12 @@ private fun ListItem(
         ) {
             Text(
                 text = product.name,
-                fontSize = 16.sp,
+                style = MaterialTheme.typography.bodyMedium,
             )
             Text(
                 text = CurrencyValue(product.price).toString(),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xff3EB17A),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
             )
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -339,7 +343,8 @@ private fun ListItem(
                 )
                 Text(
                     text = quantity.toString(),
-                    fontSize = 16.sp,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
             ChangeQuantityButton(
@@ -364,6 +369,7 @@ private fun ChangeQuantityButton(
     ) {
         Icon(
             imageVector = image,
+            tint = MaterialTheme.colorScheme.primary,
             contentDescription = contentDescription,
         )
     }
@@ -378,12 +384,14 @@ private fun OrderScreenContentPreview() {
         Product(2, "India Pale Ale (IPA), 330ml", 450, "Beer") to 1,
         Product(3, "Imperial Porter, 568ml", 650, "Beer") to 2,
     )
-    OrderScreenContent(
-        products = products,
-        productsOnCart = products,
-        categories = listOf("Beer" to false, "Food" to false),
-        onIncreaseQuantity = { },
-        onDecreaseQuantity = { },
-        onConfirmOrderButtonTapped = { },
-    )
+    CleventTheme {
+        OrderScreenContent(
+            products = products,
+            productsOnCart = products,
+            categories = listOf("Beer" to false, "Food" to false),
+            onIncreaseQuantity = { },
+            onDecreaseQuantity = { },
+            onConfirmOrderButtonTapped = { },
+        )
+    }
 }

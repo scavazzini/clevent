@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -42,9 +42,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.models.Product
+import dev.scavazzini.clevent.ui.theme.CleventTheme
 import dev.scavazzini.clevent.utilities.extensions.toCurrency
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -110,13 +110,13 @@ private fun NfcModalBottomSheetContent(
         Text(
             text = title,
             textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold,
-            fontSize = 18.sp,
+            style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.fillMaxWidth(),
         )
         Text(
             text = description,
             textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -141,17 +141,12 @@ private fun NfcModalBottomSheetContent(
                 modifier = Modifier.fillMaxWidth(),
                 fontStyle = FontStyle.Italic,
                 color = nfcReadingState.getPrimaryColor(),
-                fontSize = 14.sp,
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
-        Spacer(modifier = Modifier.height(8.dp))
-
         Button(
-            colors = ButtonColors(
-                containerColor = Color(0xFFEEEEEE),
-                contentColor = Color.Gray,
-                disabledContainerColor = Color.LightGray,
-                disabledContentColor = Color.DarkGray,
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = MaterialTheme.colorScheme.onBackground
             ),
             onClick = {
                 scope.launch {
@@ -188,7 +183,7 @@ private fun ProductListItem(product: Pair<Product, Int>, modifier: Modifier) {
         Text(leftText, modifier = Modifier.weight(1f))
         Text(
             text = rightText,
-            color = Color(0xFF3EB17A)
+            color = MaterialTheme.colorScheme.primary,
         )
     }
 }
@@ -241,7 +236,7 @@ fun BottomSheetProductListContent(
                 .fillMaxWidth(),
             text = (products.entries.sumOf { it.value * it.key.price }).toCurrency(),
             textAlign = TextAlign.Right,
-            color = Color(0xFF3EB17A),
+            color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Bold,
         )
     }
@@ -272,13 +267,8 @@ private fun NfcBottomSheetReadingState.getColors(): List<Color> {
             Color.LightGray,
         )
 
-        NfcBottomSheetReadingState.SUCCESS -> listOf(
-            Color(0xff99d07c),
-        )
-
-        NfcBottomSheetReadingState.ERROR -> listOf(
-            Color(0xffff562b),
-        )
+        NfcBottomSheetReadingState.SUCCESS -> listOf(Color(0xFF13C666))
+        NfcBottomSheetReadingState.ERROR -> listOf(Color(0xFFF54E4A))
     }
 }
 
@@ -326,7 +316,7 @@ private fun NfcModalBottomSheetContentSuccessPreview() {
 @Composable
 @Preview
 private fun NfcModalBottomSheetContentErrorPreview() {
-    MaterialTheme {
+    CleventTheme {
         NfcModalBottomSheetContent(
             title = "Confirm your Purchase",
             description = "Check the list below before complete your purchase.",

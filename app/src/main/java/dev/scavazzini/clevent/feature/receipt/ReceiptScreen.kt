@@ -2,6 +2,7 @@ package dev.scavazzini.clevent.feature.receipt
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -39,6 +41,7 @@ import dev.scavazzini.clevent.data.models.Product
 import dev.scavazzini.clevent.ui.OnNewIntentHandler
 import dev.scavazzini.clevent.ui.components.PrimaryButton
 import dev.scavazzini.clevent.ui.components.QrCodeModalBottomSheet
+import dev.scavazzini.clevent.ui.theme.CleventTheme
 import kotlinx.coroutines.launch
 
 @Composable
@@ -117,19 +120,17 @@ private fun ReceiptHeader(
         )
         Text(
             text = stringResource(R.string.receipt_available_balance),
-            fontSize = 14.sp,
             textAlign = TextAlign.Center,
-            color = Color(0xff55624C),
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            style = MaterialTheme.typography.displaySmall,
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             val buttonColors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xffD9E7CB),
-                contentColor = Color(0xff55624C),
-                disabledContainerColor = Color(0xffEEEEEE),
-                disabledContentColor = Color(0xffAAAAAA),
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.secondaryContainer,
             )
             PrimaryButton(
                 onClick = onShareButtonTapped,
@@ -158,6 +159,7 @@ fun ReceiptBalanceText(
         textAlign = TextAlign.Center,
         modifier = modifier,
         text = value.toAnnotatedString(),
+        color = MaterialTheme.colorScheme.secondaryContainer,
     )
 }
 
@@ -169,11 +171,12 @@ private fun ReceiptList(
     Column(modifier.padding(16.dp)) {
         Text(
             text = stringResource(R.string.receipt_transaction_list_title),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.titleMedium,
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        LazyColumn(Modifier.weight(1f)) {
+        LazyColumn(
+            contentPadding = PaddingValues(vertical = 8.dp),
+            modifier = Modifier.weight(1f),
+        ) {
             items(customer.products.entries.toList()) { item ->
                 ReceiptItem(
                     quantity = item.value,
@@ -181,21 +184,22 @@ private fun ReceiptList(
                 )
             }
         }
-        Divider(Modifier.padding(vertical = 8.dp))
+        HorizontalDivider()
         Row(
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .fillMaxWidth(),
         ) {
             Text(
                 text = stringResource(R.string.receipt_transaction_list_total),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodyMedium,
             )
             Text(
                 text = CurrencyValue(customer.total).toString(),
-                color = Color(0xff3EB17A),
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleMedium,
             )
         }
     }
@@ -217,7 +221,7 @@ private fun ReceiptItem(
         ) {
             Text(
                 text = product.name,
-                fontSize = 16.sp,
+                style = MaterialTheme.typography.bodyMedium,
             )
             Text(
                 text = buildAnnotatedString {
@@ -225,7 +229,7 @@ private fun ReceiptItem(
                         withStyle(style = SpanStyle(color = Color.Black)) {
                             append("${quantity}x ")
                         }
-                        withStyle(style = SpanStyle(color = Color(0xff3EB17A))) {
+                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
                             append(CurrencyValue(product.price).toString())
                         }
                     }
@@ -234,9 +238,8 @@ private fun ReceiptItem(
         }
         Text(
             text = CurrencyValue(product.price * quantity).toString(),
-            color = Color(0xff3EB17A),
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.titleMedium,
         )
     }
 }
@@ -252,9 +255,11 @@ private fun ReceiptScreenContentPreview() {
             Product(3, "Imperial Porter, 568ml", 650, "Beer") to 2,
         )
     )
-    ReceiptScreenContent(
-        state = ReceiptViewModel.ReceiptUiState(customer = customer),
-        onShareButtonTapped = { },
-        onQrCodeButtonTapped = { },
-    )
+    CleventTheme {
+        ReceiptScreenContent(
+            state = ReceiptViewModel.ReceiptUiState(customer = customer),
+            onShareButtonTapped = { },
+            onQrCodeButtonTapped = { },
+        )
+    }
 }

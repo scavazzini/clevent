@@ -29,10 +29,10 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.ui.OnNewIntentHandler
 import dev.scavazzini.clevent.ui.components.NfcModalBottomSheet
+import dev.scavazzini.clevent.ui.theme.CleventTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +49,9 @@ fun SettingsScreen(
         onSyncClick = viewModel::sync,
         onEraseClick = viewModel::onEraseTagClick,
         onDismiss = viewModel::onCancelErase,
-        modifier = modifier.padding(16.dp).fillMaxSize(),
+        modifier = modifier
+            .padding(16.dp)
+            .fillMaxSize(),
     )
 }
 
@@ -127,10 +129,8 @@ fun SettingsHeader(
         )
         Text(
             text = title,
-            style = TextStyle(
-                fontSize = 24.sp,
-                color = MaterialTheme.colorScheme.secondary,
-            ),
+            color = MaterialTheme.colorScheme.secondary,
+            style = MaterialTheme.typography.titleLarge,
         )
     }
 }
@@ -154,7 +154,7 @@ fun SettingsButtonText(
         Column {
             Text(
                 text = title,
-                style = TextStyle(fontSize = 16.sp),
+                style = MaterialTheme.typography.bodyLarge,
             )
             description?.let {
                 Text(
@@ -170,7 +170,9 @@ fun SettingsButtonText(
 @Preview
 @Composable
 private fun SettingsScreenContentPreview() {
-    SettingsScreenContent(
-        state = SettingsViewModel.SettingsUiState(),
-    )
+    CleventTheme {
+        SettingsScreenContent(
+            state = SettingsViewModel.SettingsUiState(),
+        )
+    }
 }

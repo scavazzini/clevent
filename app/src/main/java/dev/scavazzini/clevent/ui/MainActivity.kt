@@ -6,17 +6,20 @@ import android.nfc.NfcAdapter
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingBasket
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -38,6 +41,7 @@ import dev.scavazzini.clevent.feature.recharge.RechargeViewModel
 import dev.scavazzini.clevent.feature.settings.SettingsScreen
 import dev.scavazzini.clevent.feature.settings.SettingsViewModel
 import dev.scavazzini.clevent.io.NFCReader
+import dev.scavazzini.clevent.ui.theme.CleventTheme
 import javax.inject.Inject
 
 private enum class Screens(
@@ -84,62 +88,70 @@ class MainActivity : AppCompatActivity() {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentScreen = navBackStackEntry?.destination?.route
 
-            Column(Modifier.safeDrawingPadding()) {
-                NavHost(
-                    navController = navController,
-                    startDestination = Screens.OrderScreen.name,
-                    modifier = Modifier.weight(1f),
-                ) {
-                    val modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
+            CleventTheme {
+                Column(Modifier.background(MaterialTheme.colorScheme.background)) {
+                    NavHost(
+                        navController = navController,
+                        startDestination = Screens.OrderScreen.name,
+                        modifier = Modifier
+                            .statusBarsPadding()
+                            .weight(1f),
+                    ) {
+                        val modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
 
-                    composable(Screens.OrderScreen.name) {
-                        OrderScreen(
-                            viewModel = hiltViewModel<OrderViewModel>(),
-                            modifier = modifier,
-                        )
+                        composable(Screens.OrderScreen.name) {
+                            OrderScreen(
+                                viewModel = hiltViewModel<OrderViewModel>(),
+                                modifier = modifier,
+                            )
+                        }
+                        composable(Screens.RechargeScreen.name) {
+                            RechargeScreen(
+                                viewModel = hiltViewModel<RechargeViewModel>(),
+                                modifier = modifier,
+                            )
+                        }
+                        composable(Screens.ReceiptScreen.name) {
+                            ReceiptScreen(
+                                viewModel = hiltViewModel<ReceiptViewModel>(),
+                                modifier = modifier,
+                            )
+                        }
+                        composable(Screens.SettingsScreen.name) {
+                            SettingsScreen(
+                                viewModel = hiltViewModel<SettingsViewModel>(),
+                                modifier = modifier,
+                            )
+                        }
                     }
-                    composable(Screens.RechargeScreen.name) {
-                        RechargeScreen(
-                            viewModel = hiltViewModel<RechargeViewModel>(),
-                            modifier = modifier,
-                        )
-                    }
-                    composable(Screens.ReceiptScreen.name) {
-                        ReceiptScreen(
-                            viewModel = hiltViewModel<ReceiptViewModel>(),
-                            modifier = modifier,
-                        )
-                    }
-                    composable(Screens.SettingsScreen.name) {
-                        SettingsScreen(
-                            viewModel = hiltViewModel<SettingsViewModel>(),
-                            modifier = modifier,
-                        )
-                    }
-                }
 
-                NavigationBar {
-                    val screens = listOf(
-                        Screens.OrderScreen,
-                        Screens.RechargeScreen,
-                        Screens.ReceiptScreen,
-                        Screens.SettingsScreen,
-                    )
+                    NavigationBar {
+                        val screens = listOf(
+                            Screens.OrderScreen,
+                            Screens.RechargeScreen,
+                            Screens.ReceiptScreen,
+                            Screens.SettingsScreen,
+                        )
 
-                    screens.forEach { screen ->
-                        NavigationBarItem(
-                            icon = { Icon(screen.image, contentDescription = null) },
-                            label = { Text(screen.label) },
-                            selected = currentScreen == screen.name,
-                            onClick = {
-                                navController.navigate(screen.name) {
-                                    popUpTo(navController.graph.startDestinationId)
-                                    launchSingleTop = true
+                        screens.forEach { screen ->
+                            NavigationBarItem(
+                                icon = { Icon(screen.image, contentDescription = null) },
+                                label = { Text(screen.label) },
+                                selected = currentScreen == screen.name,
+                                colors = NavigationBarItemDefaults.colors(
+                                    indicatorColor = MaterialTheme.colorScheme.primary,
+                                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                                ),
+                                onClick = {
+                                    navController.navigate(screen.name) {
+                                        popUpTo(navController.graph.startDestinationId)
+                                        launchSingleTop = true
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
             }

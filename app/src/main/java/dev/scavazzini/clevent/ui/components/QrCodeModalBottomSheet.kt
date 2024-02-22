@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -25,12 +25,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import dev.scavazzini.clevent.R
 import kotlinx.coroutines.launch
 
@@ -85,13 +83,13 @@ private fun QrCodeReceiptModalBottomSheetContent(
         Text(
             text = title,
             textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold,
-            fontSize = 18.sp,
+            style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.fillMaxWidth(),
         )
         Text(
             text = description,
             textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.fillMaxWidth(),
         )
         Image(
@@ -100,11 +98,8 @@ private fun QrCodeReceiptModalBottomSheetContent(
             modifier = modifier.size(qrCodeSize),
         )
         Button(
-            colors = ButtonColors(
-                containerColor = Color(0xFFEEEEEE),
-                contentColor = Color.Gray,
-                disabledContainerColor = Color.LightGray,
-                disabledContentColor = Color.DarkGray,
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = MaterialTheme.colorScheme.onBackground
             ),
             onClick = { scope.launch { onDismiss() } },
             content = { Text(close) },

@@ -28,6 +28,7 @@ import dev.scavazzini.clevent.data.models.CurrencyValue
 import dev.scavazzini.clevent.ui.OnNewIntentHandler
 import dev.scavazzini.clevent.ui.components.NfcModalBottomSheet
 import dev.scavazzini.clevent.ui.components.PrimaryButton
+import dev.scavazzini.clevent.ui.theme.CleventTheme
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -123,10 +124,12 @@ private fun RechargeScreenContent(
 @Preview
 @Composable
 private fun RechargeScreenContentPreview() {
-    RechargeScreenContent(
-        fieldValue = "0",
-        onFieldValueChange = { },
-        onConfirmOrderButtonTapped = { },
-        state = RechargeViewModel.RechargeUiState(),
-    )
+    CleventTheme {
+        RechargeScreenContent(
+            fieldValue = "0",
+            onFieldValueChange = { },
+            onConfirmOrderButtonTapped = { },
+            state = RechargeViewModel.RechargeUiState(),
+        )
+    }
 }
