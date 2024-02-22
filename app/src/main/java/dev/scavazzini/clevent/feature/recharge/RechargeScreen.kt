@@ -28,6 +28,7 @@ import dev.scavazzini.clevent.data.models.CurrencyValue
 import dev.scavazzini.clevent.ui.OnNewIntentHandler
 import dev.scavazzini.clevent.ui.components.NfcModalBottomSheet
 import dev.scavazzini.clevent.ui.components.PrimaryButton
+import dev.scavazzini.clevent.ui.components.PrimaryButtonState
 import dev.scavazzini.clevent.ui.theme.CleventTheme
 import kotlinx.coroutines.launch
 
@@ -44,7 +45,7 @@ fun RechargeScreen(
     OnNewIntentHandler { viewModel.recharge(it) }
 
     RechargeScreenContent(
-        fieldValue = fieldValue.toString(),
+        fieldValue = fieldValue,
         modifier = modifier,
         state = uiState,
         onDismiss = viewModel::cancelOrder,
@@ -60,7 +61,7 @@ fun RechargeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RechargeScreenContent(
-    fieldValue: String,
+    fieldValue: CurrencyValue,
     onFieldValueChange: (String) -> Unit,
     onConfirmOrderButtonTapped: () -> Unit,
     modifier: Modifier = Modifier,
@@ -70,7 +71,7 @@ private fun RechargeScreenContent(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         TextField(
-            value = fieldValue,
+            value = fieldValue.toString(),
             visualTransformation = CurrencyVisualTransformation(),
             singleLine = true,
             textStyle = TextStyle(textAlign = TextAlign.Center),
@@ -92,9 +93,16 @@ private fun RechargeScreenContent(
                 focusedIndicatorColor = Color.Transparent,
             ),
         )
+
+        val buttonState = if (fieldValue.rawValue > 0)
+            PrimaryButtonState.ENABLED
+        else
+            PrimaryButtonState.DISABLED
+
         PrimaryButton(
             text = stringResource(R.string.recharge_confirm_button),
             onClick = onConfirmOrderButtonTapped,
+            state = buttonState,
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth(),
@@ -126,7 +134,7 @@ private fun RechargeScreenContent(
 private fun RechargeScreenContentPreview() {
     CleventTheme {
         RechargeScreenContent(
-            fieldValue = "0",
+            fieldValue = CurrencyValue(0),
             onFieldValueChange = { },
             onConfirmOrderButtonTapped = { },
             state = RechargeViewModel.RechargeUiState(),
