@@ -16,8 +16,6 @@ class ProductRepository @Inject constructor(
         private val productService: ProductService,
         private val preferences: Preferences,
 ) {
-    fun getProducts() = productDAO.getAll()
-
     fun getProductsAsFlow() = productDAO.getAllAsFlow()
 
     suspend fun sync(endpoint: String = preferences.endpoint): Long? {
@@ -33,19 +31,5 @@ class ProductRepository @Inject constructor(
             e.printStackTrace()
         }
         return null
-    }
-
-    @Deprecated("Will be deleted when old Recharge feature get deleted")
-    suspend fun loadData(products: List<Product>) = withContext(Dispatchers.IO) {
-        val filledProducts = productDAO.getProducts(products.map { it.id })
-        for (product in products) {
-            for (filledProduct in filledProducts) {
-                if (product.id != filledProduct.id) continue
-                product.name = filledProduct.name
-                product.price = filledProduct.price
-                product.category = filledProduct.category
-                break
-            }
-        }
     }
 }

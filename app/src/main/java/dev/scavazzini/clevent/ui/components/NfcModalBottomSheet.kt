@@ -14,6 +14,10 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Nfc
+import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,9 +37,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -128,7 +132,7 @@ private fun NfcModalBottomSheetContent(
             modifier = Modifier.size(72.dp),
         ) {
             Image(
-                painter = painterResource(nfcReadingState.getIcon()),
+                imageVector = nfcReadingState.getIcon(),
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(nfcReadingState.getPrimaryColor()),
                 modifier = Modifier.size(32.dp)
@@ -242,11 +246,11 @@ fun BottomSheetProductListContent(
     }
 }
 
-private fun NfcBottomSheetReadingState.getIcon(): Int {
+private fun NfcBottomSheetReadingState.getIcon(): ImageVector {
     return when (this) {
-        NfcBottomSheetReadingState.WAITING -> R.drawable.ic_dark_nfc_24
-        NfcBottomSheetReadingState.SUCCESS -> R.drawable.ic_done
-        NfcBottomSheetReadingState.ERROR -> R.drawable.ic_alert
+        NfcBottomSheetReadingState.WAITING -> Icons.Filled.Nfc
+        NfcBottomSheetReadingState.SUCCESS -> Icons.Filled.Check
+        NfcBottomSheetReadingState.ERROR -> Icons.Filled.WarningAmber
     }
 }
 

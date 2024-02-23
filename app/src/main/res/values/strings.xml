@@ -1,55 +1,5 @@
 <resources>
-    <plurals name="nfc_action_order">
-        <item quantity="one">Hold the NFC tag near to this terminal to complete the purchase: %s product (%s)</item>
-        <item quantity="other">Hold the NFC tag near to this terminal to complete the purchase: %s products (%s)</item>
-    </plurals>
     <string name="app_name">Clevent</string>
-    <string name="title_order">Order</string>
-    <string name="title_recharge">Recharge</string>
-    <string name="title_receipt">Receipt</string>
-    <string name="title_settings">Settings</string>
-    <string name="label_total">Total:</string>
-    <string name="label_current_balance">Current Balance:</string>
-    <string name="nfc_action_load_receipt">Hold the NFC tag near to this terminal to display the receipt</string>
-    <string name="nfc_action_recharge">Hold the NFC tag near to this terminal to recharge %s</string>
-    <string name="nfc_action_erase">Hold the NFC tag near to this terminal to erase it. This operation cannot be undone.</string>
-    <string name="confirm_order">Confirm Order</string>
-    <string name="confirm_order_value">Confirm Order (%s)</string>
-    <string name="no_products">No products to show</string>
-    <string name="how_much_to_recharge">How much do you want to recharge?</string>
-    <string name="recharge_successfully_made">Recharge successfully made.%nNew balance is %s</string>
-    <string name="order_successfully_placed">Order successfully placed.</string>
-    <string name="tag_erased">Tag erased</string>
-    <string name="erase_another_one">Erase another one</string>
-    <string name="tag_successfully_erased">The NFC tag was successfully erased.</string>
-    <string name="not_enough_credits">This tag does not have enough credits to complete this purchase</string>
-    <string name="item_quantity_receipt">%dx</string>
-    <string name="unknown_product">Unknown Product (%03d)</string>
-    <string name="invalid_tag_error">This tag appears to be invalid. If you believe this is an error, try again.</string>
-    <string name="generate_qr_code">Generate QR Code</string>
-    <string name="search_product">Search Product</string>
-    <string name="failed_generate_qr_code">Failed to generate QR Code.</string>
-    <string name="recharge_failed_title">Recharge failed</string>
-    <string name="recharge_failed_description">Recharge failed. Try again</string>
-    <string name="recharge_completed">Recharge completed</string>
-    <string name="purchase_completed">Purchase completed</string>
-    <string name="recharge_confirmation">Confirm your recharge</string>
-    <string name="purchase_confirmation">Confirm your purchase</string>
-    <string name="receipt_error">Receipt error</string>
-    <string name="purchase_error">Purchase error</string>
-    <string name="purchase_error_description">Purchase failed. Try again</string>
-    <string name="erase_failed">Erase failed</string>
-    <string name="erase_failed_description">Erase failed. Please, try again</string>
-    <string name="view_receipt">View receipt</string>
-    <string name="make_a_recharge">Make a recharge</string>
-
-    <!-- Preferences -->
-    <string name="sync_header">Sync</string>
-    <string name="sync_now_title">Sync now</string>
-    <string name="endpoint_title">Endpoint</string>
-    <string name="tags_header">Tags</string>
-    <string name="erase_tag_title">Erase an NFC tag</string>
-    <string name="erase_tag_summary">Erase the content of an NFC tag for a new use.</string>
 
     <string name="receipt_available_balance">Available balance</string>
     <string name="receipt_share_button">Share</string>
@@ -59,6 +9,10 @@
     <string name="receipt_qrcode_modal_close">Close</string>
     <string name="receipt_transaction_list_title">Transaction History</string>
     <string name="receipt_transaction_list_total">Total</string>
+
+    <string name="receipt_string_title">Receipt</string>
+    <string name="receipt_string_available_balance">Available balance: </string>
+    <string name="receipt_string_total">Total: </string>
 
     <string name="order_category_all">All</string>
     <string name="order_search_field_label">Search</string>

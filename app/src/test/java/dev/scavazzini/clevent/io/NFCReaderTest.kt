@@ -40,7 +40,7 @@ class NFCReaderTest {
     fun shouldExtractCustomerFromNFCIntent() {
         val customer = Customer()
         customer.recharge(1000)
-        customer.addProduct(Product(1.toShort(), "p1", 300))
+        customer.addProduct(Product(1.toShort(), "p1", 300, ""))
         doReturn(byteArrayOf(1, 2, 3, 4, 5)).`when`(encryptorMock).decrypt(byteArrayOf(1, 2, 3, 4, 5), null)
         doReturn(customer).`when`(serializerMock).deserialize(byteArrayOf(1, 2, 3, 4, 5))
         doReturn(mock(Tag::class.java)).`when`(intentMock).getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)

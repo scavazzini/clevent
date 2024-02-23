@@ -9,9 +9,9 @@ fun Customer.toReceiptString(
     calendar: Calendar = Calendar.getInstance(),
     context: Context? = null,
 ) = buildString {
-    val receiptTitle = context?.getString(R.string.title_receipt) ?: "Receipt"
-    val totalLabel = context?.getString(R.string.label_total) ?: "Total:"
-    val balanceLabel = context?.getString(R.string.label_current_balance) ?: "Current Balance:"
+    val receiptTitle = context?.getString(R.string.receipt_string_title) ?: "Receipt"
+    val totalLabel = context?.getString(R.string.receipt_string_total) ?: "Total:"
+    val balanceLabel = context?.getString(R.string.receipt_string_available_balance) ?: "Available balance:"
 
     append(String.format("%s (%s)%n%n", receiptTitle, calendar.time.formatted()))
     for ((product, quantity) in products) {
