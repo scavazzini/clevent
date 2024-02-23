@@ -34,7 +34,7 @@ class ReceiptViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            productRepository.getProductsAsFlow().collectLatest { p ->
+            productRepository.getProducts().collectLatest { p ->
                 products.clear()
                 products.putAll(p.associateBy { it.id })
             }

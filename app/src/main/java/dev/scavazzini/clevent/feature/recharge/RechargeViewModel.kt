@@ -26,8 +26,8 @@ class RechargeViewModel @Inject constructor(
     private val _rechargeUiState = MutableStateFlow(RechargeUiState())
     val uiState: StateFlow<RechargeUiState> = _rechargeUiState
 
-    private val _fieldValue = MutableLiveData<CurrencyValue>()
-    val fieldValue: LiveData<CurrencyValue> = _fieldValue
+    private val _fieldValue = MutableStateFlow(CurrencyValue(0))
+    val fieldValue: StateFlow<CurrencyValue> = _fieldValue
 
     fun onValueChange(newValue: String) {
         try {
@@ -41,8 +41,6 @@ class RechargeViewModel @Inject constructor(
     }
 
     fun recharge(intent: Intent) = viewModelScope.launch {
-        val value = _fieldValue.value?.rawValue ?: return@launch
-
         if (!_rechargeUiState.value.isReadyToRecharge()) {
             return@launch
         }
@@ -50,7 +48,7 @@ class RechargeViewModel @Inject constructor(
         try {
             val (tag, customer) = nfcReader.extract(intent)
 
-            customer.recharge(value)
+            customer.recharge(_fieldValue.value.rawValue)
             nfcWriter.write(tag, customer)
 
             _rechargeUiState.value = _rechargeUiState.value.copy(

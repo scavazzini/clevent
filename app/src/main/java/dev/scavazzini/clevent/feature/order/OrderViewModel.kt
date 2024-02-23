@@ -67,7 +67,7 @@ class OrderViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            productRepository.getProductsAsFlow().collectLatest { products ->
+            productRepository.getProducts().collectLatest { products ->
                 _products.value = products.associateWith { 0 }
                 _categories.value = products
                     .map { it.category }

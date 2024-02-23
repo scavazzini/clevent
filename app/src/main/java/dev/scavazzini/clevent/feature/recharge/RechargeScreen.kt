@@ -13,7 +13,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,7 +38,7 @@ fun RechargeScreen(
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val fieldValue by viewModel.fieldValue.observeAsState(CurrencyValue(0))
+    val fieldValue by viewModel.fieldValue.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
     OnNewIntentHandler { viewModel.recharge(it) }
