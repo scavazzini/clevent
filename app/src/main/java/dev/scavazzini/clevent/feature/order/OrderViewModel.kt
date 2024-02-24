@@ -8,7 +8,7 @@ import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.models.CurrencyValue
 import dev.scavazzini.clevent.data.models.Product
 import dev.scavazzini.clevent.data.repositories.ProductRepository
-import dev.scavazzini.clevent.exceptions.InsufficientBalanceException
+import dev.scavazzini.clevent.data.models.exception.InsufficientBalanceException
 import dev.scavazzini.clevent.io.NFCReader
 import dev.scavazzini.clevent.io.NFCWriter
 import dev.scavazzini.clevent.ui.components.NfcBottomSheetReadingState
