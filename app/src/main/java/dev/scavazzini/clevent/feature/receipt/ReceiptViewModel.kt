@@ -1,10 +1,13 @@
 package dev.scavazzini.clevent.feature.receipt
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.scavazzini.clevent.R
+import dev.scavazzini.clevent.data.models.CurrencyValue
 import dev.scavazzini.clevent.data.models.Customer
 import dev.scavazzini.clevent.data.models.EMPTY_CUSTOMER
 import dev.scavazzini.clevent.data.models.Product
@@ -12,12 +15,13 @@ import dev.scavazzini.clevent.data.repositories.ProductRepository
 import dev.scavazzini.clevent.domain.GetCustomerFromTagUseCase
 import dev.scavazzini.clevent.io.QRCodeGenerator
 import dev.scavazzini.clevent.ui.components.PrimaryButtonState
-import dev.scavazzini.clevent.utilities.extensions.toReceiptString
+import dev.scavazzini.clevent.utilities.extensions.formatted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
@@ -111,6 +115,26 @@ class ReceiptViewModel @Inject constructor(
                 qrCodeButtonState = PrimaryButtonState.ENABLED,
             )
         }
+    }
+
+    private fun Customer.toReceiptString(
+        calendar: Calendar = Calendar.getInstance(),
+        context: Context? = null,
+    ) = buildString {
+        val receiptTitle = context?.getString(R.string.receipt_string_title) ?: "Receipt"
+        val totalLabel = context?.getString(R.string.receipt_string_total) ?: "Total:"
+        val balanceLabel =
+            context?.getString(R.string.receipt_string_available_balance) ?: "Available balance:"
+        val totalValue = CurrencyValue(total).toString()
+        val balanceValue = CurrencyValue(balance).toString()
+
+        append(String.format("%s (%s)%n%n", receiptTitle, calendar.time.formatted()))
+        for ((product, quantity) in products) {
+            val productTotal = CurrencyValue(product.price * quantity).toString()
+            append(String.format("%dx %s: %s%n", quantity, product.name, productTotal))
+        }
+        append(String.format("%n%s %s%n", totalLabel, totalValue))
+        append(String.format("%s %s", balanceLabel, balanceValue))
     }
 
     fun dismissQrCode() {

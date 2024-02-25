@@ -47,9 +47,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.scavazzini.clevent.R
+import dev.scavazzini.clevent.data.models.CurrencyValue
 import dev.scavazzini.clevent.data.models.Product
 import dev.scavazzini.clevent.ui.theme.CleventTheme
-import dev.scavazzini.clevent.utilities.extensions.toCurrency
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -182,7 +182,7 @@ private fun ProductListItem(product: Pair<Product, Int>, modifier: Modifier) {
             .fillMaxWidth(),
     ) {
         val leftText = "${product.second}x ${product.first.name}"
-        val rightText = (product.first.price * product.second).toCurrency()
+        val rightText = CurrencyValue(product.first.price * product.second).toString()
 
         Text(leftText, modifier = Modifier.weight(1f))
         Text(
@@ -238,7 +238,7 @@ fun BottomSheetProductListContent(
             modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = verticalMargin)
                 .fillMaxWidth(),
-            text = (products.entries.sumOf { it.value * it.key.price }).toCurrency(),
+            text = CurrencyValue(products.entries.sumOf { it.value * it.key.price }).toString(),
             textAlign = TextAlign.Right,
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Bold,
