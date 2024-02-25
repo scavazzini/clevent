@@ -12,8 +12,8 @@ import dev.scavazzini.clevent.data.models.Customer
 import dev.scavazzini.clevent.data.models.EMPTY_CUSTOMER
 import dev.scavazzini.clevent.data.models.Product
 import dev.scavazzini.clevent.data.repositories.ProductRepository
+import dev.scavazzini.clevent.domain.GenerateQrCodeBitmapUseCase
 import dev.scavazzini.clevent.domain.GetCustomerFromTagUseCase
-import dev.scavazzini.clevent.io.QRCodeGenerator
 import dev.scavazzini.clevent.ui.components.PrimaryButtonState
 import dev.scavazzini.clevent.utilities.extensions.formatted
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +28,7 @@ import javax.inject.Inject
 class ReceiptViewModel @Inject constructor(
     private val productRepository: ProductRepository,
     private val readCustomerFromTagUseCase: GetCustomerFromTagUseCase,
-    private val qrCodeGenerator: QRCodeGenerator,
+    private val generateQrCodeBitmapUseCase: GenerateQrCodeBitmapUseCase,
 ) : ViewModel() {
 
     private var _uiState = MutableStateFlow(ReceiptUiState())
@@ -102,7 +102,7 @@ class ReceiptViewModel @Inject constructor(
             }
         }
 
-        val qrCode = qrCodeGenerator.generate(
+        val qrCode = generateQrCodeBitmapUseCase(
             content = uiState.value.customer.toReceiptString(),
             width = size,
             height = size,
