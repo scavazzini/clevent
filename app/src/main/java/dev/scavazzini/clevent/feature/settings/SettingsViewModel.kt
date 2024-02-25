@@ -8,7 +8,6 @@ import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.repositories.ProductRepository
 import dev.scavazzini.clevent.domain.EraseTagUseCase
 import dev.scavazzini.clevent.ui.components.NfcBottomSheetReadingState
-import dev.scavazzini.clevent.utilities.Preferences
 import dev.scavazzini.clevent.utilities.extensions.formatted
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -23,7 +22,6 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val productRepository: ProductRepository,
     private val eraseTagUseCase: EraseTagUseCase,
-    preferences: Preferences,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<SettingsUiState> = MutableStateFlow(SettingsUiState())
@@ -34,7 +32,7 @@ class SettingsViewModel @Inject constructor(
             _uiState.update {
                 _uiState.value.copy(
                     lastSync = R.string.settings_last_sync,
-                    lastSyncArgs = listOf(preferences.lastSync.parse()),
+                    lastSyncArgs = listOf(productRepository.getLastSync().parse()),
                 )
             }
         }
@@ -109,8 +107,8 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    private fun Long.parse(): String {
-        if (this <= 0) {
+    private fun Long?.parse(): String {
+        if (this == null) {
             return "-"
         }
         return Date(this).formatted()
