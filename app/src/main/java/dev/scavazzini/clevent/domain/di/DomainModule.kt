@@ -1,18 +1,18 @@
-package dev.scavazzini.clevent.di
+package dev.scavazzini.clevent.domain.di
 
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import dev.scavazzini.clevent.utilities.crypto.Encryptor
-import dev.scavazzini.clevent.utilities.crypto.FakeEncryptor
-import dev.scavazzini.clevent.utilities.serializers.CustomerNFCSerializer
-import dev.scavazzini.clevent.utilities.serializers.CustomerSerializer
+import dev.scavazzini.clevent.domain.crypto.Encryptor
+import dev.scavazzini.clevent.domain.crypto.FakeEncryptor
+import dev.scavazzini.clevent.domain.serializer.CustomerNFCSerializer
+import dev.scavazzini.clevent.domain.serializer.CustomerSerializer
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class UtilitiesModule {
+abstract class DomainModule {
     @Singleton
     @Binds
     abstract fun bindEncryptor(encryptor: FakeEncryptor): Encryptor
@@ -21,3 +21,4 @@ abstract class UtilitiesModule {
     @Binds
     abstract fun bindCustomerSerializer(customerSerializer: CustomerNFCSerializer): CustomerSerializer
 }
+

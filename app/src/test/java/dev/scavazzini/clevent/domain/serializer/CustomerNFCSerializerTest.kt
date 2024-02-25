@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.utilities.serializers
+package dev.scavazzini.clevent.domain.serializer
 
 import dev.scavazzini.clevent.data.models.Customer
 import dev.scavazzini.clevent.data.models.Product

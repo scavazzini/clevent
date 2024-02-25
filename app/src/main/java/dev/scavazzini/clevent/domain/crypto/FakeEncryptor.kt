@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.utilities.crypto
+package dev.scavazzini.clevent.domain.crypto
 
 import javax.inject.Inject
 

@@ -1,8 +1,8 @@
-package dev.scavazzini.clevent.utilities.serializers
+package dev.scavazzini.clevent.domain.serializer
 
 import dev.scavazzini.clevent.data.models.Customer
 import dev.scavazzini.clevent.data.models.Product
-import dev.scavazzini.clevent.utilities.serializers.exception.DeserializationException
+import dev.scavazzini.clevent.domain.serializer.exception.DeserializationException
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
 import java.nio.ByteBuffer

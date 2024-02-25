@@ -1,6 +1,6 @@
-package dev.scavazzini.clevent.utilities.crypto
+package dev.scavazzini.clevent.domain.crypto
 
-import dev.scavazzini.clevent.utilities.crypto.exception.DecryptionException
+import dev.scavazzini.clevent.domain.crypto.exception.DecryptionException
 
 interface Encryptor {
     fun encrypt(data: ByteArray, keySalt: ByteArray?): ByteArray
