@@ -31,7 +31,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import dev.scavazzini.clevent.data.repositories.ProductRepository
 import dev.scavazzini.clevent.feature.order.OrderScreen
 import dev.scavazzini.clevent.feature.order.OrderViewModel
 import dev.scavazzini.clevent.feature.receipt.ReceiptScreen
@@ -40,9 +39,7 @@ import dev.scavazzini.clevent.feature.recharge.RechargeScreen
 import dev.scavazzini.clevent.feature.recharge.RechargeViewModel
 import dev.scavazzini.clevent.feature.settings.SettingsScreen
 import dev.scavazzini.clevent.feature.settings.SettingsViewModel
-import dev.scavazzini.clevent.io.NFCReader
 import dev.scavazzini.clevent.ui.theme.CleventTheme
-import javax.inject.Inject
 
 private enum class Screens(
     val label: String,
@@ -68,12 +65,6 @@ private enum class Screens(
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-
-    @Inject
-    lateinit var nfcReader: NFCReader
-
-    @Inject
-    lateinit var productRepository: ProductRepository
 
     private var mNfcAdapter: NfcAdapter? = null
     private var mPendingIntent: PendingIntent? = null
