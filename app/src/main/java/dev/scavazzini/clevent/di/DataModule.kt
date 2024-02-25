@@ -8,8 +8,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import dev.scavazzini.clevent.data.database.CleventDatabase
-import dev.scavazzini.clevent.data.database.ProductDAO
+import dev.scavazzini.clevent.data.datasource.CleventDatabase
+import dev.scavazzini.clevent.data.datasource.LocalProductDataSource
+import dev.scavazzini.clevent.data.datasource.RemoteProductDataSource
 import javax.inject.Singleton
 
 @Module
@@ -28,7 +29,13 @@ object DataModule {
     }
 
     @Provides
-    fun provideProductDao(cleventDatabase: CleventDatabase): ProductDAO {
+    fun provideLocalProductDataSource(cleventDatabase: CleventDatabase): LocalProductDataSource {
         return cleventDatabase.productDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideRemoteProductDataSource(): RemoteProductDataSource {
+        return RemoteProductDataSource.create()
     }
 }

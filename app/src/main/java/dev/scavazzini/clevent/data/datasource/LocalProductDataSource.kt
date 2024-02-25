@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.data.database;
+package dev.scavazzini.clevent.data.datasource;
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -8,7 +8,7 @@ import dev.scavazzini.clevent.data.models.Product
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface ProductDAO {
+interface LocalProductDataSource {
     @Query("SELECT * FROM Product")
     fun getAll(): Flow<List<Product>>
 

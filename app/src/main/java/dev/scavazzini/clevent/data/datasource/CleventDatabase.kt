@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.data.database;
+package dev.scavazzini.clevent.data.datasource;
 
 import android.content.Context;
 
@@ -10,10 +10,11 @@ import dev.scavazzini.clevent.data.models.Product;
 
 @Database(entities = [Product::class], version = 1, exportSchema = false)
 abstract class CleventDatabase : RoomDatabase() {
-    abstract fun productDao(): ProductDAO
+    abstract fun productDao(): LocalProductDataSource
 
     companion object {
-        @Volatile private var instance: CleventDatabase? = null
+        @Volatile
+        private var instance: CleventDatabase? = null
 
         fun getInstance(context: Context): CleventDatabase {
             return instance ?: synchronized(this) {
@@ -22,6 +23,6 @@ abstract class CleventDatabase : RoomDatabase() {
         }
 
         private fun buildDatabase(context: Context): CleventDatabase =
-                Room.databaseBuilder(context, CleventDatabase::class.java, "clevent.db").build()
+            Room.databaseBuilder(context, CleventDatabase::class.java, "clevent.db").build()
     }
 }
