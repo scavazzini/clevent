@@ -1,15 +1,13 @@
 package dev.scavazzini.clevent.feature.recharge
 
 import android.content.Intent
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.models.CurrencyValue
-import dev.scavazzini.clevent.io.NFCReader
-import dev.scavazzini.clevent.io.NFCWriter
+import dev.scavazzini.clevent.domain.GetCustomerFromTagUseCase
+import dev.scavazzini.clevent.domain.WriteCustomerOnTagUseCase
 import dev.scavazzini.clevent.ui.components.NfcBottomSheetReadingState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,8 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RechargeViewModel @Inject constructor(
-    private val nfcReader: NFCReader,
-    private val nfcWriter: NFCWriter,
+    private val readCustomerFromTagUseCase: GetCustomerFromTagUseCase,
+    private val writeCustomerOnTagUseCase: WriteCustomerOnTagUseCase,
 ) : ViewModel() {
 
     private val _rechargeUiState = MutableStateFlow(RechargeUiState())
@@ -46,10 +44,10 @@ class RechargeViewModel @Inject constructor(
         }
 
         try {
-            val (tag, customer) = nfcReader.extract(intent)
-
+            val customer = readCustomerFromTagUseCase(intent)
             customer.recharge(_fieldValue.value.rawValue)
-            nfcWriter.write(tag, customer)
+
+            writeCustomerOnTagUseCase(customer, intent)
 
             _rechargeUiState.value = _rechargeUiState.value.copy(
                 sheetState = NfcBottomSheetReadingState.SUCCESS,

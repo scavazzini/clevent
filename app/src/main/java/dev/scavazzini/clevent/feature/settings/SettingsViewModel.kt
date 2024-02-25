@@ -6,8 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.repositories.ProductRepository
-import dev.scavazzini.clevent.io.NFCReader
-import dev.scavazzini.clevent.io.NFCWriter
+import dev.scavazzini.clevent.domain.EraseTagUseCase
 import dev.scavazzini.clevent.ui.components.NfcBottomSheetReadingState
 import dev.scavazzini.clevent.utilities.Preferences
 import dev.scavazzini.clevent.utilities.extensions.formatted
@@ -23,8 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val productRepository: ProductRepository,
-    private val nfcWriter: NFCWriter,
-    private val nfcReader: NFCReader,
+    private val eraseTagUseCase: EraseTagUseCase,
     preferences: Preferences,
 ) : ViewModel() {
 
@@ -86,9 +84,7 @@ class SettingsViewModel @Inject constructor(
         }
 
         try {
-            val (tag) = nfcReader.extract(intent)
-
-            nfcWriter.erase(tag)
+            eraseTagUseCase(intent)
 
             _uiState.value = _uiState.value.copy(
                 sheetState = NfcBottomSheetReadingState.SUCCESS,

@@ -9,7 +9,7 @@ import dev.scavazzini.clevent.data.models.Customer
 import dev.scavazzini.clevent.data.models.EMPTY_CUSTOMER
 import dev.scavazzini.clevent.data.models.Product
 import dev.scavazzini.clevent.data.repositories.ProductRepository
-import dev.scavazzini.clevent.io.NFCReader
+import dev.scavazzini.clevent.domain.GetCustomerFromTagUseCase
 import dev.scavazzini.clevent.io.QRCodeGenerator
 import dev.scavazzini.clevent.ui.components.PrimaryButtonState
 import dev.scavazzini.clevent.utilities.extensions.toReceiptString
@@ -23,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ReceiptViewModel @Inject constructor(
     private val productRepository: ProductRepository,
-    private val nfcReader: NFCReader,
+    private val readCustomerFromTagUseCase: GetCustomerFromTagUseCase,
     private val qrCodeGenerator: QRCodeGenerator,
 ) : ViewModel() {
 
@@ -43,7 +43,7 @@ class ReceiptViewModel @Inject constructor(
 
     fun onNfcTagRead(intent: Intent) {
         try {
-            val customer = nfcReader.extract(intent).second
+            val customer = readCustomerFromTagUseCase(intent)
 
             val enrichedProducts = customer.products.mapKeys {
                 val enrichedProduct = products[it.key.id] ?: it.key

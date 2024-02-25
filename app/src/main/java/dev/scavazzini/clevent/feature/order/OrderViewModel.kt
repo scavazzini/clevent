@@ -7,10 +7,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.models.CurrencyValue
 import dev.scavazzini.clevent.data.models.Product
-import dev.scavazzini.clevent.data.repositories.ProductRepository
 import dev.scavazzini.clevent.data.models.exception.InsufficientBalanceException
-import dev.scavazzini.clevent.io.NFCReader
-import dev.scavazzini.clevent.io.NFCWriter
+import dev.scavazzini.clevent.data.repositories.ProductRepository
+import dev.scavazzini.clevent.domain.GetCustomerFromTagUseCase
+import dev.scavazzini.clevent.domain.WriteCustomerOnTagUseCase
 import dev.scavazzini.clevent.ui.components.NfcBottomSheetReadingState
 import dev.scavazzini.clevent.ui.components.PrimaryButtonState
 import kotlinx.coroutines.delay
@@ -28,8 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class OrderViewModel @Inject constructor(
     private val productRepository: ProductRepository,
-    private val nfcWriter: NFCWriter,
-    private val nfcReader: NFCReader,
+    private val readCustomerFromTagUseCase: GetCustomerFromTagUseCase,
+    private val writeCustomerOnTagUseCase: WriteCustomerOnTagUseCase,
 ) : ViewModel() {
 
     companion object {
@@ -94,13 +94,13 @@ class OrderViewModel @Inject constructor(
         }
 
         try {
-            val (tag, customer) = nfcReader.extract(intent)
+            val customer = readCustomerFromTagUseCase(intent)
 
             productsOnCart.value.forEach {
                 customer.addProduct(it.key, it.value)
             }
 
-            nfcWriter.write(tag, customer)
+            writeCustomerOnTagUseCase(customer, intent)
 
             _orderUiState.value = _orderUiState.value.copy(
                 sheetState = NfcBottomSheetReadingState.SUCCESS,
