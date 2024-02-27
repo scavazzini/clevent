@@ -1,0 +1,12 @@
+syntax = "proto3";
+option java_package = "dev.scavazzini.clevent";
+
+message Customer {
+  uint32 balance = 1;
+  repeated Product products = 2;
+}
+
+message Product {
+  uint32 id = 1;
+  uint32 quantity = 2;
+}
