@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
+apply plugin: 'com.google.protobuf'
 
 android {
     namespace = "dev.scavazzini.clevent"
@@ -15,6 +16,22 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    protobuf {
+        protoc {
+            artifact = "com.google.protobuf:protoc:$protobuf_version"
+        }
+
+        generateProtoTasks {
+            all().each { task ->
+                task.builtins {
+                    java {
+                        option "lite"
+                    }
+                }
+            }
+        }
     }
 
     buildFeatures {
@@ -79,6 +96,9 @@ dependencies {
 
     // Zxing (QR Code)
     implementation 'com.google.zxing:core:3.4.0'
+
+    // Protobuf
+    implementation "com.google.protobuf:protobuf-javalite:$protobuf_version"
 
     // Room
     def room_version = "2.6.1"
