@@ -6,7 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dev.scavazzini.clevent.domain.crypto.Encryptor
 import dev.scavazzini.clevent.domain.crypto.FakeEncryptor
-import dev.scavazzini.clevent.domain.serializer.CustomerNFCSerializer
+import dev.scavazzini.clevent.domain.serializer.CustomerProtobufSerializer
 import dev.scavazzini.clevent.domain.serializer.CustomerSerializer
 import javax.inject.Singleton
 
@@ -19,6 +19,6 @@ abstract class DomainModule {
 
     @Singleton
     @Binds
-    abstract fun bindCustomerSerializer(customerSerializer: CustomerNFCSerializer): CustomerSerializer
+    abstract fun bindCustomerSerializer(customerSerializer: CustomerProtobufSerializer): CustomerSerializer
 }
 
