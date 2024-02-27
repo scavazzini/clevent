@@ -10,4 +10,15 @@ data class Product(
     val name: String,
     val price: Int,
     val category: String,
-) : Serializable
+) : Serializable {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        return other is Product && id == other.id
+    }
+
+    override fun hashCode(): Int {
+        return id.toInt()
+    }
+}
