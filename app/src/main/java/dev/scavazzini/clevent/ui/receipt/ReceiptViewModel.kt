@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.feature.receipt
+package dev.scavazzini.clevent.ui.receipt
 
 import android.content.Context
 import android.content.Intent
@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.scavazzini.clevent.R
+import dev.scavazzini.clevent.core.formatter.formatted
 import dev.scavazzini.clevent.data.models.CurrencyValue
 import dev.scavazzini.clevent.data.models.Customer
 import dev.scavazzini.clevent.data.models.EMPTY_CUSTOMER
@@ -14,8 +15,7 @@ import dev.scavazzini.clevent.data.models.Product
 import dev.scavazzini.clevent.data.repositories.ProductRepository
 import dev.scavazzini.clevent.domain.GenerateQrCodeBitmapUseCase
 import dev.scavazzini.clevent.domain.GetCustomerFromTagUseCase
-import dev.scavazzini.clevent.ui.components.PrimaryButtonState
-import dev.scavazzini.clevent.core.formatter.formatted
+import dev.scavazzini.clevent.ui.core.components.PrimaryButtonState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest

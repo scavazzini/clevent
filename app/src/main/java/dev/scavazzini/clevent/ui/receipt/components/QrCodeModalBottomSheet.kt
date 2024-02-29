@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.feature.receipt.components
+package dev.scavazzini.clevent.ui.receipt.components
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image

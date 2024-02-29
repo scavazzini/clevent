@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.feature.order
+package dev.scavazzini.clevent.ui.order
 
 import android.content.Intent
 import androidx.lifecycle.ViewModel
@@ -11,8 +11,8 @@ import dev.scavazzini.clevent.data.models.exception.InsufficientBalanceException
 import dev.scavazzini.clevent.data.repositories.ProductRepository
 import dev.scavazzini.clevent.domain.GetCustomerFromTagUseCase
 import dev.scavazzini.clevent.domain.WriteCustomerOnTagUseCase
-import dev.scavazzini.clevent.ui.components.NfcBottomSheetReadingState
-import dev.scavazzini.clevent.ui.components.PrimaryButtonState
+import dev.scavazzini.clevent.ui.core.components.NfcBottomSheetReadingState
+import dev.scavazzini.clevent.ui.core.components.PrimaryButtonState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

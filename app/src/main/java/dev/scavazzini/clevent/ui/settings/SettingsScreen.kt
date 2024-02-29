@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.feature.settings
+package dev.scavazzini.clevent.ui.settings
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,9 +30,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.scavazzini.clevent.R
-import dev.scavazzini.clevent.ui.OnNewIntentHandler
-import dev.scavazzini.clevent.ui.components.NfcModalBottomSheet
-import dev.scavazzini.clevent.ui.theme.CleventTheme
+import dev.scavazzini.clevent.ui.core.OnNewIntentHandler
+import dev.scavazzini.clevent.ui.core.components.NfcModalBottomSheet
+import dev.scavazzini.clevent.ui.core.theme.CleventTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

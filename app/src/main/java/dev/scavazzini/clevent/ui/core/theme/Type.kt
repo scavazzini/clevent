@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.ui.theme
+package dev.scavazzini.clevent.ui.core.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.ui.components
+package dev.scavazzini.clevent.ui.core.components
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat

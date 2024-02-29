@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.ui
+package dev.scavazzini.clevent.ui.core
 
 import android.content.Context
 import android.content.ContextWrapper

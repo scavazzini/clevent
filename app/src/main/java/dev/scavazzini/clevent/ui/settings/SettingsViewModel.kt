@@ -1,14 +1,14 @@
-package dev.scavazzini.clevent.feature.settings
+package dev.scavazzini.clevent.ui.settings
 
 import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.scavazzini.clevent.R
+import dev.scavazzini.clevent.core.formatter.formatted
 import dev.scavazzini.clevent.data.repositories.ProductRepository
 import dev.scavazzini.clevent.domain.EraseTagUseCase
-import dev.scavazzini.clevent.ui.components.NfcBottomSheetReadingState
-import dev.scavazzini.clevent.core.formatter.formatted
+import dev.scavazzini.clevent.ui.core.components.NfcBottomSheetReadingState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

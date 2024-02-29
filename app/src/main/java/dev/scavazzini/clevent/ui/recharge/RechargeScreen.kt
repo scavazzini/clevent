@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.feature.recharge
+package dev.scavazzini.clevent.ui.recharge
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,11 +24,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.models.CurrencyValue
-import dev.scavazzini.clevent.ui.OnNewIntentHandler
-import dev.scavazzini.clevent.ui.components.NfcModalBottomSheet
-import dev.scavazzini.clevent.ui.components.PrimaryButton
-import dev.scavazzini.clevent.ui.components.PrimaryButtonState
-import dev.scavazzini.clevent.ui.theme.CleventTheme
+import dev.scavazzini.clevent.ui.core.OnNewIntentHandler
+import dev.scavazzini.clevent.ui.core.components.NfcModalBottomSheet
+import dev.scavazzini.clevent.ui.core.components.PrimaryButton
+import dev.scavazzini.clevent.ui.core.components.PrimaryButtonState
+import dev.scavazzini.clevent.ui.core.theme.CleventTheme
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

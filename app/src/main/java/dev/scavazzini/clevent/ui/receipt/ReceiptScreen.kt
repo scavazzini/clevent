@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.feature.receipt
+package dev.scavazzini.clevent.ui.receipt
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,10 +38,10 @@ import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.models.CurrencyValue
 import dev.scavazzini.clevent.data.models.Customer
 import dev.scavazzini.clevent.data.models.Product
-import dev.scavazzini.clevent.ui.OnNewIntentHandler
-import dev.scavazzini.clevent.ui.components.PrimaryButton
-import dev.scavazzini.clevent.feature.receipt.components.QrCodeModalBottomSheet
-import dev.scavazzini.clevent.ui.theme.CleventTheme
+import dev.scavazzini.clevent.ui.core.OnNewIntentHandler
+import dev.scavazzini.clevent.ui.core.components.PrimaryButton
+import dev.scavazzini.clevent.ui.core.theme.CleventTheme
+import dev.scavazzini.clevent.ui.receipt.components.QrCodeModalBottomSheet
 import kotlinx.coroutines.launch
 
 @Composable

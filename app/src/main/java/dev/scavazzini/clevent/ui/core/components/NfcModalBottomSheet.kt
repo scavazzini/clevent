@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.ui.components
+package dev.scavazzini.clevent.ui.core.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.dp
 import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.models.CurrencyValue
 import dev.scavazzini.clevent.data.models.Product
-import dev.scavazzini.clevent.ui.theme.CleventTheme
+import dev.scavazzini.clevent.ui.core.theme.CleventTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

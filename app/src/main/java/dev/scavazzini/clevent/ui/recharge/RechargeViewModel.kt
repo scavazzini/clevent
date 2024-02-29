@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.feature.recharge
+package dev.scavazzini.clevent.ui.recharge
 
 import android.content.Intent
 import androidx.lifecycle.ViewModel
@@ -8,7 +8,7 @@ import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.models.CurrencyValue
 import dev.scavazzini.clevent.domain.GetCustomerFromTagUseCase
 import dev.scavazzini.clevent.domain.WriteCustomerOnTagUseCase
-import dev.scavazzini.clevent.ui.components.NfcBottomSheetReadingState
+import dev.scavazzini.clevent.ui.core.components.NfcBottomSheetReadingState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.ui.components
+package dev.scavazzini.clevent.ui.core.components
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -13,10 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import dev.scavazzini.clevent.ui.components.PrimaryButtonState.DISABLED
-import dev.scavazzini.clevent.ui.components.PrimaryButtonState.ENABLED
-import dev.scavazzini.clevent.ui.components.PrimaryButtonState.LOADING
-import dev.scavazzini.clevent.ui.theme.CleventTheme
+import dev.scavazzini.clevent.ui.core.components.PrimaryButtonState.DISABLED
+import dev.scavazzini.clevent.ui.core.components.PrimaryButtonState.ENABLED
+import dev.scavazzini.clevent.ui.core.components.PrimaryButtonState.LOADING
+import dev.scavazzini.clevent.ui.core.theme.CleventTheme
 
 @Composable
 fun PrimaryButton(
