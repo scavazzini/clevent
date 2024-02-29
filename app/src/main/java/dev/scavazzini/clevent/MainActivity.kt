@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.ui
+package dev.scavazzini.clevent
 
 import android.app.PendingIntent
 import android.content.Intent
