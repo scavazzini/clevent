@@ -15,7 +15,7 @@ import dev.scavazzini.clevent.data.repositories.ProductRepository
 import dev.scavazzini.clevent.domain.GenerateQrCodeBitmapUseCase
 import dev.scavazzini.clevent.domain.GetCustomerFromTagUseCase
 import dev.scavazzini.clevent.ui.components.PrimaryButtonState
-import dev.scavazzini.clevent.utilities.extensions.formatted
+import dev.scavazzini.clevent.core.formatter.formatted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest

@@ -8,7 +8,7 @@ import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.repositories.ProductRepository
 import dev.scavazzini.clevent.domain.EraseTagUseCase
 import dev.scavazzini.clevent.ui.components.NfcBottomSheetReadingState
-import dev.scavazzini.clevent.utilities.extensions.formatted
+import dev.scavazzini.clevent.core.formatter.formatted
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

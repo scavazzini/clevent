@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.utilities.extensions
+package dev.scavazzini.clevent.core.formatter
 
 import java.text.DateFormat
 import java.util.Date
