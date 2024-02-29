@@ -15,13 +15,17 @@ import dev.scavazzini.clevent.data.repositories.ProductRepository
 import dev.scavazzini.clevent.domain.GenerateQrCodeBitmapUseCase
 import dev.scavazzini.clevent.domain.GetCustomerFromTagUseCase
 import dev.scavazzini.clevent.ui.components.PrimaryButtonState
-import dev.scavazzini.clevent.utilities.extensions.formatted
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.Calendar
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.format.DateTimeComponents
+import kotlinx.datetime.offsetIn
 import javax.inject.Inject
 
 @HiltViewModel
@@ -118,7 +122,7 @@ class ReceiptViewModel @Inject constructor(
     }
 
     private fun Customer.toReceiptString(
-        calendar: Calendar = Calendar.getInstance(),
+        instant: Instant = Clock.System.now(),
         context: Context? = null,
     ) = buildString {
         val receiptTitle = context?.getString(R.string.receipt_string_title) ?: "Receipt"
@@ -128,7 +132,17 @@ class ReceiptViewModel @Inject constructor(
         val totalValue = CurrencyValue(total).toString()
         val balanceValue = CurrencyValue(balance).toString()
 
-        append(String.format("%s (%s)%n%n", receiptTitle, calendar.time.formatted()))
+        append(
+            String.format(
+                "%s (%s)%n%n",
+                receiptTitle,
+                instant.format(
+                    DateTimeComponents.Formats.RFC_1123, Clock.System.now().offsetIn(
+                        TimeZone.currentSystemDefault(),
+                    )
+                ),
+            )
+        )
         for ((product, quantity) in products) {
             val productTotal = CurrencyValue(product.price * quantity).toString()
             append(String.format("%dx %s: %s%n", quantity, product.name, productTotal))

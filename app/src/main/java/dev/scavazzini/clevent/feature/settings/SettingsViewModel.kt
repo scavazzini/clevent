@@ -8,14 +8,18 @@ import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.repositories.ProductRepository
 import dev.scavazzini.clevent.domain.EraseTagUseCase
 import dev.scavazzini.clevent.ui.components.NfcBottomSheetReadingState
-import dev.scavazzini.clevent.utilities.extensions.formatted
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.Date
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.format.DateTimeComponents
+import kotlinx.datetime.offsetIn
 import javax.inject.Inject
 
 @HiltViewModel
@@ -111,7 +115,13 @@ class SettingsViewModel @Inject constructor(
         if (this == null) {
             return "-"
         }
-        return Date(this).formatted()
+        return Instant.fromEpochMilliseconds(this)
+            .format(
+                DateTimeComponents.Formats.RFC_1123,
+                Clock.System.now().offsetIn(
+                    TimeZone.currentSystemDefault(),
+                )
+            )
     }
 
     data class SettingsUiState(
