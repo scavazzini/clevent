@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.scavazzini.clevent.R
-import dev.scavazzini.clevent.data.models.CurrencyValue
+import dev.scavazzini.clevent.data.core.model.CurrencyValue
 import dev.scavazzini.clevent.ui.core.OnNewIntentHandler
 import dev.scavazzini.clevent.ui.core.components.NfcModalBottomSheet
 import dev.scavazzini.clevent.ui.core.components.PrimaryButton

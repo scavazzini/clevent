@@ -1,7 +1,7 @@
 package dev.scavazzini.clevent.domain.core.serializer
 
-import dev.scavazzini.clevent.data.models.Customer
-import dev.scavazzini.clevent.data.models.Product
+import dev.scavazzini.clevent.data.core.model.Customer
+import dev.scavazzini.clevent.data.core.model.Product
 import dev.scavazzini.clevent.domain.core.serializer.exception.DeserializationException
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream

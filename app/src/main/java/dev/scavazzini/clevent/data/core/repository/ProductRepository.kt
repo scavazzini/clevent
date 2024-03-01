@@ -1,7 +1,7 @@
-package dev.scavazzini.clevent.data.repositories
+package dev.scavazzini.clevent.data.core.repository
 
-import dev.scavazzini.clevent.data.datasource.LocalProductDataSource
-import dev.scavazzini.clevent.data.datasource.RemoteProductDataSource
+import dev.scavazzini.clevent.data.core.datasource.LocalProductDataSource
+import dev.scavazzini.clevent.data.core.datasource.RemoteProductDataSource
 import javax.inject.Inject
 import javax.inject.Singleton
 

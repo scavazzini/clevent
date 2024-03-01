@@ -8,11 +8,11 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.core.formatter.formatted
-import dev.scavazzini.clevent.data.models.CurrencyValue
-import dev.scavazzini.clevent.data.models.Customer
-import dev.scavazzini.clevent.data.models.EMPTY_CUSTOMER
-import dev.scavazzini.clevent.data.models.Product
-import dev.scavazzini.clevent.data.repositories.ProductRepository
+import dev.scavazzini.clevent.data.core.model.CurrencyValue
+import dev.scavazzini.clevent.data.core.model.Customer
+import dev.scavazzini.clevent.data.core.model.EMPTY_CUSTOMER
+import dev.scavazzini.clevent.data.core.model.Product
+import dev.scavazzini.clevent.data.core.repository.ProductRepository
 import dev.scavazzini.clevent.domain.receipt.GenerateQrCodeBitmapUseCase
 import dev.scavazzini.clevent.domain.core.GetCustomerFromTagUseCase
 import dev.scavazzini.clevent.ui.core.components.PrimaryButtonState

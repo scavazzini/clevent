@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.data.database;
+package dev.scavazzini.clevent.data.core.database;
 
 import android.content.Context;
 
@@ -6,7 +6,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-import dev.scavazzini.clevent.data.models.Product;
+import dev.scavazzini.clevent.data.core.model.Product;
 
 @Database(entities = [Product::class], version = 1, exportSchema = false)
 abstract class CleventDatabase : RoomDatabase() {

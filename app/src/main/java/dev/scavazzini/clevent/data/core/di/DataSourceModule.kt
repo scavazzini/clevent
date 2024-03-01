@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.data.di
+package dev.scavazzini.clevent.data.core.di
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -8,9 +8,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import dev.scavazzini.clevent.data.database.CleventDatabase
-import dev.scavazzini.clevent.data.database.ProductDao
-import dev.scavazzini.clevent.data.datasource.RemoteProductDataSource
+import dev.scavazzini.clevent.data.core.database.CleventDatabase
+import dev.scavazzini.clevent.data.core.database.ProductDao
+import dev.scavazzini.clevent.data.core.datasource.RemoteProductDataSource
 import javax.inject.Singleton
 
 @Module

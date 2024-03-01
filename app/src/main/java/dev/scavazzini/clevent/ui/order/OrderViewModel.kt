@@ -5,10 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.scavazzini.clevent.R
-import dev.scavazzini.clevent.data.models.CurrencyValue
-import dev.scavazzini.clevent.data.models.Product
-import dev.scavazzini.clevent.data.models.exception.InsufficientBalanceException
-import dev.scavazzini.clevent.data.repositories.ProductRepository
+import dev.scavazzini.clevent.data.core.model.CurrencyValue
+import dev.scavazzini.clevent.data.core.model.Product
+import dev.scavazzini.clevent.data.core.model.exception.InsufficientBalanceException
+import dev.scavazzini.clevent.data.core.repository.ProductRepository
 import dev.scavazzini.clevent.domain.core.GetCustomerFromTagUseCase
 import dev.scavazzini.clevent.domain.core.WriteCustomerOnTagUseCase
 import dev.scavazzini.clevent.ui.core.components.NfcBottomSheetReadingState

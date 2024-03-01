@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.data.models
+package dev.scavazzini.clevent.data.core.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

@@ -1,10 +1,10 @@
-package dev.scavazzini.clevent.data.database;
+package dev.scavazzini.clevent.data.core.database;
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import dev.scavazzini.clevent.data.models.Product
+import dev.scavazzini.clevent.data.core.model.Product
 import kotlinx.coroutines.flow.Flow
 
 @Dao

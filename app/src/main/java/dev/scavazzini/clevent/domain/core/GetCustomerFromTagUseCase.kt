@@ -1,8 +1,8 @@
 package dev.scavazzini.clevent.domain.core
 
 import android.content.Intent
-import dev.scavazzini.clevent.data.models.Customer
-import dev.scavazzini.clevent.data.repositories.TagRepository
+import dev.scavazzini.clevent.data.core.model.Customer
+import dev.scavazzini.clevent.data.core.repository.TagRepository
 import dev.scavazzini.clevent.domain.core.serializer.CustomerSerializer
 import javax.inject.Inject
 

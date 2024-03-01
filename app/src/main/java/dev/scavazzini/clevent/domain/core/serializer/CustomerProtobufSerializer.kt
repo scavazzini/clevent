@@ -1,8 +1,8 @@
 package dev.scavazzini.clevent.domain.core.serializer
 
 import dev.scavazzini.clevent.CustomerOuterClass
-import dev.scavazzini.clevent.data.models.Customer
-import dev.scavazzini.clevent.data.models.Product
+import dev.scavazzini.clevent.data.core.model.Customer
+import dev.scavazzini.clevent.data.core.model.Product
 import javax.inject.Inject
 
 class CustomerProtobufSerializer @Inject constructor() : CustomerSerializer {

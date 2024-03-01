@@ -1,7 +1,7 @@
 package dev.scavazzini.clevent.domain.settings
 
 import android.content.Intent
-import dev.scavazzini.clevent.data.repositories.TagRepository
+import dev.scavazzini.clevent.data.core.repository.TagRepository
 import javax.inject.Inject
 
 class EraseTagUseCase @Inject constructor(

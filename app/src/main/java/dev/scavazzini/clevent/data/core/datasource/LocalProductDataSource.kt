@@ -1,8 +1,8 @@
-package dev.scavazzini.clevent.data.datasource
+package dev.scavazzini.clevent.data.core.datasource
 
 import android.content.SharedPreferences
-import dev.scavazzini.clevent.data.database.ProductDao
-import dev.scavazzini.clevent.data.models.Product
+import dev.scavazzini.clevent.data.core.database.ProductDao
+import dev.scavazzini.clevent.data.core.model.Product
 import kotlinx.coroutines.flow.Flow
 import java.util.Calendar
 import javax.inject.Inject

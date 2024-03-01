@@ -1,6 +1,6 @@
-package dev.scavazzini.clevent.data.datasource
+package dev.scavazzini.clevent.data.core.datasource
 
-import dev.scavazzini.clevent.data.models.Product
+import dev.scavazzini.clevent.data.core.model.Product
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

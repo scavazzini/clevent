@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.data.repositories
+package dev.scavazzini.clevent.data.core.repository
 
 import android.content.Intent
 import android.nfc.NdefMessage

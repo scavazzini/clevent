@@ -35,9 +35,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.scavazzini.clevent.R
-import dev.scavazzini.clevent.data.models.CurrencyValue
-import dev.scavazzini.clevent.data.models.Customer
-import dev.scavazzini.clevent.data.models.Product
+import dev.scavazzini.clevent.data.core.model.CurrencyValue
+import dev.scavazzini.clevent.data.core.model.Customer
+import dev.scavazzini.clevent.data.core.model.Product
 import dev.scavazzini.clevent.ui.core.OnNewIntentHandler
 import dev.scavazzini.clevent.ui.core.components.PrimaryButton
 import dev.scavazzini.clevent.ui.core.theme.CleventTheme

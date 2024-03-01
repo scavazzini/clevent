@@ -1,7 +1,9 @@
 package dev.scavazzini.clevent.data.models
 
-import dev.scavazzini.clevent.data.models.exception.BalanceLimitExceededException
-import dev.scavazzini.clevent.data.models.exception.InsufficientBalanceException
+import dev.scavazzini.clevent.data.core.model.Customer
+import dev.scavazzini.clevent.data.core.model.Product
+import dev.scavazzini.clevent.data.core.model.exception.BalanceLimitExceededException
+import dev.scavazzini.clevent.data.core.model.exception.InsufficientBalanceException
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

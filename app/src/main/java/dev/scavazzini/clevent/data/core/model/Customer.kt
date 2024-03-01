@@ -1,7 +1,7 @@
-package dev.scavazzini.clevent.data.models
+package dev.scavazzini.clevent.data.core.model
 
-import dev.scavazzini.clevent.data.models.exception.BalanceLimitExceededException
-import dev.scavazzini.clevent.data.models.exception.InsufficientBalanceException
+import dev.scavazzini.clevent.data.core.model.exception.BalanceLimitExceededException
+import dev.scavazzini.clevent.data.core.model.exception.InsufficientBalanceException
 import java.io.Serializable
 import java.util.Objects
 

@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.data.models
+package dev.scavazzini.clevent.data.core.model
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString

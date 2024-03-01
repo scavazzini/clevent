@@ -4,7 +4,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
-import dev.scavazzini.clevent.data.models.CurrencyValue
+import dev.scavazzini.clevent.data.core.model.CurrencyValue
 
 class CurrencyVisualTransformation : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
