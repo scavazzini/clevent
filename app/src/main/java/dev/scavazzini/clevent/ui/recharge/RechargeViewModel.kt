@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.models.CurrencyValue
-import dev.scavazzini.clevent.domain.GetCustomerFromTagUseCase
-import dev.scavazzini.clevent.domain.WriteCustomerOnTagUseCase
+import dev.scavazzini.clevent.domain.core.GetCustomerFromTagUseCase
+import dev.scavazzini.clevent.domain.core.WriteCustomerOnTagUseCase
 import dev.scavazzini.clevent.ui.core.components.NfcBottomSheetReadingState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

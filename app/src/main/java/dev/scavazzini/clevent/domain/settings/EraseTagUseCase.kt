@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.domain
+package dev.scavazzini.clevent.domain.settings
 
 import android.content.Intent
 import dev.scavazzini.clevent.data.repositories.TagRepository

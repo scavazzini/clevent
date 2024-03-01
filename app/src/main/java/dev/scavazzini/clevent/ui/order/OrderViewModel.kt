@@ -9,8 +9,8 @@ import dev.scavazzini.clevent.data.models.CurrencyValue
 import dev.scavazzini.clevent.data.models.Product
 import dev.scavazzini.clevent.data.models.exception.InsufficientBalanceException
 import dev.scavazzini.clevent.data.repositories.ProductRepository
-import dev.scavazzini.clevent.domain.GetCustomerFromTagUseCase
-import dev.scavazzini.clevent.domain.WriteCustomerOnTagUseCase
+import dev.scavazzini.clevent.domain.core.GetCustomerFromTagUseCase
+import dev.scavazzini.clevent.domain.core.WriteCustomerOnTagUseCase
 import dev.scavazzini.clevent.ui.core.components.NfcBottomSheetReadingState
 import dev.scavazzini.clevent.ui.core.components.PrimaryButtonState
 import kotlinx.coroutines.delay

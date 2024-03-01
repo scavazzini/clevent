@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.domain
+package dev.scavazzini.clevent.domain.receipt
 
 import android.graphics.Bitmap
 import android.graphics.Color

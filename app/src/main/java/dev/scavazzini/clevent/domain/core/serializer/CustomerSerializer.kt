@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.domain.serializer
+package dev.scavazzini.clevent.domain.core.serializer
 
 import dev.scavazzini.clevent.data.models.Customer
 
