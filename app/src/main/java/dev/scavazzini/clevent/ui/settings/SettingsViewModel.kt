@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.scavazzini.clevent.R
-import dev.scavazzini.clevent.core.formatter.formatted
 import dev.scavazzini.clevent.data.core.repository.ProductRepository
+import dev.scavazzini.clevent.domain.core.FormatDateToStringUseCase
 import dev.scavazzini.clevent.domain.settings.EraseTagUseCase
 import dev.scavazzini.clevent.ui.core.components.NfcBottomSheetReadingState
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +22,7 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val productRepository: ProductRepository,
     private val eraseTagUseCase: EraseTagUseCase,
+    private val formatDateToStringUseCase: FormatDateToStringUseCase,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<SettingsUiState> = MutableStateFlow(SettingsUiState())
@@ -111,7 +112,7 @@ class SettingsViewModel @Inject constructor(
         if (this == null) {
             return "-"
         }
-        return Date(this).formatted()
+        return formatDateToStringUseCase(Date(this))
     }
 
     data class SettingsUiState(

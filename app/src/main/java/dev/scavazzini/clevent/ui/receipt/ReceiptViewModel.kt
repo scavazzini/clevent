@@ -7,14 +7,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.scavazzini.clevent.R
-import dev.scavazzini.clevent.core.formatter.formatted
 import dev.scavazzini.clevent.data.core.model.CurrencyValue
 import dev.scavazzini.clevent.data.core.model.Customer
 import dev.scavazzini.clevent.data.core.model.EMPTY_CUSTOMER
 import dev.scavazzini.clevent.data.core.model.Product
 import dev.scavazzini.clevent.data.core.repository.ProductRepository
-import dev.scavazzini.clevent.domain.receipt.GenerateQrCodeBitmapUseCase
+import dev.scavazzini.clevent.domain.core.FormatDateToStringUseCase
 import dev.scavazzini.clevent.domain.core.GetCustomerFromTagUseCase
+import dev.scavazzini.clevent.domain.receipt.GenerateQrCodeBitmapUseCase
 import dev.scavazzini.clevent.ui.core.components.PrimaryButtonState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,6 +29,7 @@ class ReceiptViewModel @Inject constructor(
     private val productRepository: ProductRepository,
     private val readCustomerFromTagUseCase: GetCustomerFromTagUseCase,
     private val generateQrCodeBitmapUseCase: GenerateQrCodeBitmapUseCase,
+    private val formatDateToStringUseCase: FormatDateToStringUseCase,
 ) : ViewModel() {
 
     private var _uiState = MutableStateFlow(ReceiptUiState())
@@ -128,7 +129,7 @@ class ReceiptViewModel @Inject constructor(
         val totalValue = CurrencyValue(total).toString()
         val balanceValue = CurrencyValue(balance).toString()
 
-        append(String.format("%s (%s)%n%n", receiptTitle, calendar.time.formatted()))
+        append(String.format("%s (%s)%n%n", receiptTitle, formatDateToStringUseCase(calendar.time)))
         for ((product, quantity) in products) {
             val productTotal = CurrencyValue(product.price * quantity).toString()
             append(String.format("%dx %s: %s%n", quantity, product.name, productTotal))
