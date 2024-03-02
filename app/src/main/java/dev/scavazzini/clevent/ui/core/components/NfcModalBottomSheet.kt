@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Nfc
@@ -175,14 +176,14 @@ private fun ProductListDivider() {
 }
 
 @Composable
-private fun ProductListItem(product: Pair<Product, Int>, modifier: Modifier) {
+private fun ProductListItem(productEntry: Map.Entry<Product, Int>, modifier: Modifier) {
     Row(
         modifier = modifier
             .padding(horizontal = 16.dp, vertical = 0.dp)
             .fillMaxWidth(),
     ) {
-        val leftText = "${product.second}x ${product.first.name}"
-        val rightText = CurrencyValue(product.first.price * product.second).toString()
+        val leftText = "${productEntry.value}x ${productEntry.key.name}"
+        val rightText = CurrencyValue(productEntry.key.price * productEntry.value).toString()
 
         Text(leftText, modifier = Modifier.weight(1f))
         Text(
@@ -200,6 +201,8 @@ fun BottomSheetProductListContent(
     if (products.isEmpty()) {
         return
     }
+
+    val productList = remember(products) { products.entries.toList() }
 
     var singleItemHeight by remember { mutableStateOf(0.dp) }
     val verticalMargin = 8.dp
@@ -222,15 +225,13 @@ fun BottomSheetProductListContent(
                 .fillMaxWidth()
                 .height(height),
         ) {
-            products.forEach { entry ->
-                item {
-                    ProductListItem(
-                        product = entry.toPair(),
-                        modifier = Modifier.onGloballyPositioned {
-                            singleItemHeight = with(localDensity) { it.size.height.toDp() }
-                        }
-                    )
-                }
+            items(productList, key = { it.key.id }) {
+                ProductListItem(
+                    productEntry = it,
+                    modifier = Modifier.onGloballyPositioned {
+                        singleItemHeight = with(localDensity) { it.size.height.toDp() }
+                    }
+                )
             }
         }
         ProductListDivider()

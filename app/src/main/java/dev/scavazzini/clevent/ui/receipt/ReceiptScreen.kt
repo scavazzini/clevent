@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -168,6 +169,8 @@ private fun ReceiptList(
     customer: Customer,
     modifier: Modifier = Modifier,
 ) {
+    val products = remember(customer.products) { customer.products.entries.toList() }
+
     Column(modifier.padding(16.dp)) {
         Text(
             text = stringResource(R.string.receipt_transaction_list_title),
@@ -177,7 +180,7 @@ private fun ReceiptList(
             contentPadding = PaddingValues(vertical = 8.dp),
             modifier = Modifier.weight(1f),
         ) {
-            items(customer.products.entries.toList()) { item ->
+            items(products, key = { it.key.id }) { item ->
                 ReceiptItem(
                     quantity = item.value,
                     product = item.key,

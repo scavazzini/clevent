@@ -200,6 +200,7 @@ private fun ProductList(
     searchFieldValue: String = "",
     onSearchFieldValueChange: (String) -> Unit = { },
 ) {
+    val productList = remember(products) { products.entries.toList() }
     val localDensity = LocalDensity.current
     var listBottomPadding by remember { mutableIntStateOf(0) }
 
@@ -223,7 +224,7 @@ private fun ProductList(
                     modifier = Modifier.padding(bottom = 8.dp),
                 )
             }
-            items(products.entries.toList()) { item ->
+            items(productList, key = { it.key.id }) { item ->
                 ListItem(
                     product = item.key,
                     quantity = item.value,
