@@ -1,0 +1,70 @@
+[versions]
+agp-version = "8.2.2"
+kotlin-version = "1.8.0"
+activity-compose-version = "1.8.2"
+compose-bom-version = "2024.02.01"
+compose-compiler-version = "1.4.1"
+espresso-core-version = "3.5.1"
+hilt-version = "2.50"
+hilt-navigation-compose-version = "1.2.0"
+androidx-junit-version = "1.1.5"
+junit-version = "4.13.2"
+lifecycle-viewmodel-compose-version = "2.7.0"
+mockito-version = "2.28.2"
+navigation-compose-version = "2.7.7"
+preference-ktx-version = "1.2.1"
+protobuf-plugin-version = "0.9.4"
+protobuf-version = "3.25.2"
+retrofit-version = "2.9.0"
+room-version = "2.6.1"
+zxing-version = "3.5.3"
+
+[libraries]
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose-version" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose-version" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel-compose-version" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose-version" }
+compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom-version" }
+compose-ui = { module = "androidx.compose.ui:ui" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+compose-foundation = { module = "androidx.compose.foundation:foundation" }
+compose-material3 = { module = "androidx.compose.material3:material3" }
+compose-material-icons-core = { module = "androidx.compose.material:material-icons-core" }
+compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
+androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso-core-version" }
+androidx-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-junit-version" }
+androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preference-ktx-version" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room-version" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room-version" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room-version" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit-version" }
+retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit-version" }
+zxing-core = { module = "com.google.zxing:core", version.ref = "zxing-version" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt-version" }
+hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt-version" }
+junit = { module = "junit:junit", version.ref = "junit-version" }
+mockito-android = { module = "org.mockito:mockito-android", version.ref = "mockito-version" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito-version" }
+mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockito-version" }
+protobuf-protoc = { module = "com.google.protobuf:protoc", version.ref = "protobuf-version" }
+protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.ref = "protobuf-version" }
+
+[bundles]
+compose = [
+    "compose-ui",
+    "compose-ui-tooling",
+    "compose-foundation",
+    "compose-material3",
+    "compose-material-icons-core",
+    "compose-material-icons-extended",
+]
+retrofit = [
+    "retrofit",
+    "retrofit-gson",
+]
+
+[plugins]
+agp = { id = "com.android.application", version.ref = "agp-version" }
+kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin-version" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt-version" }
+protobuf = { id = "com.google.protobuf", version.ref = "protobuf-plugin-version" }

@@ -1,12 +1,10 @@
 plugins {
-    id("com.android.application")
-    id("kotlin-android")
+    alias(libs.plugins.agp)
+    alias(libs.plugins.kotlin)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.protobuf)
     id("kotlin-kapt")
-    id("com.google.dagger.hilt.android")
-    id("com.google.protobuf")
 }
-
-val protobufVersion = "3.25.2"
 
 android {
     namespace = "dev.scavazzini.clevent"
@@ -22,7 +20,7 @@ android {
 
     protobuf {
         protoc {
-            artifact = "com.google.protobuf:protoc:$protobufVersion"
+            artifact = libs.protobuf.protoc.get().toString()
         }
 
         generateProtoTasks {
@@ -41,7 +39,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.1"
+        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.version.get().toString()
     }
 
     compileOptions {
@@ -68,50 +66,41 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.navigation.compose)
+
     // Preferences
-    implementation("androidx.preference:preference-ktx:1.2.1")
+    implementation(libs.androidx.preference.ktx)
 
     // Compose
-    implementation(platform("androidx.compose:compose-bom:2024.02.01"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-tooling")
-    implementation("androidx.compose.foundation:foundation")
-    implementation("androidx.compose.material:material-icons-core")
-    implementation("androidx.compose.material:material-icons-extended")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.activity:activity-compose:1.8.2")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
-    implementation("androidx.navigation:navigation-compose:2.7.7")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation(platform(libs.compose.bom))
+    implementation(libs.bundles.compose)
 
     // Hilt
-    val hiltVersion = "2.50"
-    implementation("com.google.dagger:hilt-android:$hiltVersion")
-    kapt("com.google.dagger:hilt-compiler:$hiltVersion")
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
+    kapt(libs.hilt.compiler)
 
     // Zxing (QR Code)
-    implementation("com.google.zxing:core:3.4.0")
+    implementation(libs.zxing.core)
 
     // Protobuf
-    implementation("com.google.protobuf:protobuf-javalite:$protobufVersion")
+    implementation(libs.protobuf.javalite)
 
     // Room
-    val roomVersion = "2.6.1"
-    implementation("androidx.room:room-runtime:$roomVersion")
-    implementation("androidx.room:room-ktx:$roomVersion")
-    kapt("androidx.room:room-compiler:$roomVersion")
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    kapt(libs.room.compiler)
 
     // Tests (JUnit, Mockito and Espresso)
-    val mockitoVersion = "2.28.2"
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("org.mockito:mockito-core:$mockitoVersion")
-    testImplementation("org.mockito:mockito-inline:$mockitoVersion")
-    androidTestImplementation("org.mockito:mockito-android:$mockitoVersion")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    testImplementation(libs.junit)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.inline)
+    androidTestImplementation(libs.mockito.android)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.junit)
 
-    // Retrofit (with Gson)
-    val retrofitVersion = "2.9.0"
-    implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
-    implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")
+    // Retrofit
+    implementation(libs.bundles.retrofit)
 }
