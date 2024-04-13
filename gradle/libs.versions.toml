@@ -1,5 +1,5 @@
 [versions]
-agp-version = "8.2.2"
+agp-version = "8.3.2"
 kotlin-version = "1.8.0"
 activity-compose-version = "1.8.2"
 compose-bom-version = "2024.02.01"
