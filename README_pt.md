@@ -11,12 +11,12 @@ O aplicativo armazena nas tags NFC informações de saldo e itens consumidos pel
 ## Screenshots
 
 <div style="display:flex; margin-bottom:30px" >
-    <img src="docs/images/screenshots/01.png" height="230px">
-    <img src="docs/images/screenshots/02.png" height="230px" style="margin-left:10px;">
-    <img src="docs/images/screenshots/03.png" height="230px" style="margin-left:10px;">
-    <img src="docs/images/screenshots/04.png" height="230px" style="margin-left:10px;">
-    <img src="docs/images/screenshots/05.png" height="230px" style="margin-left:10px;">
-    <img src="docs/images/screenshots/06.png" height="230px" style="margin-left:10px;">
+    <img src="docs/images/screenshots/01.png" height="300px">
+    <img src="docs/images/screenshots/02.png" height="300px" style="margin-left:10px;">
+    <img src="docs/images/screenshots/03.png" height="300px" style="margin-left:10px;">
+    <img src="docs/images/screenshots/04.png" height="300px" style="margin-left:10px;">
+    <img src="docs/images/screenshots/05.png" height="300px" style="margin-left:10px;">
+    <img src="docs/images/screenshots/06.png" height="300px" style="margin-left:10px;">
 </div>
 
 ## Desenvolvimento do Aplicativo
