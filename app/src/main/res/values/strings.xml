@@ -14,19 +14,6 @@
     <string name="receipt_string_available_balance">Available balance: </string>
     <string name="receipt_string_total">Total: </string>
 
-    <string name="order_category_all">All</string>
-    <string name="order_search_field_label">Search</string>
-    <string name="order_search_field_clear_button">Clear</string>
-    <string name="order_confirm_order_button">Confirm Order</string>
-    <string name="order_confirm_order_with_value_button">Confirm Order (%s)</string>
-    <string name="order_confirm_title">Confirm your Order</string>
-    <string name="order_confirm_description">Check the list below before complete your purchase.</string>
-    <string name="order_success_title">Order completed</string>
-    <string name="order_success_description">Your new balance is %s</string>
-    <string name="order_error_title">Order went wrong</string>
-    <string name="order_error_description">%s</string>
-    <string name="order_not_enough_credits_description">This tag does not have enough credits to complete this purchase</string>
-
     <string name="recharge_confirm_button">Recharge</string>
     <string name="recharge_confirm_title">Confirm your Recharge</string>
     <string name="recharge_confirm_description">You\'re about to make a recharge of %s</string>

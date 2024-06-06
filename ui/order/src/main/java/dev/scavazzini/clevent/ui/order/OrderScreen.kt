@@ -46,7 +46,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.core.model.CurrencyValue
 import dev.scavazzini.clevent.data.core.model.Product
 import dev.scavazzini.clevent.ui.core.OnNewIntentHandler
