@@ -29,4 +29,6 @@ include(
 
     ":ui:receipt",
     ":domain:receipt",
+
+    ":ui:recharge"
 )
