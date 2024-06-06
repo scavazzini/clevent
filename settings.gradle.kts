@@ -17,4 +17,8 @@ dependencyResolutionManagement {
 
 include(
     ":app",
+
+    ":ui:core",
+    ":domain:core",
+    ":data:core",
 )
