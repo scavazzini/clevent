@@ -1,8 +1,7 @@
-package dev.scavazzini.clevent.domain.serializer
+package dev.scavazzini.clevent.domain.core.serializer
 
 import dev.scavazzini.clevent.data.core.model.Customer
 import dev.scavazzini.clevent.data.core.model.Product
-import dev.scavazzini.clevent.domain.core.serializer.CustomerNFCSerializer
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Before

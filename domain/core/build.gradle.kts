@@ -61,4 +61,11 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+
+    // Tests
+    testImplementation(libs.junit)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.inline)
+    androidTestImplementation(libs.mockito.android)
+    androidTestImplementation(libs.androidx.junit)
 }

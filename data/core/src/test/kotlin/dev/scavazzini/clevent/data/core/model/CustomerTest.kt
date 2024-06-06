@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.data.models
+package dev.scavazzini.clevent.data.core.model
 
 import dev.scavazzini.clevent.data.core.model.Customer
 import dev.scavazzini.clevent.data.core.model.Product

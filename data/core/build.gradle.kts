@@ -62,4 +62,11 @@ dependencies {
 
     // Retrofit
     implementation(libs.bundles.retrofit)
+
+    // Tests
+    testImplementation(libs.junit)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.inline)
+    androidTestImplementation(libs.mockito.android)
+    androidTestImplementation(libs.androidx.junit)
 }
