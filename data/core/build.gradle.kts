@@ -16,6 +16,7 @@ android {
         consumerProguardFiles(
             "retrofit2-consumer-rules.pro",
             "room-consumer-rules.pro",
+            "protobuf-consumer-rules.pro",
         )
     }
 
