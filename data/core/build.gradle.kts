@@ -12,7 +12,11 @@ android {
         minSdk = libs.versions.minSdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
+
+        consumerProguardFiles(
+            "retrofit2-consumer-rules.pro",
+            "room-consumer-rules.pro",
+        )
     }
 
     buildFeatures {
@@ -31,10 +35,6 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
         }
     }
 
