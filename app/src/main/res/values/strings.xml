@@ -1,19 +1,5 @@
 <resources>
     <string name="app_name">Clevent</string>
-
-    <string name="receipt_available_balance">Available balance</string>
-    <string name="receipt_share_button">Share</string>
-    <string name="receipt_qrcode_button">QR code</string>
-    <string name="receipt_qrcode_modal_title">Receipt</string>
-    <string name="receipt_qrcode_modal_description">Scan the QR Code below to get your Receipt</string>
-    <string name="receipt_qrcode_modal_close">Close</string>
-    <string name="receipt_transaction_list_title">Transaction History</string>
-    <string name="receipt_transaction_list_total">Total</string>
-
-    <string name="receipt_string_title">Receipt</string>
-    <string name="receipt_string_available_balance">Available balance: </string>
-    <string name="receipt_string_total">Total: </string>
-
     <string name="recharge_confirm_button">Recharge</string>
     <string name="recharge_confirm_title">Confirm your Recharge</string>
     <string name="recharge_confirm_description">You\'re about to make a recharge of %s</string>

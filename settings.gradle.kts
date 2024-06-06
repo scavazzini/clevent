@@ -26,4 +26,7 @@ include(
 
     ":ui:settings",
     ":domain:settings",
+
+    ":ui:receipt",
+    ":domain:receipt",
 )

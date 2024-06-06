@@ -35,7 +35,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.core.model.CurrencyValue
 import dev.scavazzini.clevent.data.core.model.Customer
 import dev.scavazzini.clevent.data.core.model.Product

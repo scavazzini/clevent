@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.data.core.model.CurrencyValue
 import dev.scavazzini.clevent.data.core.model.Customer
 import dev.scavazzini.clevent.data.core.model.EMPTY_CUSTOMER
