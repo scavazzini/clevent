@@ -29,7 +29,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import dev.scavazzini.clevent.R
 import dev.scavazzini.clevent.ui.core.OnNewIntentHandler
 import dev.scavazzini.clevent.ui.core.components.NfcModalBottomSheet
 import dev.scavazzini.clevent.ui.core.theme.CleventTheme

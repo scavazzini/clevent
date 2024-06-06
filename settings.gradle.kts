@@ -23,4 +23,7 @@ include(
     ":data:core",
 
     ":ui:order",
+
+    ":ui:settings",
+    ":domain:settings",
 )

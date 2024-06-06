@@ -1,0 +1,14 @@
+<resources>
+    <string name="settings_products_header">Products</string>
+    <string name="settings_sync_now_button">Sync now</string>
+    <string name="settings_last_sync">Last sync: %s</string>
+    <string name="settings_last_sync_loading">Syncing…</string>
+    <string name="settings_last_sync_error">Failed to sync</string>
+    <string name="settings_tags_header">Tags</string>
+    <string name="settings_erase_tag_title">Erase an NFC tag</string>
+    <string name="settings_erase_tag_description">Erase the content of an NFC tag for a new use</string>
+    <string name="settings_erase_tag_modal_success_title">Tag erased</string>
+    <string name="settings_erase_tag_modal_success_description">The NFC tag was successfully erased</string>
+    <string name="settings_erase_tag_modal_error_title">Erase failed</string>
+    <string name="settings_erase_tag_modal_error_description">Erase failed. Please, try again</string>
+</resources>
