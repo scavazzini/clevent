@@ -8,16 +8,13 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import dagger.hilt.android.HiltAndroidApp
+import dev.scavazzini.clevent.data.core.workers.SyncProductsWorker
+import dev.scavazzini.clevent.data.core.workers.SyncProductsWorker.Companion.SYNC_PRODUCTS_WORK_NAME
 import dev.scavazzini.clevent.sync.CleventWorkerFactory
-import dev.scavazzini.clevent.sync.SyncProductsWorker
 import javax.inject.Inject
 
 @HiltAndroidApp
 class CleventApplication : Application(), Configuration.Provider {
-
-    companion object {
-        private const val SYNC_PRODUCTS_WORK = "SyncProductsWork"
-    }
 
     @Inject
     lateinit var workerFactory: CleventWorkerFactory
@@ -43,8 +40,8 @@ class CleventApplication : Application(), Configuration.Provider {
 
         WorkManager.getInstance(this)
             .enqueueUniqueWork(
-                SYNC_PRODUCTS_WORK,
-                ExistingWorkPolicy.REPLACE,
+                SYNC_PRODUCTS_WORK_NAME,
+                ExistingWorkPolicy.KEEP,
                 syncProductsRequest,
             )
     }

@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.sync
+package dev.scavazzini.clevent.data.core.workers
 
 import android.content.Context
 import androidx.hilt.work.HiltWorker
@@ -16,6 +16,10 @@ class SyncProductsWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     @Assisted private val productRepository: ProductRepository,
 ) : CoroutineWorker(context, workerParams) {
+
+    companion object {
+        const val SYNC_PRODUCTS_WORK_NAME = "SyncProductsWork"
+    }
 
     override suspend fun doWork(): Result {
         return withContext(Dispatchers.IO) {

@@ -48,9 +48,14 @@ dependencies {
     // Preferences
     implementation(libs.androidx.preference.ktx)
 
+    // WorkManager
+    implementation(libs.workManager)
+
     // Hilt
     implementation(libs.hilt.android)
+    implementation(libs.hilt.common)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.hilt.workManager)
     kapt(libs.hilt.compiler)
 
     // Protobuf

@@ -5,6 +5,7 @@ import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import dev.scavazzini.clevent.data.core.repository.ProductRepository
+import dev.scavazzini.clevent.data.core.workers.SyncProductsWorker
 import javax.inject.Inject
 
 class CleventWorkerFactory @Inject constructor(
