@@ -1,19 +1,25 @@
 package dev.scavazzini.clevent.ui.settings
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Nfc
-import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
@@ -71,26 +77,21 @@ private fun SettingsScreenContent(
     }
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
         modifier = modifier,
     ) {
-        SettingsHeader(
-            icon = Icons.Filled.ShoppingCart,
-            title = stringResource(R.string.settings_products_header),
-        )
+        SettingsHeader(title = stringResource(R.string.settings_title))
         SettingsButtonText(
             title = stringResource(R.string.settings_sync_now_button),
             description = lastSyncDescription,
             loading = state.isSyncing ?: false,
+            icon = Icons.Filled.Sync,
             onClick = onSyncClick,
-        )
-        SettingsHeader(
-            icon = Icons.Filled.Nfc,
-            title = stringResource(R.string.settings_tags_header),
         )
         SettingsButtonText(
             title = stringResource(R.string.settings_erase_tag_title),
             description = stringResource(R.string.settings_erase_tag_description),
+            icon = Icons.Filled.Nfc,
             onClick = onEraseClick,
         )
     }
@@ -115,39 +116,29 @@ private fun SettingsScreenContent(
 }
 
 @Composable
-fun SettingsHeader(
-    icon: ImageVector,
+private fun SettingsHeader(
     title: String,
+    modifier: Modifier = Modifier,
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.padding(top = 16.dp)
-    ) {
-        Icon(
-            imageVector = icon,
-            tint = MaterialTheme.colorScheme.secondary,
-            contentDescription = null,
-        )
-        Text(
-            text = title,
-            color = MaterialTheme.colorScheme.secondary,
-            style = MaterialTheme.typography.titleLarge,
-        )
-    }
+    Text(
+        text = title,
+        color = MaterialTheme.colorScheme.onPrimaryContainer,
+        style = MaterialTheme.typography.headlineLarge,
+        modifier = modifier.padding(top = 16.dp),
+    )
 }
 
 @Composable
-fun SettingsButtonText(
+private fun SettingsButtonText(
     title: String,
     description: String? = null,
     loading: Boolean = false,
+    icon: ImageVector,
     onClick: () -> Unit,
 ) {
     Surface(
         color = Color.Transparent,
         modifier = Modifier
-            .padding(8.dp)
             .fillMaxWidth()
             .clickable(
                 enabled = !loading,
@@ -155,26 +146,70 @@ fun SettingsButtonText(
                 onClick = onClick,
             ),
     ) {
-        Column(Modifier.animateContentSize()) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            SettingsButtonIcon(
+                icon = icon,
+                loading = loading,
             )
-            if (loading) {
-                LinearProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                )
-            }
-            description?.let {
+            Spacer(modifier = Modifier.width(8.dp))
+            Column(Modifier.animateContentSize()) {
                 Text(
-                    text = it,
-                    style = TextStyle(color = Color.Gray),
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge,
                 )
+                description?.let {
+                    Text(
+                        text = it,
+                        style = TextStyle(color = Color.Gray),
+                    )
+                }
             }
         }
     }
+}
+
+@Composable
+private fun SettingsButtonIcon(
+    icon: ImageVector,
+    loading: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val backgroundColor = if (loading) {
+        Color.Transparent
+    } else {
+        MaterialTheme.colorScheme.tertiary
+    }
+
+    val iconColor = if (loading) {
+        MaterialTheme.colorScheme.tertiary
+    } else {
+        MaterialTheme.colorScheme.onPrimary
+    }
+
+    Box(
+        modifier = modifier.size(48.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = icon,
+            tint = iconColor,
+            contentDescription = null,
+            modifier = Modifier
+                .background(
+                    color = backgroundColor,
+                    shape = CircleShape,
+                )
+                .padding(10.dp)
+                .fillMaxSize(),
+        )
+        if (loading) {
+            CircularProgressIndicator(
+                color = MaterialTheme.colorScheme.tertiary,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
+    }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
