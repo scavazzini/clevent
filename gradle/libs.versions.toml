@@ -10,7 +10,7 @@ compose-bom-version = "2024.02.01"
 compose-compiler-version = "1.4.1"
 espresso-core-version = "3.5.1"
 hilt-version = "2.50"
-hilt-navigation-compose-version = "1.2.0"
+androidx-hilt-version = "1.2.0"
 androidx-junit-version = "1.1.5"
 junit-version = "4.13.2"
 lifecycle-viewmodel-compose-version = "2.7.0"
@@ -22,10 +22,11 @@ protobuf-version = "3.25.2"
 retrofit-version = "2.9.0"
 room-version = "2.6.1"
 zxing-version = "3.5.3"
+workManagerVersion = "2.9.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose-version" }
-androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose-version" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "androidx-hilt-version" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel-compose-version" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose-version" }
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom-version" }
@@ -46,12 +47,15 @@ retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref 
 zxing-core = { module = "com.google.zxing:core", version.ref = "zxing-version" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt-version" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt-version" }
+hilt-common = { module = "androidx.hilt:hilt-common", version.ref = "androidx-hilt-version" }
+hilt-workManager = { module = "androidx.hilt:hilt-work", version.ref = "androidx-hilt-version" }
 junit = { module = "junit:junit", version.ref = "junit-version" }
 mockito-android = { module = "org.mockito:mockito-android", version.ref = "mockito-version" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito-version" }
 mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockito-version" }
 protobuf-protoc = { module = "com.google.protobuf:protoc", version.ref = "protobuf-version" }
 protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.ref = "protobuf-version" }
+workManager = { module = "androidx.work:work-runtime-ktx", version.ref = "workManagerVersion" }
 
 [bundles]
 compose = [
