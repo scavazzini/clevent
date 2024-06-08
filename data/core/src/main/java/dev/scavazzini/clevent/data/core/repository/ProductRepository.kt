@@ -10,21 +10,21 @@ class ProductRepository @Inject constructor(
     private val localProductDataSource: LocalProductDataSource,
     private val remoteProductDataSource: RemoteProductDataSource,
 ) {
+    companion object {
+        private const val PRODUCTS_ENDPOINT = "products.json"
+    }
+
     fun getProducts() = localProductDataSource.getAll()
 
-    suspend fun sync(endpoint: String): Long? {
-        try {
-            val response = remoteProductDataSource.getProducts(endpoint)
-            val products = response.body()
+    suspend fun sync(): Long {
+        val response = remoteProductDataSource.getProducts(PRODUCTS_ENDPOINT)
+        val products = response.body()
 
-            if (response.isSuccessful && products != null) {
-                return localProductDataSource.clearAndInsert(products)
-            }
-
-        } catch (e: Exception) {
-            e.printStackTrace()
+        if (!response.isSuccessful || products == null) {
+            throw Exception("Sync failed with status code ${response.code()}")
         }
-        return null
+
+        return localProductDataSource.clearAndInsert(products)
     }
 
     fun getLastSync(): Long? {

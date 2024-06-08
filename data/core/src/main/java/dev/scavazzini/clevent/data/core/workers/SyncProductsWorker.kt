@@ -3,6 +3,7 @@ package dev.scavazzini.clevent.data.core.workers
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
+import androidx.work.Data
 import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -23,10 +24,15 @@ class SyncProductsWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         return withContext(Dispatchers.IO) {
-            productRepository.sync("products.json")
-                ?: return@withContext Result.failure()
+            try {
+                productRepository.sync()
+                Result.success()
 
-            return@withContext Result.success()
+            } catch (e: Exception) {
+                Result.failure(
+                    Data.Builder().putString("exception", e.message).build()
+                )
+            }
         }
     }
 }
