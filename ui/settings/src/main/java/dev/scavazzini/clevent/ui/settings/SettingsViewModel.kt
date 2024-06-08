@@ -1,10 +1,20 @@
 package dev.scavazzini.clevent.ui.settings
 
+import android.app.Application
 import android.content.Intent
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import androidx.work.WorkQuery
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.scavazzini.clevent.data.core.repository.ProductRepository
+import dev.scavazzini.clevent.data.core.workers.SyncProductsWorker
+import dev.scavazzini.clevent.data.core.workers.SyncProductsWorker.Companion.SYNC_PRODUCTS_WORK_NAME
 import dev.scavazzini.clevent.domain.core.FormatDateToStringUseCase
 import dev.scavazzini.clevent.domain.settings.EraseTagUseCase
 import dev.scavazzini.clevent.ui.core.components.NfcBottomSheetReadingState
@@ -19,44 +29,63 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
+    private val application: Application,
     private val productRepository: ProductRepository,
     private val eraseTagUseCase: EraseTagUseCase,
     private val formatDateToStringUseCase: FormatDateToStringUseCase,
-) : ViewModel() {
+) : AndroidViewModel(application) {
 
     private val _uiState: MutableStateFlow<SettingsUiState> = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState
 
+    private val syncProductsWorkInfoFlow = WorkManager.getInstance(application).getWorkInfosFlow(
+        WorkQuery.fromUniqueWorkNames(SYNC_PRODUCTS_WORK_NAME)
+    )
+
     init {
         viewModelScope.launch {
-            _uiState.update {
-                _uiState.value.copy(
-                    lastSync = R.string.settings_last_sync,
-                    lastSyncArgs = listOf(productRepository.getLastSync().parse()),
-                )
+            syncProductsWorkInfoFlow.collect { workInfoList ->
+                val workState = workInfoList.getOrNull(0)?.state ?: return@collect
+
+                _uiState.update { _uiState.value.copy(isSyncing = !workState.isFinished) }
+
+                when (workState) {
+                    WorkInfo.State.ENQUEUED, WorkInfo.State.RUNNING -> _uiState.update {
+                        _uiState.value.copy(lastSync = R.string.settings_last_sync_loading)
+                    }
+
+                    WorkInfo.State.FAILED -> _uiState.update {
+                        _uiState.value.copy(lastSync = R.string.settings_last_sync_error)
+                    }
+
+                    else -> _uiState.update {
+                        val lastSync = productRepository.getLastSync().parse()
+
+                        _uiState.value.copy(
+                            lastSync = R.string.settings_last_sync,
+                            lastSyncArgs = listOf(lastSync),
+                        )
+                    }
+                }
             }
         }
     }
 
     fun sync() = viewModelScope.launch(Dispatchers.IO) {
-        _uiState.update {
-            _uiState.value.copy(lastSync = R.string.settings_last_sync_loading)
-        }
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
 
-        productRepository.sync("products.json").also { syncedIn ->
-            if (syncedIn == null) {
-                return@launch _uiState.update {
-                    _uiState.value.copy(lastSync = R.string.settings_last_sync_error)
-                }
-            }
+        val syncProductsRequest = OneTimeWorkRequest.Builder(SyncProductsWorker::class.java)
+            .setConstraints(constraints)
+            .build()
 
-            _uiState.update {
-                _uiState.value.copy(
-                    lastSync = R.string.settings_last_sync,
-                    lastSyncArgs = listOf(syncedIn.parse()),
-                )
-            }
-        }
+        WorkManager.getInstance(application)
+            .enqueueUniqueWork(
+                SYNC_PRODUCTS_WORK_NAME,
+                ExistingWorkPolicy.KEEP,
+                syncProductsRequest,
+            )
     }
 
     fun onEraseTagClick() {
@@ -123,6 +152,7 @@ class SettingsViewModel @Inject constructor(
         val descriptionArgs: List<String> = emptyList(),
         val lastSync: Int? = null,
         val lastSyncArgs: List<String> = emptyList(),
+        val isSyncing: Boolean? = false,
     ) {
         fun isReadyToErase(): Boolean {
             return sheetState == NfcBottomSheetReadingState.WAITING && showSheet

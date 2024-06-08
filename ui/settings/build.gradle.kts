@@ -49,6 +49,9 @@ dependencies {
     implementation(project(":ui:core"))
     implementation(project(":domain:settings"))
 
+    // WorkManager
+    implementation(libs.workManager)
+
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
@@ -59,6 +62,8 @@ dependencies {
 
     // Hilt
     implementation(libs.hilt.android)
+    implementation(libs.hilt.common)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.hilt.workManager)
     kapt(libs.hilt.compiler)
 }

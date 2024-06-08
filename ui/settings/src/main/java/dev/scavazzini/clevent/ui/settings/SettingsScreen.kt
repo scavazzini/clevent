@@ -1,5 +1,6 @@
 package dev.scavazzini.clevent.ui.settings
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.material.icons.filled.Nfc
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
@@ -79,6 +81,7 @@ private fun SettingsScreenContent(
         SettingsButtonText(
             title = stringResource(R.string.settings_sync_now_button),
             description = lastSyncDescription,
+            loading = state.isSyncing ?: false,
             onClick = onSyncClick,
         )
         SettingsHeader(
@@ -138,6 +141,7 @@ fun SettingsHeader(
 fun SettingsButtonText(
     title: String,
     description: String? = null,
+    loading: Boolean = false,
     onClick: () -> Unit,
 ) {
     Surface(
@@ -146,15 +150,23 @@ fun SettingsButtonText(
             .padding(8.dp)
             .fillMaxWidth()
             .clickable(
+                enabled = !loading,
                 role = Role.Button,
                 onClick = onClick,
             ),
     ) {
-        Column {
+        Column(Modifier.animateContentSize()) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyLarge,
             )
+            if (loading) {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                )
+            }
             description?.let {
                 Text(
                     text = it,
