@@ -1,18 +1,23 @@
 package dev.scavazzini.clevent.ui.receipt
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Nfc
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -116,7 +121,7 @@ private fun ReceiptHeader(
         modifier = modifier.padding(vertical = 24.dp),
     ) {
         ReceiptBalanceText(
-            value = CurrencyValue(state.customer.balance),
+            value = CurrencyValue(state.customer?.balance ?: 0),
         )
         Text(
             text = stringResource(R.string.receipt_available_balance),
@@ -165,12 +170,30 @@ fun ReceiptBalanceText(
 
 @Composable
 private fun ReceiptList(
+    customer: Customer?,
+    modifier: Modifier = Modifier,
+) {
+    Crossfade(
+        targetState = customer,
+        label = "ReceiptListFade",
+        modifier = modifier.padding(16.dp),
+    ) {
+        if (it != null) {
+            ProductsList(it)
+        } else {
+            ProductsEmptyList()
+        }
+    }
+}
+
+@Composable
+private fun ProductsList(
     customer: Customer,
     modifier: Modifier = Modifier,
 ) {
     val products = remember(customer.products) { customer.products.entries.toList() }
 
-    Column(modifier.padding(16.dp)) {
+    Column(modifier = modifier.fillMaxSize()) {
         Text(
             text = stringResource(R.string.receipt_transaction_list_title),
             style = MaterialTheme.typography.titleMedium,
@@ -204,6 +227,30 @@ private fun ReceiptList(
                 style = MaterialTheme.typography.titleMedium,
             )
         }
+    }
+}
+
+@Composable
+fun ProductsEmptyList(
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.fillMaxSize(),
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Nfc,
+            contentDescription = null,
+            tint = Color.LightGray,
+            modifier = Modifier.size(120.dp),
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(id = R.string.receipt_empty_state_instructions),
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.Gray,
+        )
     }
 }
 
@@ -260,6 +307,18 @@ private fun ReceiptScreenContentPreview() {
     CleventTheme {
         ReceiptScreenContent(
             state = ReceiptViewModel.ReceiptUiState(customer = customer),
+            onShareButtonTapped = { },
+            onQrCodeButtonTapped = { },
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ReceiptScreenEmptyContentPreview() {
+    CleventTheme {
+        ReceiptScreenContent(
+            state = ReceiptViewModel.ReceiptUiState(customer = null),
             onShareButtonTapped = { },
             onQrCodeButtonTapped = { },
         )

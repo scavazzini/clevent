@@ -5,6 +5,7 @@
     <string name="receipt_qrcode_modal_title">Receipt</string>
     <string name="receipt_qrcode_modal_description">Scan the QR Code below to get your Receipt</string>
     <string name="receipt_qrcode_modal_close">Close</string>
+    <string name="receipt_empty_state_instructions">Scan an NFC tag to load its Receipt</string>
     <string name="receipt_transaction_list_title">Transaction History</string>
     <string name="receipt_transaction_list_total">Total</string>
 

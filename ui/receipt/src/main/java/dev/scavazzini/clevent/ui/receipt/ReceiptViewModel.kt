@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.scavazzini.clevent.data.core.model.CurrencyValue
 import dev.scavazzini.clevent.data.core.model.Customer
-import dev.scavazzini.clevent.data.core.model.EMPTY_CUSTOMER
 import dev.scavazzini.clevent.data.core.model.Product
 import dev.scavazzini.clevent.data.core.repository.ProductRepository
 import dev.scavazzini.clevent.domain.core.FormatDateToStringUseCase
@@ -76,7 +75,7 @@ class ReceiptViewModel @Inject constructor(
 
             _uiState.update {
                 it.copy(
-                    customer = EMPTY_CUSTOMER,
+                    customer = null,
                     qrCode = null,
                     showQrCodeSheet = false,
                     qrCodeButtonState = PrimaryButtonState.DISABLED,
@@ -89,6 +88,8 @@ class ReceiptViewModel @Inject constructor(
     }
 
     fun showQrCode(size: Int) = viewModelScope.launch {
+        val customer = uiState.value.customer ?: return@launch
+
         _uiState.update {
             it.copy(qrCodeButtonState = PrimaryButtonState.LOADING)
         }
@@ -103,7 +104,7 @@ class ReceiptViewModel @Inject constructor(
         }
 
         val qrCode = generateQrCodeBitmapUseCase(
-            content = uiState.value.customer.toReceiptString(),
+            content = customer.toReceiptString(),
             width = size,
             height = size,
         )
@@ -146,7 +147,7 @@ class ReceiptViewModel @Inject constructor(
     }
 
     data class ReceiptUiState(
-        val customer: Customer = EMPTY_CUSTOMER,
+        val customer: Customer? = null,
         val qrCode: Bitmap? = null,
         val showQrCodeSheet: Boolean = false,
         val qrCodeButtonState: PrimaryButtonState = PrimaryButtonState.DISABLED,
