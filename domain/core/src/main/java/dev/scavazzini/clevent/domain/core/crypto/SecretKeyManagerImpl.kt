@@ -1,88 +1,112 @@
 package dev.scavazzini.clevent.domain.core.crypto
 
-import android.security.keystore.KeyGenParameterSpec
-import android.security.keystore.KeyInfo
-import android.security.keystore.KeyProperties
-import java.security.KeyStore
-import java.security.KeyStore.SecretKeyEntry
+import android.content.SharedPreferences
+import android.util.Base64
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.security.MessageDigest
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
-import javax.crypto.SecretKeyFactory
+import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
-class SecretKeyManagerImpl @Inject constructor() : SecretKeyManager {
+
+class SecretKeyManagerImpl @Inject constructor(
+    private val masterKeyManager: MasterKeyManager,
+    private val encryptor: SymmetricEncryptor,
+    private val preferences: SharedPreferences,
+) : SecretKeyManager {
 
     companion object {
-        private const val KEYSTORE_PROVIDER = "AndroidKeyStore"
-        private const val KEY_ALIAS = "CleventKey"
+        private const val KEY_ALIAS = "CleventSecretKey"
+        private const val KEY_IV = "CleventSecretKeyIv"
     }
 
-    override suspend fun getKey(): SecretKey? = suspendCoroutine { continuation ->
-        try {
-            val keyStore = loadKeyStore()
-            val secretKeyEntry = keyStore.getEntry(KEY_ALIAS, null) as SecretKeyEntry
-            continuation.resume(secretKeyEntry.secretKey)
-        } catch (e: Exception) {
-            continuation.resumeWithException(e)
-        }
+    override suspend fun getKey(): SecretKey? {
+        val encryptedSecretKeyBytes = getBytesFromSharedPreferences(KEY_ALIAS) ?: return null
+        val encryptedSecretKeyIvBytes = getBytesFromSharedPreferences(KEY_IV) ?: return null
+        val masterKey = masterKeyManager.getKey() ?: return null
+
+        val secretKeyBytes = encryptor.decrypt(
+            data = encryptedSecretKeyBytes,
+            iv = encryptedSecretKeyIvBytes,
+            key = masterKey,
+        )
+
+        return SecretKeySpec(secretKeyBytes, "AES")
     }
 
-    private fun loadKeyStore(): KeyStore {
-        return KeyStore.getInstance(KEYSTORE_PROVIDER).apply {
-            load(null)
-        }
+    private fun getBytesFromSharedPreferences(key: String): ByteArray? {
+        return preferences.getString(key, null)
+            ?.decodeFromBase64()
+            ?: return null
     }
 
-    override suspend fun getKeyInfo(
-        secretKey: SecretKey,
-    ): KeyInfo? = suspendCoroutine { continuation ->
-        try {
-            val factory = SecretKeyFactory.getInstance(secretKey.algorithm, KEYSTORE_PROVIDER)
-            val keyInfo = factory.getKeySpec(secretKey, KeyInfo::class.java) as KeyInfo
+    private fun String.decodeFromBase64(): ByteArray {
+        return Base64.decode(this, Base64.NO_WRAP)
+    }
 
-            continuation.resume(keyInfo)
-        } catch (e: Exception) {
-            continuation.resumeWithException(e)
+    override suspend fun getKeyInfo(): KeyInfo? {
+        val secretKey = getKey() ?: return null
+
+        val secretKeyHash = MessageDigest.getInstance("SHA-1").run {
+            update(secretKey.encoded, 0, secretKey.encoded.size)
+            digest().toHex()
         }
+
+        return KeyInfo(
+            id = secretKeyHash.take(10),
+            algorithm = secretKey.algorithm,
+            size = secretKey.encoded.size * 8,
+        )
+    }
+
+    private fun ByteArray.toHex(): String {
+        return joinToString(separator = "") { byte -> "%02x".format(byte) }
     }
 
     override suspend fun createKey(
         size: Int,
         algorithm: String,
-        blockMode: String,
-        encryptionPaddings: String,
-        requireUserAuthentication: Boolean,
-    ): SecretKey = suspendCoroutine { continuation ->
-        try {
-            val keyGenerator = KeyGenerator.getInstance(algorithm, KEYSTORE_PROVIDER)
+    ): SecretKey {
+        val keyGenerator = KeyGenerator.getInstance(algorithm).apply { init(size) }
 
-            val keyGenParameterSpec = KeyGenParameterSpec.Builder(
-                /* keystoreAlias = */ KEY_ALIAS,
-                /* purposes = */ KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT,
-            ).run {
-                setKeySize(size)
-                setBlockModes(blockMode)
-                setEncryptionPaddings(encryptionPaddings)
-                setUserAuthenticationRequired(requireUserAuthentication)
-                build()
-            }
-
-            keyGenerator.init(keyGenParameterSpec)
-            continuation.resume(keyGenerator.generateKey())
-        } catch (e: Exception) {
-            continuation.resumeWithException(e)
+        return keyGenerator.generateKey().also {
+            persistSecretKey(it)
         }
     }
 
-    override suspend fun clearKey() = suspendCoroutine { continuation ->
-        try {
-            loadKeyStore().apply { this.deleteEntry(KEY_ALIAS) }
-            continuation.resume(Unit)
-        } catch (e: Exception) {
-            continuation.resumeWithException(e)
+    private suspend fun persistSecretKey(key: SecretKey) {
+        val masterKey = masterKeyManager.createKey()
+        val encryptedSecretKey = encryptor.encrypt(key.encoded, masterKey)
+
+        withContext(Dispatchers.IO) {
+            with(preferences.edit()) {
+                putString(KEY_ALIAS, encryptedSecretKey.cipherData.toBase64())
+                putString(KEY_IV, encryptedSecretKey.iv?.toBase64())
+                commit()
+            }
+        }
+    }
+
+    private fun ByteArray.toBase64(): String {
+        return Base64.encodeToString(this, Base64.NO_WRAP)
+    }
+
+    override suspend fun importKey(content: ByteArray): SecretKey {
+        return SecretKeySpec(content, "AES").also {
+            persistSecretKey(it)
+        }
+    }
+
+    override suspend fun clearKey() {
+        withContext(Dispatchers.IO) {
+            with(preferences.edit()) {
+                remove(KEY_ALIAS)
+                remove(KEY_IV)
+                commit()
+            }
+            masterKeyManager.clearKey()
         }
     }
 }
