@@ -1,0 +1,7 @@
+syntax = "proto3";
+option java_package = "dev.scavazzini.clevent";
+
+message EncryptedCustomer {
+  bytes data = 1;
+  bytes iv = 2;
+}
