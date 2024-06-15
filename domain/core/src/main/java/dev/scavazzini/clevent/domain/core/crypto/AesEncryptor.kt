@@ -3,21 +3,18 @@ package dev.scavazzini.clevent.domain.core.crypto
 import dev.scavazzini.clevent.domain.core.crypto.exception.DecryptionException
 import dev.scavazzini.clevent.domain.core.crypto.exception.EncryptionException
 import javax.crypto.Cipher
+import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
 import javax.inject.Inject
 
-class AesEncryptor @Inject constructor(
-    private val secretKeyManager: SecretKeyManager,
-) : SymmetricEncryptor {
+class AesEncryptor @Inject constructor() : SymmetricEncryptor {
 
     @Throws(EncryptionException::class)
     override suspend fun encrypt(
         data: ByteArray,
+        key: SecretKey,
         cipherTransformation: String,
     ): EncryptedPayload {
-        val key = secretKeyManager.getKey()
-            ?: throw EncryptionException("No Secret Key available to encrypt data")
-
         val cipher = Cipher.getInstance(cipherTransformation).apply {
             init(Cipher.ENCRYPT_MODE, key)
         }
@@ -32,11 +29,9 @@ class AesEncryptor @Inject constructor(
     override suspend fun decrypt(
         data: ByteArray,
         iv: ByteArray?,
+        key: SecretKey,
         cipherTransformation: String,
     ): ByteArray {
-        val key = secretKeyManager.getKey()
-            ?: throw DecryptionException("No Secret Key available to decrypt data")
-
         val cipher = Cipher.getInstance(cipherTransformation).apply {
             val params = if (iv != null) IvParameterSpec(iv) else null
             init(Cipher.DECRYPT_MODE, key, params)
