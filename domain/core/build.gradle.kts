@@ -55,6 +55,9 @@ android {
 dependencies {
     implementation(project(":data:core"))
 
+    // Preferences
+    implementation(libs.androidx.preference.ktx)
+
     // Protobuf
     implementation(libs.protobuf.javalite)
 
