@@ -4,8 +4,10 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import dev.scavazzini.clevent.domain.core.crypto.Encryptor
-import dev.scavazzini.clevent.domain.core.crypto.FakeEncryptor
+import dev.scavazzini.clevent.domain.core.crypto.AesEncryptor
+import dev.scavazzini.clevent.domain.core.crypto.SecretKeyManager
+import dev.scavazzini.clevent.domain.core.crypto.SecretKeyManagerImpl
+import dev.scavazzini.clevent.domain.core.crypto.SymmetricEncryptor
 import dev.scavazzini.clevent.domain.core.serializer.CustomerProtobufSerializer
 import dev.scavazzini.clevent.domain.core.serializer.CustomerSerializer
 import javax.inject.Singleton
@@ -15,7 +17,11 @@ import javax.inject.Singleton
 abstract class CoreDomainModule {
     @Singleton
     @Binds
-    abstract fun bindEncryptor(encryptor: FakeEncryptor): Encryptor
+    abstract fun bindEncryptor(encryptor: AesEncryptor): SymmetricEncryptor
+
+    @Singleton
+    @Binds
+    abstract fun bindSecretKeyManager(secretKeyManagerImpl: SecretKeyManagerImpl): SecretKeyManager
 
     @Singleton
     @Binds

@@ -44,7 +44,7 @@ class ReceiptViewModel @Inject constructor(
         }
     }
 
-    fun onNfcTagRead(intent: Intent) {
+    fun onNfcTagRead(intent: Intent) = viewModelScope.launch {
         try {
             val customer = readCustomerFromTagUseCase(intent)
 
