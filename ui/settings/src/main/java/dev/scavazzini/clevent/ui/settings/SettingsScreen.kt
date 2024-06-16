@@ -6,6 +6,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,8 +18,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Nfc
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -24,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -34,9 +42,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.scavazzini.clevent.domain.core.crypto.KeyInfo
 import dev.scavazzini.clevent.ui.core.OnNewIntentHandler
 import dev.scavazzini.clevent.ui.core.components.NfcModalBottomSheet
 import dev.scavazzini.clevent.ui.core.theme.CleventTheme
@@ -56,13 +68,15 @@ fun SettingsScreen(
         onSyncClick = viewModel::sync,
         onEraseClick = viewModel::onEraseTagClick,
         onDismiss = viewModel::onCancelErase,
+        onGenerateSecretKeyClick = viewModel::generateSecretKey,
+        onDeleteSecretKeyClick = viewModel::deleteSecretKey,
         modifier = modifier
             .padding(16.dp)
             .fillMaxSize(),
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun SettingsScreenContent(
     state: SettingsViewModel.SettingsUiState,
@@ -70,6 +84,8 @@ private fun SettingsScreenContent(
     onSyncClick: () -> Unit = { },
     onEraseClick: () -> Unit = { },
     onDismiss: () -> Unit = { },
+    onGenerateSecretKeyClick: () -> Unit = { },
+    onDeleteSecretKeyClick: () -> Unit = { },
     sheetState: SheetState = rememberModalBottomSheetState(),
 ) {
     val lastSyncDescription = state.lastSync?.let { lastSyncRes ->
@@ -83,15 +99,39 @@ private fun SettingsScreenContent(
         SettingsHeader(title = stringResource(R.string.settings_title))
         SettingsButtonText(
             title = stringResource(R.string.settings_sync_now_button),
-            description = lastSyncDescription,
+            description = if (lastSyncDescription != null) AnnotatedString(lastSyncDescription) else null,
             loading = state.isSyncing ?: false,
             icon = Icons.Filled.Sync,
+            clickable = state.isSyncing != true,
             onClick = onSyncClick,
         )
         SettingsButtonText(
+            title = stringResource(R.string.settings_secret_key_title),
+            description = state.secretKeyInfo.toAnnotatedString(),
+            clickable = false,
+            icon = Icons.Filled.Security,
+        ) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                if (state.secretKeyInfo == null) {
+                    IconTextButton(
+                        text = stringResource(R.string.settings_secret_key_generate_button),
+                        icon = Icons.Filled.Add,
+                        onClick = onGenerateSecretKeyClick,
+                    )
+                } else {
+                    IconTextButton(
+                        text = stringResource(R.string.settings_secret_key_delete_button),
+                        icon = Icons.Filled.Delete,
+                        onClick = onDeleteSecretKeyClick,
+                    )
+                }
+            }
+        }
+        SettingsButtonText(
             title = stringResource(R.string.settings_erase_tag_title),
-            description = stringResource(R.string.settings_erase_tag_description),
+            description = AnnotatedString(stringResource(R.string.settings_erase_tag_description)),
             icon = Icons.Filled.Nfc,
+            clickable = true,
             onClick = onEraseClick,
         )
     }
@@ -116,6 +156,41 @@ private fun SettingsScreenContent(
 }
 
 @Composable
+private fun KeyInfo?.toAnnotatedString(): AnnotatedString {
+    if (this == null) {
+        return AnnotatedString(
+            text = stringResource(R.string.settings_secret_key_not_set),
+            spanStyle = SpanStyle(
+                color = MaterialTheme.colorScheme.error,
+                fontWeight = FontWeight.Bold,
+            ),
+        )
+    }
+
+    return AnnotatedString(stringResource(R.string.settings_secret_key_info, algorithm, id, size))
+}
+
+@Composable
+private fun IconTextButton(
+    text: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    TextButton(
+        contentPadding = PaddingValues(),
+        onClick = onClick,
+        modifier = modifier,
+        colors = ButtonDefaults.textButtonColors(
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        ),
+    ) {
+        Icon(imageVector = icon, contentDescription = null)
+        Text(text)
+    }
+}
+
+@Composable
 private fun SettingsHeader(
     title: String,
     modifier: Modifier = Modifier,
@@ -131,22 +206,27 @@ private fun SettingsHeader(
 @Composable
 private fun SettingsButtonText(
     title: String,
-    description: String? = null,
+    description: AnnotatedString? = null,
     loading: Boolean = false,
     icon: ImageVector,
-    onClick: () -> Unit,
+    clickable: Boolean,
+    onClick: (() -> Unit)? = {},
+    footerContent: @Composable () -> Unit = {},
 ) {
     Surface(
         color = Color.Transparent,
         modifier = Modifier
             .fillMaxWidth()
             .clickable(
-                enabled = !loading,
+                enabled = clickable,
                 role = Role.Button,
-                onClick = onClick,
+                onClick = { onClick?.invoke() },
             ),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(vertical = 8.dp),
+        ) {
             SettingsButtonIcon(
                 icon = icon,
                 loading = loading,
@@ -163,6 +243,7 @@ private fun SettingsButtonText(
                         style = TextStyle(color = Color.Gray),
                     )
                 }
+                footerContent()
             }
         }
     }

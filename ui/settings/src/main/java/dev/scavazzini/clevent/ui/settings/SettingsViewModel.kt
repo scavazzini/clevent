@@ -16,7 +16,11 @@ import dev.scavazzini.clevent.data.core.repository.ProductRepository
 import dev.scavazzini.clevent.data.core.workers.SyncProductsWorker
 import dev.scavazzini.clevent.data.core.workers.SyncProductsWorker.Companion.SYNC_PRODUCTS_WORK_NAME
 import dev.scavazzini.clevent.domain.core.FormatDateToStringUseCase
+import dev.scavazzini.clevent.domain.core.crypto.KeyInfo
+import dev.scavazzini.clevent.domain.settings.CreateSecretKeyUseCase
+import dev.scavazzini.clevent.domain.settings.DeleteSecretKeyUseCase
 import dev.scavazzini.clevent.domain.settings.EraseTagUseCase
+import dev.scavazzini.clevent.domain.settings.GetSecretKeyInfoUseCase
 import dev.scavazzini.clevent.ui.core.components.NfcBottomSheetReadingState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -33,6 +37,9 @@ class SettingsViewModel @Inject constructor(
     private val productRepository: ProductRepository,
     private val eraseTagUseCase: EraseTagUseCase,
     private val formatDateToStringUseCase: FormatDateToStringUseCase,
+    private val getSecretKeyInfoUseCase: GetSecretKeyInfoUseCase,
+    private val createSecretKeyUseCase: CreateSecretKeyUseCase,
+    private val deleteSecretKeyUseCase: DeleteSecretKeyUseCase,
 ) : AndroidViewModel(application) {
 
     private val _uiState: MutableStateFlow<SettingsUiState> = MutableStateFlow(SettingsUiState())
@@ -44,6 +51,8 @@ class SettingsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            updateSecretKeyInfoUiState()
+
             syncProductsWorkInfoFlow.collect { workInfoList ->
                 val workState = workInfoList.getOrNull(0)?.state ?: return@collect
 
@@ -71,6 +80,17 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    private suspend fun updateSecretKeyInfoUiState() {
+        try {
+            _uiState.update {
+                _uiState.value.copy(secretKeyInfo = getSecretKeyInfoUseCase())
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _uiState.update { _uiState.value.copy(secretKeyInfo = null) }
+        }
+    }
+
     fun sync() = viewModelScope.launch(Dispatchers.IO) {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -86,6 +106,24 @@ class SettingsViewModel @Inject constructor(
                 ExistingWorkPolicy.KEEP,
                 syncProductsRequest,
             )
+    }
+
+    fun generateSecretKey() = viewModelScope.launch {
+        try {
+            createSecretKeyUseCase()
+            updateSecretKeyInfoUiState()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun deleteSecretKey() = viewModelScope.launch {
+        try {
+            deleteSecretKeyUseCase()
+            updateSecretKeyInfoUiState()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     fun onEraseTagClick() {
@@ -153,6 +191,7 @@ class SettingsViewModel @Inject constructor(
         val lastSync: Int? = null,
         val lastSyncArgs: List<String> = emptyList(),
         val isSyncing: Boolean? = false,
+        val secretKeyInfo: KeyInfo? = null,
     ) {
         fun isReadyToErase(): Boolean {
             return sheetState == NfcBottomSheetReadingState.WAITING && showSheet
