@@ -94,6 +94,10 @@ class SecretKeyManagerImpl @Inject constructor(
     }
 
     override suspend fun importKey(content: ByteArray): SecretKey {
+        if (content.size !in arrayOf(16, 24, 32)) {
+            throw IllegalArgumentException("Key should have a length of 128, 192 or 256 bits")
+        }
+
         return SecretKeySpec(content, "AES").also {
             persistSecretKey(it)
         }
