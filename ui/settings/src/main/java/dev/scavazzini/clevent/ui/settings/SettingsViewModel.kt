@@ -2,6 +2,7 @@ package dev.scavazzini.clevent.ui.settings
 
 import android.app.Application
 import android.content.Intent
+import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.Constraints
@@ -19,8 +20,10 @@ import dev.scavazzini.clevent.domain.core.FormatDateToStringUseCase
 import dev.scavazzini.clevent.domain.core.crypto.KeyInfo
 import dev.scavazzini.clevent.domain.settings.CreateSecretKeyUseCase
 import dev.scavazzini.clevent.domain.settings.DeleteSecretKeyUseCase
+import dev.scavazzini.clevent.domain.settings.DownloadSecretKeyUseCase
 import dev.scavazzini.clevent.domain.settings.EraseTagUseCase
 import dev.scavazzini.clevent.domain.settings.GetSecretKeyInfoUseCase
+import dev.scavazzini.clevent.domain.settings.ImportSecretKeyUseCase
 import dev.scavazzini.clevent.ui.core.components.NfcBottomSheetReadingState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -28,6 +31,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Date
 import javax.inject.Inject
 
@@ -39,6 +43,8 @@ class SettingsViewModel @Inject constructor(
     private val formatDateToStringUseCase: FormatDateToStringUseCase,
     private val getSecretKeyInfoUseCase: GetSecretKeyInfoUseCase,
     private val createSecretKeyUseCase: CreateSecretKeyUseCase,
+    private val importSecretKeyUseCase: ImportSecretKeyUseCase,
+    private val downloadSecretKeyUseCase: DownloadSecretKeyUseCase,
     private val deleteSecretKeyUseCase: DeleteSecretKeyUseCase,
 ) : AndroidViewModel(application) {
 
@@ -114,6 +120,37 @@ class SettingsViewModel @Inject constructor(
             updateSecretKeyInfoUiState()
         } catch (e: Exception) {
             e.printStackTrace()
+        }
+    }
+
+    fun importSecretKey(uri: Uri) = viewModelScope.launch {
+        withContext(Dispatchers.IO) {
+            try {
+                application.contentResolver.openInputStream(uri).use {
+                    val fileBytes = it?.readBytes()
+                        ?: throw Exception("File bytes could not be read.")
+
+                    importSecretKeyUseCase(fileBytes)
+                    updateSecretKeyInfoUiState()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun downloadSecretKey(uri: Uri) = viewModelScope.launch {
+        withContext(Dispatchers.IO) {
+            try {
+                val keyBytes = downloadSecretKeyUseCase()?.encoded
+                    ?: throw Exception("Secret key bytes could not be read.")
+
+                application.contentResolver.openOutputStream(uri).use {
+                    it?.write(keyBytes)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 

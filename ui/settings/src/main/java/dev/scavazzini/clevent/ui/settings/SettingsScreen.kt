@@ -1,5 +1,8 @@
 package dev.scavazzini.clevent.ui.settings
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
+import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,6 +23,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.FileDownload
+import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.Nfc
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Sync
@@ -61,6 +66,16 @@ fun SettingsScreen(
 ) {
     OnNewIntentHandler { viewModel.eraseTag(it) }
 
+    val openFileLauncher = rememberLauncherForActivityResult(GetContent()) { uri ->
+        uri?.let { viewModel.importSecretKey(it) }
+    }
+
+    val saveFileLauncher = rememberLauncherForActivityResult(
+        CreateDocument(mimeType = "application/octet-stream")
+    ) { uri ->
+        uri?.let { viewModel.downloadSecretKey(it) }
+    }
+
     val state by viewModel.uiState.collectAsState()
 
     SettingsScreenContent(
@@ -69,6 +84,8 @@ fun SettingsScreen(
         onEraseClick = viewModel::onEraseTagClick,
         onDismiss = viewModel::onCancelErase,
         onGenerateSecretKeyClick = viewModel::generateSecretKey,
+        onImportSecretKeyClick = { openFileLauncher.launch("*/*") },
+        onDownloadSecretKeyClick = { saveFileLauncher.launch("${state.secretKeyInfo?.id}.aes") },
         onDeleteSecretKeyClick = viewModel::deleteSecretKey,
         modifier = modifier
             .padding(16.dp)
@@ -85,6 +102,8 @@ private fun SettingsScreenContent(
     onEraseClick: () -> Unit = { },
     onDismiss: () -> Unit = { },
     onGenerateSecretKeyClick: () -> Unit = { },
+    onImportSecretKeyClick: () -> Unit = { },
+    onDownloadSecretKeyClick: () -> Unit = { },
     onDeleteSecretKeyClick: () -> Unit = { },
     sheetState: SheetState = rememberModalBottomSheetState(),
 ) {
@@ -118,11 +137,21 @@ private fun SettingsScreenContent(
                         icon = Icons.Filled.Add,
                         onClick = onGenerateSecretKeyClick,
                     )
+                    IconTextButton(
+                        text = stringResource(R.string.settings_secret_key_import_button),
+                        icon = Icons.Filled.FileUpload,
+                        onClick = onImportSecretKeyClick,
+                    )
                 } else {
                     IconTextButton(
                         text = stringResource(R.string.settings_secret_key_delete_button),
                         icon = Icons.Filled.Delete,
                         onClick = onDeleteSecretKeyClick,
+                    )
+                    IconTextButton(
+                        text = stringResource(R.string.settings_secret_key_download_button),
+                        icon = Icons.Filled.FileDownload,
+                        onClick = onDownloadSecretKeyClick,
                     )
                 }
             }
@@ -186,6 +215,7 @@ private fun IconTextButton(
         ),
     ) {
         Icon(imageVector = icon, contentDescription = null)
+        Spacer(modifier = Modifier.width(2.dp))
         Text(text)
     }
 }

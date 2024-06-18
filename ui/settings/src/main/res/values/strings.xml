@@ -9,7 +9,9 @@
     <string name="settings_secret_key_info">%s key (%s) of %s bits configured</string>
     <string name="settings_secret_key_not_set">⚠ Secret key not configured</string>
     <string name="settings_secret_key_generate_button">Generate random key</string>
+    <string name="settings_secret_key_import_button">Import key</string>
     <string name="settings_secret_key_delete_button">Delete key</string>
+    <string name="settings_secret_key_download_button">Download key</string>
     <string name="settings_erase_tag_description">Erase the content of an NFC tag for a new use</string>
     <string name="settings_erase_tag_modal_success_title">Tag erased</string>
     <string name="settings_erase_tag_modal_success_description">The NFC tag was successfully erased</string>
