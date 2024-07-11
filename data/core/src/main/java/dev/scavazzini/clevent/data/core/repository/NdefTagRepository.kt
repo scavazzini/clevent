@@ -65,18 +65,11 @@ class NdefTagRepository @Inject constructor() : TagRepository {
 
     override suspend fun erase(intent: Intent) {
         withContext(Dispatchers.IO) {
-            val emptyRecord = NdefRecord(
-                /* tnf = */ NdefRecord.TNF_EMPTY,
-                /* type = */ null,
-                /* id = */ null,
-                /* payload = */ null,
-            )
-
-            val emptyMessage = NdefMessage(emptyRecord)
+            val blankMessage = createNdefMessage(ByteArray(0))
 
             intent.getNdef().use {
                 it.connect()
-                it.writeNdefMessage(emptyMessage)
+                it.writeNdefMessage(blankMessage)
             }
         }
     }
