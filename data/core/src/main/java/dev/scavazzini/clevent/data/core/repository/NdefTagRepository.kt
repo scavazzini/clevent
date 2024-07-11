@@ -58,7 +58,8 @@ class NdefTagRepository @Inject constructor() : TagRepository {
 
     private fun createNdefMessage(payload: ByteArray): NdefMessage {
         return NdefMessage(
-            NdefRecord.createExternal(RECORD_DOMAIN, RECORD_TYPE, payload)
+            NdefRecord.createExternal(RECORD_DOMAIN, RECORD_TYPE, payload),
+            NdefRecord.createApplicationRecord("dev.scavazzini.clevent"),
         )
     }
 
