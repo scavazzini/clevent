@@ -6,59 +6,64 @@ import dev.scavazzini.clevent.domain.core.serializer.exception.DeserializationEx
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
 import java.nio.ByteBuffer
+import java.util.zip.CRC32
 import javax.inject.Inject
-import kotlin.math.ceil
 
 /**
  *
  *   Serialized Customer:
  * ```
- *   +-----------+---------------------+----------------------------------
- *   | 0xFF 0xFF | 0xFF 0xFF 0xFF 0xFF | 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF ...
- *   +-----------+---------------------+----------------------------------
- *     Region 1         Region 2                    Region 3
- *    (Checksum)       (Balance)                  (Item list)
+ *   +---------------------+-----------------------------------+---------------------+
+ *   | 0xFF 0xFF 0xFF 0xFF | 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF ... | 0xFF 0xFF 0xFF 0xFF |
+ *   +---------------------+-----------------------------------+---------------------+
+ *     Region 1 (Balance)          Region 2 (Item list)            Region 3 (CRC)
  * ```
- *   - Region 1 (2 bytes): 1 byte for balance checksum and 1 byte for item list checksum.
- *   - Region 2 (4 bytes): Balance as an integer
- *   - Region 3 (3 bytes per item): Each item uses 3B, 2B for item ID (short) and 1B for quantity.
+ *   - Region 1 (4 bytes): Balance as an integer value
+ *   - Region 2 (3 bytes per item): Each item uses 3 bytes, 2 for item ID and 1 for quantity.
+ *   - Region 3 (4 bytes): CRC as an integer value
  *
  */
-class CustomerNFCSerializer @Inject constructor() : CustomerSerializer {
+class CustomerNFCSerializer @Inject constructor(private val crc: CRC32) : CustomerSerializer {
 
     override fun serialize(customer: Customer): ByteArray {
-        val productEntriesQuantity = customer.products.map {
-            ceil(it.value / Byte.MAX_VALUE.toDouble()).toInt() }.sum()
-
         val outputStream = ByteArrayOutputStream()
         DataOutputStream(outputStream).use { dataOutputStream ->
-            dataOutputStream.write(customer.balance % 0xFF)
-            dataOutputStream.write(productEntriesQuantity % 0xFF)
             dataOutputStream.writeInt(customer.balance)
 
             for ((product, quantity) in customer.products) {
                 var remainingToAdd = quantity
 
                 while (remainingToAdd > 0) {
-                    val toBeAdded = if (remainingToAdd > Byte.MAX_VALUE) Byte.MAX_VALUE.toInt() else remainingToAdd
+                    val toBeAdded = remainingToAdd.coerceAtMost(Byte.MAX_VALUE.toInt())
                     dataOutputStream.writeShort(product.id.toInt())
                     dataOutputStream.writeByte(toBeAdded)
                     remainingToAdd -= toBeAdded
                 }
             }
+
+            val crcValue = outputStream.toByteArray().calculateCrc()
+            dataOutputStream.writeInt(crcValue)
         }
         return outputStream.toByteArray()
+    }
+
+    private fun ByteArray.calculateCrc(): Int {
+        crc.update(this)
+        val crcValue = crc.value.toInt()
+        crc.reset()
+
+        return crcValue
     }
 
     @Throws(DeserializationException::class)
     override fun deserialize(data: ByteArray): Customer {
 
-        if (data.size < 6) throw DeserializationException()
+        if (data.size < 8 || data.isCorrupted()) {
+            throw DeserializationException()
+        }
 
-        val byteBuffer = ByteBuffer.wrap(data)
+        val byteBuffer = ByteBuffer.wrap(data.getPayloadBytes())
 
-        val balanceChecksum = byteBuffer.get()
-        val productsChecksum = byteBuffer.get()
         val balance = byteBuffer.int
 
         var productEntriesQuantity = 0
@@ -74,14 +79,22 @@ class CustomerNFCSerializer @Inject constructor() : CustomerSerializer {
             }
         }
 
-        val balanceChecksumMatched = (balance % 0xFF).toByte() == balanceChecksum
-        val productsChecksumMatched = (productEntriesQuantity % 0xFF).toByte() == productsChecksum
-
-        if (!balanceChecksumMatched || !productsChecksumMatched) {
-            throw DeserializationException()
-        }
-
         return Customer(balance, products)
+    }
+
+    private fun ByteArray.isCorrupted(): Boolean {
+        val calculatedCrc = getPayloadBytes().calculateCrc()
+        val receivedCrc = ByteBuffer.wrap(getCrcBytes()).getInt()
+
+        return calculatedCrc != receivedCrc
+    }
+
+    private fun ByteArray.getCrcBytes(): ByteArray {
+        return takeLast(Int.SIZE_BYTES).toByteArray()
+    }
+
+    private fun ByteArray.getPayloadBytes(): ByteArray {
+        return sliceArray(0 until size - Int.SIZE_BYTES)
     }
 
 }
