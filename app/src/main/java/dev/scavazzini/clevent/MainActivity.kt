@@ -2,6 +2,7 @@ package dev.scavazzini.clevent
 
 import android.app.PendingIntent
 import android.content.Intent
+import android.content.IntentFilter
 import android.nfc.NfcAdapter
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -167,11 +168,17 @@ class MainActivity : AppCompatActivity() {
     public override fun onResume() {
         super.onResume()
 
+        val filters = arrayOf(
+            IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED),
+            IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED),
+        )
+        val techList = arrayOf(android.nfc.tech.Ndef::class.java.name)
+
         mNfcAdapter?.enableForegroundDispatch(
             /* activity = */ this,
             /* intent = */ mPendingIntent,
-            /* filters = */ null, // TODO: Should we apply some kind of filter?
-            /* techLists = */ null, // TODO: Interesting parameter to get only supported techs
+            /* filters = */ filters,
+            /* techLists = */ arrayOf(techList),
         )
     }
 
