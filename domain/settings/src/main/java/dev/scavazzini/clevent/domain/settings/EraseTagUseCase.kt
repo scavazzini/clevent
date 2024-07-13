@@ -8,6 +8,7 @@ class EraseTagUseCase @Inject constructor(
     private val tagRepository: TagRepository,
 ) {
     suspend operator fun invoke(intent: Intent) {
-        tagRepository.erase(intent)
+        val tag = tagRepository.getTag(intent)
+        tagRepository.erase(tag)
     }
 }

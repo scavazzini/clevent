@@ -1,9 +1,11 @@
 package dev.scavazzini.clevent.data.core.repository
 
 import android.content.Intent
+import android.nfc.Tag
 
 interface TagRepository {
-    fun read(intent: Intent): ByteArray
-    suspend fun write(payload: ByteArray, intent: Intent)
-    suspend fun erase(intent: Intent)
+    fun getTag(intent: Intent): Tag
+    fun read(tag: Tag): ByteArray
+    suspend fun write(payload: ByteArray, tag: Tag)
+    suspend fun erase(tag: Tag)
 }

@@ -30,7 +30,8 @@ class WriteCustomerOnTagUseCase @Inject constructor(
             serializedCustomer
         }
 
-        tagRepository.write(payload, intent)
+        val tag = tagRepository.getTag(intent)
+        tagRepository.write(payload, tag)
     }
 
     private suspend fun encryptCustomerBytes(

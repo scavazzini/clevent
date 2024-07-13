@@ -17,7 +17,8 @@ class GetCustomerFromTagUseCase @Inject constructor(
     private val encryptor: SymmetricEncryptor,
 ) {
     suspend operator fun invoke(intent: Intent): Customer {
-        val payload = tagRepository.read(intent)
+        val tag = tagRepository.getTag(intent)
+        val payload = tagRepository.read(tag)
         val secretKey = keyManager.getKey()
 
         if (payload.all { it == 0x0.toByte() }) {
