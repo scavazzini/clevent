@@ -1,4 +1,4 @@
-<img src="/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" align="right" height="100">
+<img src="/app/src/main/ic_launcher-playstore.png" align="right" height="60">
 
 # Clevent
 
@@ -8,14 +8,7 @@ The application stores credits information and items consumed by the user in the
 
 ## Screenshots
 
-<div style="display:flex; margin-bottom:30px" >
-    <img src="docs/images/screenshots/01.png" height="300px">
-    <img src="docs/images/screenshots/02.png" height="300px" style="margin-left:10px;">
-    <img src="docs/images/screenshots/03.png" height="300px" style="margin-left:10px;">
-    <img src="docs/images/screenshots/04.png" height="300px" style="margin-left:10px;">
-    <img src="docs/images/screenshots/05.png" height="300px" style="margin-left:10px;">
-    <img src="docs/images/screenshots/06.png" height="300px" style="margin-left:10px;">
-</div>
+<img src="docs/images/screenshots.png">
 
 ## Application development
 
