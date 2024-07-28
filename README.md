@@ -2,26 +2,26 @@
 
 # Clevent
 
-Clevent is an Android application developed for a Undergraduate Research that uses NFC technology to create a payment system that stores credits in NFC tags to manage visitor consumption at short-duration events and festivals. This project was presented at the 28th edition of SIICUSP (University of São Paulo's International Symposium of Undergraduate Research) in November 2020.
+Clevent is an Android application developed for a Undergraduate Research that uses NFC technology to create a prepaid system that stores credits in NFC tags in NDEF format.
+This project was presented at the 28th edition of SIICUSP (University of São Paulo's International Symposium of Undergraduate Research) in November 2020.
 
-The application stores credits information and items consumed by the user in the NFC tags, thus being able to carry out operations such as balance recharging, issuing receipts and purchasing products entirely offline, without the need of a constant connection with a online server.
+This application encrypts and stores the balance and a history of consumed items using the NDEF format allowing operations such as balance recharging, issuing receipts, and purchasing products entirely offline, without needing a constant connection to a remote server.
+
 
 ## Screenshots
 
 <img src="docs/images/screenshots.png">
 
-## Application development
+## Application technical stack
 
 The application was developed using modern Android development techniques, including:
 
-- Kotlin programming language.
-- MVVM architecture.
-- Architecture Components (Lifecycle, LiveData, ViewModel, Room).
-- Single Activity Architecture with Navigation Component and Fragments.
-- Unit tests with JUnit and Mockito.
-- Hilt.
-- Retrofit.
-- Data Binding.
+- Jetpack Compose;
+- Multi-module architecture;
+- Dagger Hilt;
+- Retrofit;
+- Room;
+- WorkManager;
 
 ## Data serialization
 
