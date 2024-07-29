@@ -32,15 +32,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import dev.scavazzini.clevent.ui.core.theme.CleventTheme
-import dev.scavazzini.clevent.ui.order.OrderScreen
-import dev.scavazzini.clevent.ui.order.OrderViewModel
-import dev.scavazzini.clevent.ui.receipt.ReceiptScreen
-import dev.scavazzini.clevent.ui.receipt.ReceiptViewModel
-import dev.scavazzini.clevent.ui.recharge.RechargeScreen
-import dev.scavazzini.clevent.ui.recharge.RechargeViewModel
-import dev.scavazzini.clevent.ui.settings.SettingsScreen
-import dev.scavazzini.clevent.ui.settings.SettingsViewModel
+import dev.scavazzini.clevent.core.ui.theme.CleventTheme
+import dev.scavazzini.clevent.feature.order.ui.OrderScreen
+import dev.scavazzini.clevent.feature.order.ui.OrderViewModel
+import dev.scavazzini.clevent.feature.receipt.ui.ReceiptScreen
+import dev.scavazzini.clevent.feature.receipt.ui.ReceiptViewModel
+import dev.scavazzini.clevent.feature.recharge.ui.RechargeScreen
+import dev.scavazzini.clevent.feature.recharge.ui.RechargeViewModel
+import dev.scavazzini.clevent.feature.settings.ui.SettingsScreen
+import dev.scavazzini.clevent.feature.settings.ui.SettingsViewModel
 
 private enum class Screens(
     val label: String,

@@ -8,8 +8,8 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import dagger.hilt.android.HiltAndroidApp
-import dev.scavazzini.clevent.data.core.workers.SyncProductsWorker
-import dev.scavazzini.clevent.data.core.workers.SyncProductsWorker.Companion.SYNC_PRODUCTS_WORK_NAME
+import dev.scavazzini.clevent.core.data.workers.SyncProductsWorker
+import dev.scavazzini.clevent.core.data.workers.SyncProductsWorker.Companion.SYNC_PRODUCTS_WORK_NAME
 import dev.scavazzini.clevent.sync.CleventWorkerFactory
 import javax.inject.Inject
 

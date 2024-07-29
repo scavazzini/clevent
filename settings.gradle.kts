@@ -17,18 +17,13 @@ dependencyResolutionManagement {
 
 include(
     ":app",
-
-    ":ui:core",
-    ":domain:core",
-    ":data:core",
-
-    ":ui:order",
-
-    ":ui:settings",
-    ":domain:settings",
-
-    ":ui:receipt",
-    ":domain:receipt",
-
-    ":ui:recharge"
+    ":core:ui",
+    ":core:domain",
+    ":core:data",
+    ":feature:order:ui",
+    ":feature:receipt:ui",
+    ":feature:receipt:domain",
+    ":feature:recharge:ui",
+    ":feature:settings:ui",
+    ":feature:settings:domain",
 )

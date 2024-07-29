@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
-import dev.scavazzini.clevent.data.core.repository.ProductRepository
-import dev.scavazzini.clevent.data.core.workers.SyncProductsWorker
+import dev.scavazzini.clevent.core.data.repository.ProductRepository
+import dev.scavazzini.clevent.core.data.workers.SyncProductsWorker
 import javax.inject.Inject
 
 class CleventWorkerFactory @Inject constructor(
