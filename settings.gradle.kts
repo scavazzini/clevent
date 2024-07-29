@@ -20,6 +20,7 @@ include(
     ":core:ui",
     ":core:domain",
     ":core:data",
+    ":crypto",
     ":feature:order:ui",
     ":feature:receipt:ui",
     ":feature:receipt:domain",

@@ -1,13 +1,13 @@
-package dev.scavazzini.clevent.core.domain.di
+package dev.scavazzini.clevent.crypto.di
 
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import dev.scavazzini.clevent.core.domain.crypto.AesEncryptor
-import dev.scavazzini.clevent.core.domain.crypto.SecretKeyManager
-import dev.scavazzini.clevent.core.domain.crypto.SecretKeyManagerImpl
-import dev.scavazzini.clevent.core.domain.crypto.SymmetricEncryptor
+import dev.scavazzini.clevent.crypto.AesEncryptor
+import dev.scavazzini.clevent.crypto.SecretKeyManager
+import dev.scavazzini.clevent.crypto.SecretKeyManagerImpl
+import dev.scavazzini.clevent.crypto.SymmetricEncryptor
 import javax.inject.Singleton
 
 @Module
@@ -21,4 +21,3 @@ abstract class EncryptionCoreDomainModule {
     @Binds
     abstract fun bindSecretKeyManager(secretKeyManagerImpl: SecretKeyManagerImpl): SecretKeyManager
 }
-

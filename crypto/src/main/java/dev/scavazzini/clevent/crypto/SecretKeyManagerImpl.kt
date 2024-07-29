@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.core.domain.crypto
+package dev.scavazzini.clevent.crypto
 
 import android.content.SharedPreferences
 import android.util.Base64

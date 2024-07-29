@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.core.domain.crypto
+package dev.scavazzini.clevent.crypto
 
 data class KeyInfo(
     val id: String,

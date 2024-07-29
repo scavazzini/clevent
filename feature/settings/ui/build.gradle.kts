@@ -47,6 +47,7 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:domain"))
     implementation(project(":core:ui"))
+    implementation(project(":crypto"))
     implementation(project(":feature:settings:domain"))
 
     // WorkManager

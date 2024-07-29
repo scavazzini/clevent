@@ -17,7 +17,7 @@ import dev.scavazzini.clevent.core.data.repository.ProductRepository
 import dev.scavazzini.clevent.core.data.workers.SyncProductsWorker
 import dev.scavazzini.clevent.core.data.workers.SyncProductsWorker.Companion.SYNC_PRODUCTS_WORK_NAME
 import dev.scavazzini.clevent.core.domain.FormatDateToStringUseCase
-import dev.scavazzini.clevent.core.domain.crypto.KeyInfo
+import dev.scavazzini.clevent.crypto.KeyInfo
 import dev.scavazzini.clevent.feature.settings.domain.CreateSecretKeyUseCase
 import dev.scavazzini.clevent.feature.settings.domain.DeleteSecretKeyUseCase
 import dev.scavazzini.clevent.feature.settings.domain.DownloadSecretKeyUseCase

@@ -1,6 +1,6 @@
 package dev.scavazzini.clevent.feature.settings.domain
 
-import dev.scavazzini.clevent.core.domain.crypto.SecretKeyManager
+import dev.scavazzini.clevent.crypto.SecretKeyManager
 import javax.crypto.SecretKey
 import javax.inject.Inject
 

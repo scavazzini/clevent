@@ -53,7 +53,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import dev.scavazzini.clevent.core.domain.crypto.KeyInfo
+import dev.scavazzini.clevent.crypto.KeyInfo
 import dev.scavazzini.clevent.core.ui.OnNewIntentHandler
 import dev.scavazzini.clevent.core.ui.components.NfcModalBottomSheet
 import dev.scavazzini.clevent.core.ui.theme.CleventTheme

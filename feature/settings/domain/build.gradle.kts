@@ -38,6 +38,7 @@ android {
 dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:domain"))
+    implementation(project(":crypto"))
 
     // Hilt
     implementation(libs.hilt.android)

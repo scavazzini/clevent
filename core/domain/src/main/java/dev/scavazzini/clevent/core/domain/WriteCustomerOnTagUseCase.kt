@@ -5,8 +5,8 @@ import com.google.protobuf.ByteString
 import dev.scavazzini.clevent.EncryptedCustomerOuterClass
 import dev.scavazzini.clevent.core.data.model.Customer
 import dev.scavazzini.clevent.core.data.repository.TagRepository
-import dev.scavazzini.clevent.core.domain.crypto.SecretKeyManager
-import dev.scavazzini.clevent.core.domain.crypto.SymmetricEncryptor
+import dev.scavazzini.clevent.crypto.SecretKeyManager
+import dev.scavazzini.clevent.crypto.SymmetricEncryptor
 import dev.scavazzini.clevent.core.domain.serializer.CustomerSerializer
 import javax.crypto.SecretKey
 import javax.inject.Inject

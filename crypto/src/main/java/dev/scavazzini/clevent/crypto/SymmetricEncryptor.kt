@@ -1,7 +1,7 @@
-package dev.scavazzini.clevent.core.domain.crypto
+package dev.scavazzini.clevent.crypto
 
-import dev.scavazzini.clevent.core.domain.crypto.exception.DecryptionException
-import dev.scavazzini.clevent.core.domain.crypto.exception.EncryptionException
+import dev.scavazzini.clevent.crypto.exception.DecryptionException
+import dev.scavazzini.clevent.crypto.exception.EncryptionException
 import javax.crypto.SecretKey
 
 class EncryptedPayload(

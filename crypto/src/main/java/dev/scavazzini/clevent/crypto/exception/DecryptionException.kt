@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.core.domain.crypto.exception
+package dev.scavazzini.clevent.crypto.exception
 
 class DecryptionException(
     override val message: String,

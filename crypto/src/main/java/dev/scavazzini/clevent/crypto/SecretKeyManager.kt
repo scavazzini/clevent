@@ -1,7 +1,6 @@
-package dev.scavazzini.clevent.core.domain.crypto
+package dev.scavazzini.clevent.crypto
 
 import android.security.keystore.KeyProperties
-import dev.scavazzini.clevent.core.domain.crypto.KeyInfo
 import javax.crypto.SecretKey
 
 interface SecretKeyManager {

@@ -1,7 +1,7 @@
 package dev.scavazzini.clevent.feature.settings.domain
 
-import dev.scavazzini.clevent.core.domain.crypto.KeyInfo
-import dev.scavazzini.clevent.core.domain.crypto.SecretKeyManager
+import dev.scavazzini.clevent.crypto.KeyInfo
+import dev.scavazzini.clevent.crypto.SecretKeyManager
 import javax.inject.Inject
 
 class GetSecretKeyInfoUseCase @Inject constructor(
