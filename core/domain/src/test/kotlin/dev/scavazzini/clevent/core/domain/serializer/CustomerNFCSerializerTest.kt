@@ -12,7 +12,13 @@ class CustomerNFCSerializerTest {
     private val customer: Customer = Customer()
     private val product1 = Product(1.toShort(), "p1", 2500, "cat1")
     private val product2 = Product(50.toShort(), "p2", 1000, "cat2")
-    private val customerSerializer = CustomerNFCSerializer()
+
+    private val expectedSerializedBalance = byteArrayOf(0x0, 0x0, 0x1D, 0x4C)
+    private val expectedSerializedProducts = byteArrayOf(0x0, 0x1, 0x3, 0x0, 0x32, 0xF)
+    private val expectedSerializedCrc = byteArrayOf(0x0, 0x0, 0x4, 0xD2.toByte())
+    private val expectedSerializedCustomer = expectedSerializedBalance + expectedSerializedProducts + expectedSerializedCrc
+
+    private val customerSerializer = CustomerNFCSerializer(crc = FakeCRC32())
 
     @Before
     fun setUp() {
@@ -24,19 +30,15 @@ class CustomerNFCSerializerTest {
     @Test
     fun shouldSerializeCustomer() {
         val serializedCustomer = customerSerializer.serialize(customer)
-        val expectedByteArray = byteArrayOf(0x69, 0x2, 0x0, 0x0, 0x1D, 0x4C, 0x0, 0x1, 0x3, 0x0, 0x32, 0xF)
 
-        assertArrayEquals(expectedByteArray, serializedCustomer)
+        assertArrayEquals(serializedCustomer, expectedSerializedCustomer)
     }
 
     @Test
     fun shouldDeserializeCustomer() {
-        val serializedCustomer = byteArrayOf(0x69, 0x2, 0x0, 0x0, 0x1D, 0x4C, 0x0, 0x1, 0x3, 0x0, 0x32, 0xF)
+        val deserializedCustomer = customerSerializer.deserialize(expectedSerializedCustomer)
 
-        val deserializedCustomer = customerSerializer.deserialize(serializedCustomer)
-
-        assertEquals(7500, deserializedCustomer.balance)
-        assertEquals(2, deserializedCustomer.products.size)
+        assertEquals(deserializedCustomer, customer)
     }
 
     @Test
