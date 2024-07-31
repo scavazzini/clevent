@@ -12,8 +12,10 @@ import dev.scavazzini.clevent.core.data.model.Product
 import dev.scavazzini.clevent.core.data.repository.ProductRepository
 import dev.scavazzini.clevent.core.domain.FormatDateToStringUseCase
 import dev.scavazzini.clevent.core.domain.GetCustomerFromTagUseCase
-import dev.scavazzini.clevent.feature.receipt.domain.GenerateQrCodeBitmapUseCase
 import dev.scavazzini.clevent.core.ui.components.PrimaryButtonState
+import dev.scavazzini.clevent.feature.receipt.domain.GenerateQrCodeBitmapUseCase
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -30,6 +32,8 @@ class ReceiptViewModel @Inject constructor(
     private val formatDateToStringUseCase: FormatDateToStringUseCase,
 ) : ViewModel() {
 
+    private var readTagJob: Job? = null
+
     private var _uiState = MutableStateFlow(ReceiptUiState())
     val uiState: StateFlow<ReceiptUiState> = _uiState
 
@@ -44,43 +48,67 @@ class ReceiptViewModel @Inject constructor(
         }
     }
 
-    fun onNfcTagRead(intent: Intent) = viewModelScope.launch {
-        try {
-            val customer = readCustomerFromTagUseCase(intent)
+    fun onNfcTagRead(intent: Intent) {
+        readTagJob?.cancel()
 
-            val enrichedProducts = customer.products.mapKeys {
-                val enrichedProduct = products[it.key.id] ?: it.key
+        readTagJob = viewModelScope.launch {
+            try {
+                val customer = readCustomerFromTagUseCase(intent)
 
-                it.key.copy(
-                    name = enrichedProduct.name,
-                    price = enrichedProduct.price,
-                    category = enrichedProduct.category,
-                )
-            }
-
-            _uiState.update {
-                it.copy(
+                _uiState.emitSuccessState(
                     customer = Customer(
                         balance = customer.balance,
-                        products = enrichedProducts,
+                        products = loadProductsDetails(customer.products),
                     ),
-                    qrCode = null,
-                    showQrCodeSheet = false,
-                    qrCodeButtonState = PrimaryButtonState.ENABLED,
                 )
-            }
 
-        } catch (e: Exception) {
-            e.printStackTrace()
+            } catch (e: Exception) {
+                e.printStackTrace()
 
-            _uiState.update {
-                it.copy(
-                    customer = null,
-                    qrCode = null,
-                    showQrCodeSheet = false,
-                    qrCodeButtonState = PrimaryButtonState.DISABLED,
-                )
+                _uiState.emitErrorState()
+                delay(2500)
+                _uiState.emitIdleState()
+
+            } finally {
+                readTagJob = null
             }
+        }
+    }
+
+    private fun loadProductsDetails(products: Map<Product, Int>): Map<Product, Int> {
+        return products.mapKeys { this.products[it.key.id] ?: it.key }
+    }
+
+    private fun MutableStateFlow<ReceiptUiState>.emitSuccessState(customer: Customer) {
+        update {
+            it.copy(
+                tagState = TagState(customer = customer),
+                qrCode = null,
+                showQrCodeSheet = false,
+                qrCodeButtonState = PrimaryButtonState.ENABLED,
+            )
+        }
+    }
+
+    private fun MutableStateFlow<ReceiptUiState>.emitErrorState() {
+        update {
+            it.copy(
+                tagState = TagState(error = R.string.receipt_error_try_again),
+                qrCode = null,
+                showQrCodeSheet = false,
+                qrCodeButtonState = PrimaryButtonState.DISABLED,
+            )
+        }
+    }
+
+    private fun MutableStateFlow<ReceiptUiState>.emitIdleState() {
+        update {
+            it.copy(
+                tagState = null,
+                qrCode = null,
+                showQrCodeSheet = false,
+                qrCodeButtonState = PrimaryButtonState.DISABLED,
+            )
         }
     }
 
@@ -88,7 +116,7 @@ class ReceiptViewModel @Inject constructor(
     }
 
     fun showQrCode(size: Int) = viewModelScope.launch {
-        val customer = uiState.value.customer ?: return@launch
+        val customer = uiState.value.tagState?.customer ?: return@launch
 
         _uiState.update {
             it.copy(qrCodeButtonState = PrimaryButtonState.LOADING)
@@ -146,8 +174,13 @@ class ReceiptViewModel @Inject constructor(
         }
     }
 
-    data class ReceiptUiState(
+    data class TagState(
         val customer: Customer? = null,
+        val error: Int? = null,
+    )
+
+    data class ReceiptUiState(
+        val tagState: TagState? = null,
         val qrCode: Bitmap? = null,
         val showQrCodeSheet: Boolean = false,
         val qrCodeButtonState: PrimaryButtonState = PrimaryButtonState.DISABLED,

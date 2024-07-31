@@ -8,6 +8,7 @@
     <string name="receipt_empty_state_instructions">Scan an NFC tag to load its Receipt</string>
     <string name="receipt_transaction_list_title">Transaction History</string>
     <string name="receipt_transaction_list_total">Total</string>
+    <string name="receipt_error_try_again">Failed to read NFC tag, please try again</string>
 
     <string name="receipt_string_title">Receipt</string>
     <string name="receipt_string_available_balance">Available balance: </string>

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Nfc
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -92,7 +93,7 @@ private fun ReceiptScreenContent(
             modifier = Modifier.fillMaxWidth(),
         )
         ReceiptList(
-            customer = state.customer,
+            tagState = state.tagState,
             modifier = Modifier.weight(1f),
         )
     }
@@ -121,7 +122,7 @@ private fun ReceiptHeader(
         modifier = modifier.padding(vertical = 24.dp),
     ) {
         ReceiptBalanceText(
-            value = CurrencyValue(state.customer?.balance ?: 0),
+            value = CurrencyValue(state.tagState?.customer?.balance ?: 0),
         )
         Text(
             text = stringResource(R.string.receipt_available_balance),
@@ -170,18 +171,18 @@ fun ReceiptBalanceText(
 
 @Composable
 private fun ReceiptList(
-    customer: Customer?,
+    tagState: ReceiptViewModel.TagState?,
     modifier: Modifier = Modifier,
 ) {
     Crossfade(
-        targetState = customer,
+        targetState = tagState,
         label = "ReceiptListFade",
         modifier = modifier.padding(16.dp),
-    ) {
-        if (it != null) {
-            ProductsList(it)
-        } else {
-            ProductsEmptyList()
+    ) { state ->
+        when {
+            state == null -> ProductsIdleList()
+            state.customer != null -> ProductsList(state.customer)
+            state.error != null -> ProductsErrorList(error = state.error)
         }
     }
 }
@@ -231,7 +232,7 @@ private fun ProductsList(
 }
 
 @Composable
-fun ProductsEmptyList(
+fun ProductsIdleList(
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -248,6 +249,31 @@ fun ProductsEmptyList(
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(id = R.string.receipt_empty_state_instructions),
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.Gray,
+        )
+    }
+}
+
+@Composable
+private fun ProductsErrorList(
+    error: Int,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.fillMaxSize(),
+    ) {
+        Icon(
+            imageVector = Icons.Filled.ErrorOutline,
+            contentDescription = null,
+            tint = Color.LightGray,
+            modifier = Modifier.size(120.dp),
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(error),
             style = MaterialTheme.typography.bodyMedium,
             color = Color.Gray,
         )
@@ -306,7 +332,9 @@ private fun ReceiptScreenContentPreview() {
     )
     CleventTheme {
         ReceiptScreenContent(
-            state = ReceiptViewModel.ReceiptUiState(customer = customer),
+            state = ReceiptViewModel.ReceiptUiState(
+                tagState = ReceiptViewModel.TagState(customer),
+            ),
             onShareButtonTapped = { },
             onQrCodeButtonTapped = { },
         )
@@ -318,7 +346,7 @@ private fun ReceiptScreenContentPreview() {
 private fun ReceiptScreenEmptyContentPreview() {
     CleventTheme {
         ReceiptScreenContent(
-            state = ReceiptViewModel.ReceiptUiState(customer = null),
+            state = ReceiptViewModel.ReceiptUiState(),
             onShareButtonTapped = { },
             onQrCodeButtonTapped = { },
         )
