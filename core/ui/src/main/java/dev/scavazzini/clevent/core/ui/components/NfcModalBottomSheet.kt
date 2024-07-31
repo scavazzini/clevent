@@ -49,8 +49,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.scavazzini.clevent.core.data.model.CurrencyValue
 import dev.scavazzini.clevent.core.data.model.Product
-import dev.scavazzini.clevent.core.ui.theme.CleventTheme
 import dev.scavazzini.clevent.core.ui.R
+import dev.scavazzini.clevent.core.ui.theme.CleventTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -60,13 +60,18 @@ enum class NfcBottomSheetReadingState {
     ERROR,
 }
 
+data class NfcReadingState(
+    val state: NfcBottomSheetReadingState = NfcBottomSheetReadingState.WAITING,
+    val message: String? = null,
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NfcModalBottomSheet(
     title: String,
     description: String,
     sheetState: SheetState,
-    nfcReadingState: NfcBottomSheetReadingState,
+    nfcReadingState: NfcReadingState,
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit = { },
     content: @Composable () -> Unit = { },
@@ -99,7 +104,7 @@ private fun NfcModalBottomSheetContent(
     title: String,
     description: String,
     sheetState: SheetState,
-    nfcReadingState: NfcBottomSheetReadingState,
+    nfcReadingState: NfcReadingState,
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit = { },
     scope: CoroutineScope = rememberCoroutineScope(),
@@ -129,23 +134,27 @@ private fun NfcModalBottomSheetContent(
 
         Spacer(modifier = Modifier.height(8.dp))
         CircularAnimatedIcon(
-            colors = nfcReadingState.getColors(),
+            colors = nfcReadingState.state.getColors(),
             modifier = Modifier.size(72.dp),
         ) {
             Image(
-                imageVector = nfcReadingState.getIcon(),
+                imageVector = nfcReadingState.state.getIcon(),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(nfcReadingState.getPrimaryColor()),
+                colorFilter = ColorFilter.tint(nfcReadingState.state.getPrimaryColor()),
                 modifier = Modifier.size(32.dp)
             )
         }
-        nfcReadingState.getMessage()?.let { message ->
+
+        val readStatusMessage = nfcReadingState.message
+            ?: nfcReadingState.state.getDefaultMessage()
+
+        readStatusMessage?.let { message ->
             Text(
-                text = stringResource(message),
+                text = message,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.padding(horizontal = 16.dp),
                 fontStyle = FontStyle.Italic,
-                color = nfcReadingState.getPrimaryColor(),
+                color = nfcReadingState.state.getPrimaryColor(),
                 style = MaterialTheme.typography.bodyMedium,
             )
         }
@@ -255,10 +264,11 @@ private fun NfcBottomSheetReadingState.getIcon(): ImageVector {
     }
 }
 
-private fun NfcBottomSheetReadingState.getMessage(): Int? {
+@Composable
+private fun NfcBottomSheetReadingState.getDefaultMessage(): String? {
     return when (this) {
-        NfcBottomSheetReadingState.WAITING -> R.string.nfc_modal_waiting_message
-        NfcBottomSheetReadingState.ERROR -> R.string.nfc_modal_error_message
+        NfcBottomSheetReadingState.WAITING -> stringResource(R.string.nfc_modal_waiting_message)
+        NfcBottomSheetReadingState.ERROR -> stringResource(R.string.nfc_modal_error_message)
         else -> null
     }
 }
@@ -288,7 +298,7 @@ private fun NfcModalBottomSheetContentWithListPreview() {
             title = "Confirm your Purchase",
             description = "Check the list below for compatibility before complete the purchase.",
             sheetState = rememberModalBottomSheetState(),
-            nfcReadingState = NfcBottomSheetReadingState.WAITING,
+            nfcReadingState = NfcReadingState(state = NfcBottomSheetReadingState.WAITING),
         ) {
             BottomSheetProductListContent(
                 products = mapOf(
@@ -312,7 +322,7 @@ private fun NfcModalBottomSheetContentSuccessPreview() {
             title = "Confirm your Purchase",
             description = "Check the list below before complete your purchase.",
             sheetState = rememberModalBottomSheetState(),
-            nfcReadingState = NfcBottomSheetReadingState.SUCCESS,
+            nfcReadingState = NfcReadingState(state = NfcBottomSheetReadingState.SUCCESS),
         )
     }
 }
@@ -326,7 +336,7 @@ private fun NfcModalBottomSheetContentErrorPreview() {
             title = "Confirm your Purchase",
             description = "Check the list below before complete your purchase.",
             sheetState = rememberModalBottomSheetState(),
-            nfcReadingState = NfcBottomSheetReadingState.ERROR,
+            nfcReadingState = NfcReadingState(state = NfcBottomSheetReadingState.ERROR),
         )
     }
 }

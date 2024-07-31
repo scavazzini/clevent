@@ -8,6 +8,7 @@ import dev.scavazzini.clevent.core.data.model.CurrencyValue
 import dev.scavazzini.clevent.core.domain.GetCustomerFromTagUseCase
 import dev.scavazzini.clevent.core.domain.WriteCustomerOnTagUseCase
 import dev.scavazzini.clevent.core.ui.components.NfcBottomSheetReadingState
+import dev.scavazzini.clevent.core.ui.components.NfcReadingState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -49,7 +50,7 @@ class RechargeViewModel @Inject constructor(
             writeCustomerOnTagUseCase(customer, intent)
 
             _rechargeUiState.value = _rechargeUiState.value.copy(
-                sheetState = NfcBottomSheetReadingState.SUCCESS,
+                sheetState = NfcReadingState(state = NfcBottomSheetReadingState.SUCCESS),
                 title = R.string.recharge_success_title,
                 description = R.string.recharge_success_description,
                 descriptionArgs = listOf(CurrencyValue(customer.balance).toString()),
@@ -59,14 +60,14 @@ class RechargeViewModel @Inject constructor(
 
         } catch (e: Exception) {
             _rechargeUiState.value = _rechargeUiState.value.copy(
-                sheetState = NfcBottomSheetReadingState.ERROR,
+                sheetState = NfcReadingState(state = NfcBottomSheetReadingState.ERROR),
                 title = R.string.recharge_error_title,
                 description = R.string.recharge_error_description,
                 descriptionArgs = listOf(e.message ?: ""),
             )
             delay(1500)
             _rechargeUiState.value = _rechargeUiState.value.copy(
-                sheetState = NfcBottomSheetReadingState.WAITING,
+                sheetState = NfcReadingState(state = NfcBottomSheetReadingState.WAITING),
                 title = R.string.recharge_confirm_title,
                 description = R.string.recharge_confirm_description,
                 descriptionArgs = listOf(fieldValue.value.toString()),
@@ -76,7 +77,7 @@ class RechargeViewModel @Inject constructor(
 
     fun confirmOrder() {
         _rechargeUiState.value = _rechargeUiState.value.copy(
-            sheetState = NfcBottomSheetReadingState.WAITING,
+            sheetState = NfcReadingState(state = NfcBottomSheetReadingState.WAITING),
             showSheet = true,
             title = R.string.recharge_confirm_title,
             description = R.string.recharge_confirm_description,
@@ -91,7 +92,7 @@ class RechargeViewModel @Inject constructor(
     }
 
     data class RechargeUiState(
-        val sheetState: NfcBottomSheetReadingState = NfcBottomSheetReadingState.WAITING,
+        val sheetState: NfcReadingState = NfcReadingState(state = NfcBottomSheetReadingState.WAITING),
         val showSheet: Boolean = false,
         val title: Int? = null,
         val titleArgs: List<String> = emptyList(),
@@ -99,7 +100,7 @@ class RechargeViewModel @Inject constructor(
         val descriptionArgs: List<String> = emptyList(),
     ) {
         fun isReadyToRecharge(): Boolean {
-            return sheetState == NfcBottomSheetReadingState.WAITING && showSheet
+            return sheetState.state == NfcBottomSheetReadingState.WAITING && showSheet
         }
     }
 }

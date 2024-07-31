@@ -121,18 +121,10 @@ private fun OrderScreenContent(
     }
 
     if (state.showSheet) {
-        val title = state.title?.let { titleRes ->
-            stringResource(titleRes, *state.titleArgs.toTypedArray())
-        }
-
-        val description = state.description?.let { descriptionRes ->
-            stringResource(descriptionRes, *state.descriptionArgs.toTypedArray())
-        }
-
         NfcModalBottomSheet(
             onDismiss = onDismiss,
-            title = title ?: "",
-            description = description ?: "",
+            title = stringResource(R.string.order_confirm_title),
+            description = stringResource(R.string.order_confirm_description),
             sheetState = sheetState,
             nfcReadingState = state.sheetState,
             content = { BottomSheetProductListContent(productsOnCart) },

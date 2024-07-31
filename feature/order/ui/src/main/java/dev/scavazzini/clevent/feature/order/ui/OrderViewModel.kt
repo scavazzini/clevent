@@ -1,5 +1,6 @@
 package dev.scavazzini.clevent.feature.order.ui
 
+import android.app.Application
 import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +12,7 @@ import dev.scavazzini.clevent.core.data.repository.ProductRepository
 import dev.scavazzini.clevent.core.domain.GetCustomerFromTagUseCase
 import dev.scavazzini.clevent.core.domain.WriteCustomerOnTagUseCase
 import dev.scavazzini.clevent.core.ui.components.NfcBottomSheetReadingState
+import dev.scavazzini.clevent.core.ui.components.NfcReadingState
 import dev.scavazzini.clevent.core.ui.components.PrimaryButtonState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +31,7 @@ class OrderViewModel @Inject constructor(
     private val productRepository: ProductRepository,
     private val readCustomerFromTagUseCase: GetCustomerFromTagUseCase,
     private val writeCustomerOnTagUseCase: WriteCustomerOnTagUseCase,
+    private val application: Application,
 ) : ViewModel() {
 
     companion object {
@@ -102,10 +105,13 @@ class OrderViewModel @Inject constructor(
             writeCustomerOnTagUseCase(customer, intent)
 
             _orderUiState.value = _orderUiState.value.copy(
-                sheetState = NfcBottomSheetReadingState.SUCCESS,
-                title = R.string.order_success_title,
-                description = R.string.order_success_description,
-                descriptionArgs = listOf(CurrencyValue(customer.balance).toString()),
+                sheetState = NfcReadingState(
+                    state = NfcBottomSheetReadingState.SUCCESS,
+                    message = application.getString(
+                        R.string.order_success_description,
+                        CurrencyValue(customer.balance).toString(),
+                    ),
+                ),
             )
             delay(MODAL_CHANGE_STATE_DELAY)
             _products.update { it.keys.associateWith { 0 } }
@@ -117,19 +123,23 @@ class OrderViewModel @Inject constructor(
 
         } catch (e: InsufficientBalanceException) {
             _orderUiState.value = _orderUiState.value.copy(
-                sheetState = NfcBottomSheetReadingState.ERROR,
-                title = R.string.order_error_title,
-                description = R.string.order_not_enough_credits_description,
+                sheetState = NfcReadingState(
+                    state = NfcBottomSheetReadingState.ERROR,
+                    message = application.getString(R.string.order_not_enough_credits_description),
+                ),
             )
             delay(MODAL_CHANGE_STATE_DELAY)
             _orderUiState.value.updateSheetToWaiting()
 
         } catch (e: Exception) {
             _orderUiState.value = _orderUiState.value.copy(
-                sheetState = NfcBottomSheetReadingState.ERROR,
-                title = R.string.order_error_title,
-                description = R.string.order_error_description,
-                descriptionArgs = listOf(e.message ?: "")
+                sheetState = NfcReadingState(
+                    state = NfcBottomSheetReadingState.ERROR,
+                    message = application.getString(
+                        R.string.order_error_description,
+                        e.message
+                    ),
+                ),
             )
             delay(MODAL_CHANGE_STATE_DELAY)
             _orderUiState.value.updateSheetToWaiting()
@@ -180,26 +190,22 @@ class OrderViewModel @Inject constructor(
     }
 
     data class OrderUiState(
-        val sheetState: NfcBottomSheetReadingState = NfcBottomSheetReadingState.WAITING,
+        val sheetState: NfcReadingState = NfcReadingState(),
         val showSheet: Boolean = false,
-        val title: Int? = null,
-        val titleArgs: List<String> = emptyList(),
-        val description: Int? = null,
-        val descriptionArgs: List<String> = emptyList(),
         val confirmOrderButtonState: PrimaryButtonState = PrimaryButtonState.DISABLED,
         val orderValue: Int = 0,
     ) {
         fun isReadyToOrder(): Boolean {
-            return sheetState == NfcBottomSheetReadingState.WAITING && showSheet
+            return sheetState.state == NfcBottomSheetReadingState.WAITING && showSheet
         }
     }
 
     private fun OrderUiState.updateSheetToWaiting() {
         _orderUiState.value = copy(
-            sheetState = NfcBottomSheetReadingState.WAITING,
+            sheetState = NfcReadingState(
+                state = NfcBottomSheetReadingState.WAITING,
+            ),
             showSheet = true,
-            title = R.string.order_confirm_title,
-            description = R.string.order_confirm_description,
         )
     }
 }

@@ -17,6 +17,8 @@ import dev.scavazzini.clevent.core.data.repository.ProductRepository
 import dev.scavazzini.clevent.core.data.workers.SyncProductsWorker
 import dev.scavazzini.clevent.core.data.workers.SyncProductsWorker.Companion.SYNC_PRODUCTS_WORK_NAME
 import dev.scavazzini.clevent.core.domain.FormatDateToStringUseCase
+import dev.scavazzini.clevent.core.ui.components.NfcBottomSheetReadingState
+import dev.scavazzini.clevent.core.ui.components.NfcReadingState
 import dev.scavazzini.clevent.crypto.KeyInfo
 import dev.scavazzini.clevent.feature.settings.domain.CreateSecretKeyUseCase
 import dev.scavazzini.clevent.feature.settings.domain.DeleteSecretKeyUseCase
@@ -24,7 +26,6 @@ import dev.scavazzini.clevent.feature.settings.domain.DownloadSecretKeyUseCase
 import dev.scavazzini.clevent.feature.settings.domain.EraseTagUseCase
 import dev.scavazzini.clevent.feature.settings.domain.GetSecretKeyInfoUseCase
 import dev.scavazzini.clevent.feature.settings.domain.ImportSecretKeyUseCase
-import dev.scavazzini.clevent.core.ui.components.NfcBottomSheetReadingState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -166,7 +167,7 @@ class SettingsViewModel @Inject constructor(
     fun onEraseTagClick() {
         _uiState.update {
             it.copy(
-                sheetState = NfcBottomSheetReadingState.WAITING,
+                sheetState = NfcReadingState(state = NfcBottomSheetReadingState.WAITING),
                 showSheet = true,
                 title = R.string.settings_erase_tag_title,
                 description = R.string.settings_erase_tag_description,
@@ -189,7 +190,7 @@ class SettingsViewModel @Inject constructor(
             eraseTagUseCase(intent)
 
             _uiState.value = _uiState.value.copy(
-                sheetState = NfcBottomSheetReadingState.SUCCESS,
+                sheetState = NfcReadingState(state = NfcBottomSheetReadingState.SUCCESS),
                 title = R.string.settings_erase_tag_modal_success_title,
                 description = R.string.settings_erase_tag_modal_success_description,
             )
@@ -198,13 +199,13 @@ class SettingsViewModel @Inject constructor(
 
         } catch (e: Exception) {
             _uiState.value = _uiState.value.copy(
-                sheetState = NfcBottomSheetReadingState.ERROR,
+                sheetState = NfcReadingState(state = NfcBottomSheetReadingState.ERROR),
                 title = R.string.settings_erase_tag_modal_error_title,
                 description = R.string.settings_erase_tag_modal_error_description,
             )
             delay(1500)
             _uiState.value = _uiState.value.copy(
-                sheetState = NfcBottomSheetReadingState.WAITING,
+                sheetState = NfcReadingState(state = NfcBottomSheetReadingState.WAITING),
                 title = R.string.settings_erase_tag_title,
                 description = R.string.settings_erase_tag_description,
             )
@@ -219,7 +220,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     data class SettingsUiState(
-        val sheetState: NfcBottomSheetReadingState = NfcBottomSheetReadingState.WAITING,
+        val sheetState: NfcReadingState = NfcReadingState(NfcBottomSheetReadingState.WAITING),
         val showSheet: Boolean = false,
         val title: Int? = null,
         val titleArgs: List<String> = emptyList(),
@@ -231,7 +232,7 @@ class SettingsViewModel @Inject constructor(
         val secretKeyInfo: KeyInfo? = null,
     ) {
         fun isReadyToErase(): Boolean {
-            return sheetState == NfcBottomSheetReadingState.WAITING && showSheet
+            return sheetState.state == NfcBottomSheetReadingState.WAITING && showSheet
         }
     }
 
