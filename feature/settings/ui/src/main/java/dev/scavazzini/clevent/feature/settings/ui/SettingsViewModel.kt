@@ -169,8 +169,6 @@ class SettingsViewModel @Inject constructor(
             it.copy(
                 sheetState = NfcReadingState(state = NfcBottomSheetReadingState.WAITING),
                 showSheet = true,
-                title = R.string.settings_erase_tag_title,
-                description = R.string.settings_erase_tag_description,
             )
         }
     }
@@ -190,24 +188,28 @@ class SettingsViewModel @Inject constructor(
             eraseTagUseCase(intent)
 
             _uiState.value = _uiState.value.copy(
-                sheetState = NfcReadingState(state = NfcBottomSheetReadingState.SUCCESS),
-                title = R.string.settings_erase_tag_modal_success_title,
-                description = R.string.settings_erase_tag_modal_success_description,
+                sheetState = NfcReadingState(
+                    state = NfcBottomSheetReadingState.SUCCESS,
+                    message = application.getString(
+                        R.string.settings_erase_tag_modal_success_description,
+                    )
+                ),
             )
             delay(1500)
             _uiState.value = _uiState.value.copy(showSheet = false)
 
         } catch (e: Exception) {
             _uiState.value = _uiState.value.copy(
-                sheetState = NfcReadingState(state = NfcBottomSheetReadingState.ERROR),
-                title = R.string.settings_erase_tag_modal_error_title,
-                description = R.string.settings_erase_tag_modal_error_description,
+                sheetState = NfcReadingState(
+                    state = NfcBottomSheetReadingState.ERROR,
+                    message = application.getString(
+                        R.string.settings_erase_tag_modal_error_description
+                    ),
+                ),
             )
             delay(1500)
             _uiState.value = _uiState.value.copy(
                 sheetState = NfcReadingState(state = NfcBottomSheetReadingState.WAITING),
-                title = R.string.settings_erase_tag_title,
-                description = R.string.settings_erase_tag_description,
             )
         }
     }
@@ -222,10 +224,6 @@ class SettingsViewModel @Inject constructor(
     data class SettingsUiState(
         val sheetState: NfcReadingState = NfcReadingState(NfcBottomSheetReadingState.WAITING),
         val showSheet: Boolean = false,
-        val title: Int? = null,
-        val titleArgs: List<String> = emptyList(),
-        val description: Int? = null,
-        val descriptionArgs: List<String> = emptyList(),
         val lastSync: Int? = null,
         val lastSyncArgs: List<String> = emptyList(),
         val isSyncing: Boolean? = false,
