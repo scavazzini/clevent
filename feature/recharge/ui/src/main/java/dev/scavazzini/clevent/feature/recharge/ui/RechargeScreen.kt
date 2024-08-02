@@ -46,11 +46,11 @@ fun RechargeScreen(
         fieldValue = fieldValue,
         modifier = modifier,
         state = uiState,
-        onDismiss = viewModel::cancelOrder,
+        onDismiss = viewModel::cancelRecharge,
         onFieldValueChange = { viewModel.onValueChange(it) },
-        onConfirmOrderButtonTapped = {
+        onConfirmRechargeButtonTapped = {
             coroutineScope.launch {
-                viewModel.confirmOrder()
+                viewModel.confirmRecharge()
             }
         },
     )
@@ -61,7 +61,7 @@ fun RechargeScreen(
 private fun RechargeScreenContent(
     fieldValue: CurrencyValue,
     onFieldValueChange: (String) -> Unit,
-    onConfirmOrderButtonTapped: () -> Unit,
+    onConfirmRechargeButtonTapped: () -> Unit,
     modifier: Modifier = Modifier,
     sheetState: SheetState = rememberModalBottomSheetState(),
     onDismiss: () -> Unit = { },
@@ -99,7 +99,7 @@ private fun RechargeScreenContent(
 
         PrimaryButton(
             text = stringResource(R.string.recharge_confirm_button),
-            onClick = onConfirmOrderButtonTapped,
+            onClick = onConfirmRechargeButtonTapped,
             state = buttonState,
             modifier = Modifier
                 .padding(8.dp)
@@ -129,7 +129,7 @@ private fun RechargeScreenContentPreview() {
         RechargeScreenContent(
             fieldValue = CurrencyValue(0),
             onFieldValueChange = { },
-            onConfirmOrderButtonTapped = { },
+            onConfirmRechargeButtonTapped = { },
             state = RechargeViewModel.RechargeUiState(),
         )
     }

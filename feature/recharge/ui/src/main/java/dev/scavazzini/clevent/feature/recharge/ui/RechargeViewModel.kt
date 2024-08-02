@@ -77,14 +77,14 @@ class RechargeViewModel @Inject constructor(
         }
     }
 
-    fun confirmOrder() {
+    fun confirmRecharge() {
         _rechargeUiState.value = _rechargeUiState.value.copy(
             sheetState = NfcReadingState(state = NfcBottomSheetReadingState.WAITING),
             showSheet = true,
         )
     }
 
-    fun cancelOrder() {
+    fun cancelRecharge() {
         _rechargeUiState.value = _rechargeUiState.value.copy(
             showSheet = false,
         )
