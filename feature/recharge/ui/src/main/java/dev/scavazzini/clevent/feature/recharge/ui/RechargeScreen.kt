@@ -108,18 +108,13 @@ private fun RechargeScreenContent(
     }
 
     if (state.showSheet) {
-        val title = state.title?.let { titleRes ->
-            stringResource(titleRes, *state.titleArgs.toTypedArray())
-        }
-
-        val description = state.description?.let { descriptionRes ->
-            stringResource(descriptionRes, *state.descriptionArgs.toTypedArray())
-        }
-
         NfcModalBottomSheet(
             onDismiss = onDismiss,
-            title = title ?: "",
-            description = description ?: "",
+            title = stringResource(R.string.recharge_confirm_title),
+            description = stringResource(
+                id = R.string.recharge_confirm_description,
+                fieldValue.toString(),
+            ),
             sheetState = sheetState,
             nfcReadingState = state.sheetState,
         )

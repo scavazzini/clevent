@@ -1,5 +1,6 @@
 package dev.scavazzini.clevent.feature.recharge.ui
 
+import android.app.Application
 import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,6 +20,7 @@ import javax.inject.Inject
 class RechargeViewModel @Inject constructor(
     private val readCustomerFromTagUseCase: GetCustomerFromTagUseCase,
     private val writeCustomerOnTagUseCase: WriteCustomerOnTagUseCase,
+    private val application: Application,
 ) : ViewModel() {
 
     private val _rechargeUiState = MutableStateFlow(RechargeUiState())
@@ -50,27 +52,27 @@ class RechargeViewModel @Inject constructor(
             writeCustomerOnTagUseCase(customer, intent)
 
             _rechargeUiState.value = _rechargeUiState.value.copy(
-                sheetState = NfcReadingState(state = NfcBottomSheetReadingState.SUCCESS),
-                title = R.string.recharge_success_title,
-                description = R.string.recharge_success_description,
-                descriptionArgs = listOf(CurrencyValue(customer.balance).toString()),
+                sheetState = NfcReadingState(
+                    state = NfcBottomSheetReadingState.SUCCESS,
+                    message = application.getString(
+                        R.string.recharge_success_description,
+                        CurrencyValue(customer.balance).toString(),
+                    )
+                ),
             )
             delay(1500)
             _rechargeUiState.value = _rechargeUiState.value.copy(showSheet = false)
 
         } catch (e: Exception) {
             _rechargeUiState.value = _rechargeUiState.value.copy(
-                sheetState = NfcReadingState(state = NfcBottomSheetReadingState.ERROR),
-                title = R.string.recharge_error_title,
-                description = R.string.recharge_error_description,
-                descriptionArgs = listOf(e.message ?: ""),
+                sheetState = NfcReadingState(
+                    state = NfcBottomSheetReadingState.ERROR,
+                    message = e.message,
+                ),
             )
             delay(1500)
             _rechargeUiState.value = _rechargeUiState.value.copy(
                 sheetState = NfcReadingState(state = NfcBottomSheetReadingState.WAITING),
-                title = R.string.recharge_confirm_title,
-                description = R.string.recharge_confirm_description,
-                descriptionArgs = listOf(fieldValue.value.toString()),
             )
         }
     }
@@ -79,9 +81,6 @@ class RechargeViewModel @Inject constructor(
         _rechargeUiState.value = _rechargeUiState.value.copy(
             sheetState = NfcReadingState(state = NfcBottomSheetReadingState.WAITING),
             showSheet = true,
-            title = R.string.recharge_confirm_title,
-            description = R.string.recharge_confirm_description,
-            descriptionArgs = listOf(fieldValue.value.toString()),
         )
     }
 
@@ -94,10 +93,6 @@ class RechargeViewModel @Inject constructor(
     data class RechargeUiState(
         val sheetState: NfcReadingState = NfcReadingState(state = NfcBottomSheetReadingState.WAITING),
         val showSheet: Boolean = false,
-        val title: Int? = null,
-        val titleArgs: List<String> = emptyList(),
-        val description: Int? = null,
-        val descriptionArgs: List<String> = emptyList(),
     ) {
         fun isReadyToRecharge(): Boolean {
             return sheetState.state == NfcBottomSheetReadingState.WAITING && showSheet
