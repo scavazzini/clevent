@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -39,6 +40,7 @@ fun RechargeScreen(
     val uiState by viewModel.uiState.collectAsState()
     val fieldValue by viewModel.fieldValue.collectAsState()
     val coroutineScope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
 
     OnNewIntentHandler { viewModel.recharge(it) }
 
@@ -50,6 +52,7 @@ fun RechargeScreen(
         onFieldValueChange = { viewModel.onValueChange(it) },
         onConfirmRechargeButtonTapped = {
             coroutineScope.launch {
+                focusManager.clearFocus()
                 viewModel.confirmRecharge()
             }
         },
