@@ -114,12 +114,7 @@ class OrderViewModel @Inject constructor(
                 ),
             )
             delay(MODAL_CHANGE_STATE_DELAY)
-            _products.update { it.keys.associateWith { 0 } }
-            _orderUiState.value = _orderUiState.value.copy(
-                showSheet = false,
-                confirmOrderButtonState = PrimaryButtonState.DISABLED,
-                orderValue = 0,
-            )
+            clearOrder()
 
         } catch (e: InsufficientBalanceException) {
             _orderUiState.value = _orderUiState.value.copy(
@@ -144,6 +139,16 @@ class OrderViewModel @Inject constructor(
             delay(MODAL_CHANGE_STATE_DELAY)
             _orderUiState.value.updateSheetToWaiting()
         }
+    }
+
+    fun clearOrder() {
+        _products.update { it.keys.associateWith { 0 } }
+
+        _orderUiState.value = _orderUiState.value.copy(
+            showSheet = false,
+            confirmOrderButtonState = PrimaryButtonState.DISABLED,
+            orderValue = 0,
+        )
     }
 
     fun confirmOrder() {

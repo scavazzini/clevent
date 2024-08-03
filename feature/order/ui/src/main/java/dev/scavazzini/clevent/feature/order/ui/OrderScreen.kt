@@ -16,6 +16,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.RemoveCircle
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -76,6 +78,7 @@ fun OrderScreen(
         onIncreaseQuantity = viewModel::increase,
         onDecreaseQuantity = viewModel::decrease,
         onConfirmOrderButtonTapped = viewModel::confirmOrder,
+        onClearOrderButtonTapped = viewModel::clearOrder,
         modifier = modifier.fillMaxWidth(),
         state = state,
         onCategoryClick = viewModel::onCategoryChange,
@@ -94,6 +97,7 @@ private fun OrderScreenContent(
     onIncreaseQuantity: (product: Product) -> Unit,
     onDecreaseQuantity: (product: Product) -> Unit,
     onConfirmOrderButtonTapped: () -> Unit,
+    onClearOrderButtonTapped: () -> Unit,
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit = { },
     state: OrderViewModel.OrderUiState = OrderViewModel.OrderUiState(),
@@ -112,6 +116,7 @@ private fun OrderScreenContent(
             onIncreaseQuantity = onIncreaseQuantity,
             onDecreaseQuantity = onDecreaseQuantity,
             onConfirmOrderButtonTapped = onConfirmOrderButtonTapped,
+            onClearOrderButtonTapped = onClearOrderButtonTapped,
             buttonState = state.confirmOrderButtonState,
             buttonValue = state.orderValue,
             modifier = Modifier.weight(1f),
@@ -185,6 +190,7 @@ private fun ProductList(
     onIncreaseQuantity: (product: Product) -> Unit,
     onDecreaseQuantity: (product: Product) -> Unit,
     onConfirmOrderButtonTapped: () -> Unit,
+    onClearOrderButtonTapped: () -> Unit,
     modifier: Modifier = Modifier,
     buttonState: PrimaryButtonState = PrimaryButtonState.ENABLED,
     buttonValue: Int = 0,
@@ -213,6 +219,11 @@ private fun ProductList(
                     value = searchFieldValue,
                     onValueChange = onSearchFieldValueChange,
                     modifier = Modifier.padding(bottom = 8.dp),
+                    trailingIcon = if (buttonState == PrimaryButtonState.ENABLED) {
+                        {
+                            ClearOrderButton(onClick = onClearOrderButtonTapped)
+                        }
+                    } else null,
                 )
             }
             items(productList, key = { it.key.id }) { item ->
@@ -249,6 +260,7 @@ private fun SearchBar(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    trailingIcon: (@Composable () -> Unit)? = null,
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -268,17 +280,20 @@ private fun SearchBar(
             )
         },
         trailingIcon = {
-            if (value.isNotEmpty()) {
-                IconButton(
-                    onClick = clearInput,
-                    modifier = Modifier,
-                    content = {
-                        Icon(
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = stringResource(R.string.order_search_field_clear_button),
-                        )
-                    }
-                )
+            when {
+                trailingIcon != null -> trailingIcon()
+                value.isNotEmpty() -> {
+                    IconButton(
+                        onClick = clearInput,
+                        modifier = Modifier,
+                        content = {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = stringResource(R.string.order_search_field_clear_button),
+                            )
+                        }
+                    )
+                }
             }
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
@@ -298,6 +313,22 @@ private fun SearchBar(
         ),
         modifier = modifier.fillMaxWidth(),
     )
+}
+
+@Composable
+private fun ClearOrderButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Button(
+        colors = ButtonDefaults.outlinedButtonColors(
+            contentColor = MaterialTheme.colorScheme.error,
+        ),
+        onClick = onClick,
+        modifier = modifier,
+    ) {
+        Text(stringResource(id = R.string.order_clear_order_button))
+    }
 }
 
 @Composable
@@ -384,6 +415,7 @@ private fun OrderScreenContentPreview() {
             onIncreaseQuantity = { },
             onDecreaseQuantity = { },
             onConfirmOrderButtonTapped = { },
+            onClearOrderButtonTapped = { },
         )
     }
 }

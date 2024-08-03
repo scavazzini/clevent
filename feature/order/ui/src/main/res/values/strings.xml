@@ -2,6 +2,7 @@
     <string name="order_category_all">All</string>
     <string name="order_search_field_label">Search</string>
     <string name="order_search_field_clear_button">Clear</string>
+    <string name="order_clear_order_button">Clear order</string>
     <string name="order_confirm_order_button">Confirm Order</string>
     <string name="order_confirm_order_with_value_button">Confirm Order (%s)</string>
     <string name="order_confirm_title">Confirm your Order</string>
