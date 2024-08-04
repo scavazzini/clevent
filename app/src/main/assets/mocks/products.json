@@ -1,110 +1,110 @@
 [
     {
         "id": 1,
-        "name": "Guinness Draught",
-        "price": 1990,
-        "category": "Beer"
+        "name": "Lager Beer",
+        "price": 800,
+        "category": "Beverages"
     },
     {
         "id": 2,
-        "name": "Rochefort Trappistes 10",
-        "price": 3990,
-        "category": "Beer"
+        "name": "IPA Beer",
+        "price": 1000,
+        "category": "Beverages"
     },
     {
         "id": 3,
-        "name": "Duvel",
-        "price": 3490,
-        "category": "Beer"
+        "name": "Coffee",
+        "price": 500,
+        "category": "Beverages"
     },
     {
         "id": 4,
-        "name": "Fuller's London Pride",
-        "price": 2990,
-        "category": "Cocktail"
+        "name": "Ice Tea",
+        "price": 450,
+        "category": "Beverages"
     },
     {
         "id": 5,
-        "name": "Colorado Indica",
-        "price": 1690,
-        "category": "Beer"
+        "name": "Soda",
+        "price": 600,
+        "category": "Beverages"
     },
     {
         "id": 6,
-        "name": "BrewDog Punk IPA",
-        "price": 2290,
-        "category": "Beer"
+        "name": "Water",
+        "price": 350,
+        "category": "Beverages"
     },
     {
         "id": 7,
-        "name": "Chimay Blue",
-        "price": 3790,
-        "category": "Cocktail"
+        "name": "Cheeseburger",
+        "price": 900,
+        "category": "Food"
     },
     {
         "id": 8,
-        "name": "Delirium Tremens",
-        "price": 8600,
-        "category": "Beer"
+        "name": "Veggie burger",
+        "price": 900,
+        "category": "Food"
     },
     {
         "id": 9,
-        "name": "St Bernardus Tripel",
-        "price": 3190,
+        "name": "Hot dog",
+        "price": 750,
         "category": "Food"
     },
     {
         "id": 10,
-        "name": "Newcastle Brown Ale",
-        "price": 2999,
-        "category": "Beer"
+        "name": "Fried chicken",
+        "price": 900,
+        "category": "Food"
     },
     {
         "id": 11,
-        "name": "Paulaner Hefeweissbier",
-        "price": 2550,
-        "category": "Beer"
+        "name": "Club sandwich",
+        "price": 700,
+        "category": "Food"
     },
     {
         "id": 12,
-        "name": "Blue Moon Belgian White",
-        "price": 1990,
-        "category": "Beer"
+        "name": "French fries",
+        "price": 700,
+        "category": "Snacks"
     },
     {
         "id": 13,
-        "name": "Brooklyn East India Pale Ale",
-        "price": 1990,
-        "category": "Beer"
+        "name": "Popcorn",
+        "price": 450,
+        "category": "Snacks"
     },
     {
         "id": 14,
-        "name": "Brooklyn Lager",
-        "price": 1990,
-        "category": "Beer"
+        "name": "Nuts",
+        "price": 400,
+        "category": "Snacks"
     },
     {
         "id": 15,
-        "name": "Sierra Nevada Hazy Little Thing",
-        "price": 2390,
-        "category": "Beer"
+        "name": "Energy bar",
+        "price": 600,
+        "category": "Snacks"
     },
     {
         "id": 16,
-        "name": "BrewDog Indie Pale Ale",
-        "price": 1690,
-        "category": "Beer"
+        "name": "Gelato",
+        "price": 700,
+        "category": "Desserts"
     },
     {
         "id": 17,
-        "name": "Vedett Extra White",
-        "price": 2290,
-        "category": "Beer"
+        "name": "Donuts",
+        "price": 500,
+        "category": "Desserts"
     },
     {
         "id": 18,
-        "name": "Westmalle Dubbel",
-        "price": 2690,
-        "category": "Beer"
+        "name": "Cookies",
+        "price": 600,
+        "category": "Desserts"
     }
 ]
