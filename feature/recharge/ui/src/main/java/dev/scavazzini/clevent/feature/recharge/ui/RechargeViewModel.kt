@@ -6,8 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.scavazzini.clevent.core.data.model.CurrencyValue
+import dev.scavazzini.clevent.core.data.repository.NonCleventTagException
 import dev.scavazzini.clevent.core.domain.GetCustomerFromTagUseCase
 import dev.scavazzini.clevent.core.domain.WriteCustomerOnTagUseCase
+import dev.scavazzini.clevent.core.ui.R.string.non_clevent_tag_error
 import dev.scavazzini.clevent.core.ui.components.NfcBottomSheetReadingState
 import dev.scavazzini.clevent.core.ui.components.NfcReadingState
 import kotlinx.coroutines.delay
@@ -64,17 +66,30 @@ class RechargeViewModel @Inject constructor(
             _rechargeUiState.value = _rechargeUiState.value.copy(showSheet = false)
 
         } catch (e: Exception) {
-            _rechargeUiState.value = _rechargeUiState.value.copy(
-                sheetState = NfcReadingState(
-                    state = NfcBottomSheetReadingState.ERROR,
-                    message = e.message,
-                ),
-            )
-            delay(1500)
-            _rechargeUiState.value = _rechargeUiState.value.copy(
-                sheetState = NfcReadingState(state = NfcBottomSheetReadingState.WAITING),
-            )
+            val message: String = when (e) {
+                is NonCleventTagException -> application.getString(non_clevent_tag_error)
+                else -> e.message ?: application.getString(R.string.recharge_error_title)
+            }
+
+            _rechargeUiState.value.emitErrorState(message)
         }
+    }
+
+    private suspend fun RechargeUiState.emitErrorState(message: String) {
+        _rechargeUiState.value = copy(
+            sheetState = NfcReadingState(
+                state = NfcBottomSheetReadingState.ERROR,
+                message = message,
+            ),
+        )
+        delay(1500)
+        emitWaitingState()
+    }
+
+    private fun RechargeUiState.emitWaitingState() {
+        _rechargeUiState.value = copy(
+            sheetState = NfcReadingState(state = NfcBottomSheetReadingState.WAITING),
+        )
     }
 
     fun confirmRecharge() {
