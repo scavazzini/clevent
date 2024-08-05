@@ -8,9 +8,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.scavazzini.clevent.core.data.model.CurrencyValue
 import dev.scavazzini.clevent.core.data.model.Product
 import dev.scavazzini.clevent.core.data.model.exception.InsufficientBalanceException
+import dev.scavazzini.clevent.core.data.repository.NonCleventTagException
 import dev.scavazzini.clevent.core.data.repository.ProductRepository
 import dev.scavazzini.clevent.core.domain.GetCustomerFromTagUseCase
 import dev.scavazzini.clevent.core.domain.WriteCustomerOnTagUseCase
+import dev.scavazzini.clevent.core.ui.R.string.non_clevent_tag_error
 import dev.scavazzini.clevent.core.ui.components.NfcBottomSheetReadingState
 import dev.scavazzini.clevent.core.ui.components.NfcReadingState
 import dev.scavazzini.clevent.core.ui.components.PrimaryButtonState
@@ -116,28 +118,22 @@ class OrderViewModel @Inject constructor(
             delay(MODAL_CHANGE_STATE_DELAY)
             clearOrder()
 
-        } catch (e: InsufficientBalanceException) {
-            _orderUiState.value = _orderUiState.value.copy(
-                sheetState = NfcReadingState(
-                    state = NfcBottomSheetReadingState.ERROR,
-                    message = application.getString(R.string.order_not_enough_credits_description),
-                ),
-            )
-            delay(MODAL_CHANGE_STATE_DELAY)
-            _orderUiState.value.updateSheetToWaiting()
-
         } catch (e: Exception) {
-            _orderUiState.value = _orderUiState.value.copy(
-                sheetState = NfcReadingState(
-                    state = NfcBottomSheetReadingState.ERROR,
-                    message = application.getString(
-                        R.string.order_error_description,
-                        e.message
-                    ),
-                ),
-            )
-            delay(MODAL_CHANGE_STATE_DELAY)
-            _orderUiState.value.updateSheetToWaiting()
+            val message = when (e) {
+                is InsufficientBalanceException -> {
+                    application.getString(R.string.order_not_enough_credits_description)
+                }
+
+                is NonCleventTagException -> {
+                    application.getString(non_clevent_tag_error)
+                }
+
+                else -> {
+                    e.message ?: application.getString(R.string.order_error_title)
+                }
+            }
+
+            _orderUiState.value.updateSheetToError(message)
         }
     }
 
@@ -203,6 +199,17 @@ class OrderViewModel @Inject constructor(
         fun isReadyToOrder(): Boolean {
             return sheetState.state == NfcBottomSheetReadingState.WAITING && showSheet
         }
+    }
+
+    private suspend fun OrderUiState.updateSheetToError(message: String) {
+        _orderUiState.value = copy(
+            sheetState = NfcReadingState(
+                state = NfcBottomSheetReadingState.ERROR,
+                message = message,
+            ),
+        )
+        delay(MODAL_CHANGE_STATE_DELAY)
+        _orderUiState.value.updateSheetToWaiting()
     }
 
     private fun OrderUiState.updateSheetToWaiting() {

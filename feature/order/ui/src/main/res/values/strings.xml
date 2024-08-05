@@ -10,6 +10,5 @@
     <string name="order_success_title">Order completed</string>
     <string name="order_success_description">Order completed! Your new balance is %s</string>
     <string name="order_error_title">Order went wrong</string>
-    <string name="order_error_description">%s</string>
     <string name="order_not_enough_credits_description">Insufficient balance to complete this order</string>
 </resources>
