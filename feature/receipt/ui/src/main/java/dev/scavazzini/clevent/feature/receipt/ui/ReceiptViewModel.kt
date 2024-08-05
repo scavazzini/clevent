@@ -9,9 +9,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.scavazzini.clevent.core.data.model.CurrencyValue
 import dev.scavazzini.clevent.core.data.model.Customer
 import dev.scavazzini.clevent.core.data.model.Product
+import dev.scavazzini.clevent.core.data.repository.NonCleventTagException
 import dev.scavazzini.clevent.core.data.repository.ProductRepository
 import dev.scavazzini.clevent.core.domain.FormatDateToStringUseCase
 import dev.scavazzini.clevent.core.domain.GetCustomerFromTagUseCase
+import dev.scavazzini.clevent.core.ui.R.string.non_clevent_tag_error
 import dev.scavazzini.clevent.core.ui.components.PrimaryButtonState
 import dev.scavazzini.clevent.feature.receipt.domain.GenerateQrCodeBitmapUseCase
 import kotlinx.coroutines.Job
@@ -65,9 +67,12 @@ class ReceiptViewModel @Inject constructor(
             } catch (e: Exception) {
                 e.printStackTrace()
 
-                _uiState.emitErrorState()
-                delay(2500)
-                _uiState.emitIdleState()
+                val message = when (e) {
+                    is NonCleventTagException -> non_clevent_tag_error
+                    else -> R.string.receipt_error_try_again
+                }
+
+                _uiState.emitErrorState(message)
 
             } finally {
                 readTagJob = null
@@ -90,15 +95,17 @@ class ReceiptViewModel @Inject constructor(
         }
     }
 
-    private fun MutableStateFlow<ReceiptUiState>.emitErrorState() {
+    private suspend fun MutableStateFlow<ReceiptUiState>.emitErrorState(message: Int) {
         update {
             it.copy(
-                tagState = TagState(error = R.string.receipt_error_try_again),
+                tagState = TagState(error = message),
                 qrCode = null,
                 showQrCodeSheet = false,
                 qrCodeButtonState = PrimaryButtonState.DISABLED,
             )
         }
+        delay(2500)
+        _uiState.emitIdleState()
     }
 
     private fun MutableStateFlow<ReceiptUiState>.emitIdleState() {
