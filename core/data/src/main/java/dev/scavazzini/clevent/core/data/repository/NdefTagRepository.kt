@@ -3,6 +3,7 @@ package dev.scavazzini.clevent.core.data.repository
 import android.content.Intent
 import android.nfc.NdefMessage
 import android.nfc.NdefRecord
+import android.nfc.NdefRecord.TNF_EXTERNAL_TYPE
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.Ndef
@@ -25,11 +26,18 @@ class NdefTagRepository @Inject constructor() : TagRepository {
     }
 
     override fun read(tag: Tag): ByteArray {
-        return Ndef.get(tag)
-            .cachedNdefMessage
-            .records
-            .first()
-            .payload
+        val record = Ndef.get(tag).cachedNdefMessage.records.first()
+
+        if (!record.isCleventRecord()) {
+            throw NonCleventTagException()
+        }
+
+        return record.payload
+    }
+
+    private fun NdefRecord.isCleventRecord(): Boolean {
+        return tnf == TNF_EXTERNAL_TYPE
+                && type contentEquals "${RECORD_DOMAIN}:${RECORD_TYPE}".toByteArray()
     }
 
     override suspend fun write(payload: ByteArray, tag: Tag) {

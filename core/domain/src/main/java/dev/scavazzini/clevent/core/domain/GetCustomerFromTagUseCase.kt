@@ -21,7 +21,7 @@ class GetCustomerFromTagUseCase @Inject constructor(
         val payload = tagRepository.read(tag)
         val secretKey = keyManager.getKey()
 
-        if (payload.all { it == 0x0.toByte() }) {
+        if (payload.isEmpty()) {
             return Customer()
         }
 
