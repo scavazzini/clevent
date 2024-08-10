@@ -6,11 +6,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,14 +23,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.scavazzini.clevent.core.data.model.CurrencyValue
-import dev.scavazzini.clevent.core.ui.OnNewIntentHandler
-import dev.scavazzini.clevent.core.ui.components.NfcModalBottomSheet
 import dev.scavazzini.clevent.core.ui.components.PrimaryButton
 import dev.scavazzini.clevent.core.ui.components.PrimaryButtonState
 import dev.scavazzini.clevent.core.ui.theme.CleventTheme
+import dev.scavazzini.clevent.nfc.NfcHandlerPrompt
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RechargeScreen(
     viewModel: RechargeViewModel,
@@ -44,13 +39,21 @@ fun RechargeScreen(
     val coroutineScope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
 
-    OnNewIntentHandler { viewModel.recharge(it) }
+    NfcHandlerPrompt(
+        title = stringResource(R.string.recharge_confirm_title),
+        description = stringResource(
+            id = R.string.recharge_confirm_description,
+            fieldValue.toString(),
+        ),
+        readingStatus = uiState.nfcReadingStatus,
+        onDismiss = viewModel::cancelRecharge,
+        readingMessage = uiState.nfcReadingMessage,
+        onTagRead = viewModel::recharge,
+    )
 
     RechargeScreenContent(
         fieldValue = fieldValue,
         modifier = modifier,
-        state = uiState,
-        onDismiss = viewModel::cancelRecharge,
         onFieldValueChange = { viewModel.onValueChange(it) },
         onConfirmRechargeButtonTapped = {
             coroutineScope.launch {
@@ -61,16 +64,12 @@ fun RechargeScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RechargeScreenContent(
     fieldValue: CurrencyValue,
     onFieldValueChange: (String) -> Unit,
     onConfirmRechargeButtonTapped: () -> Unit,
     modifier: Modifier = Modifier,
-    sheetState: SheetState = rememberModalBottomSheetState(),
-    onDismiss: () -> Unit = { },
-    state: RechargeViewModel.RechargeUiState,
 ) {
     val rechargeEnabled = fieldValue.rawValue > 0
     val imeAction = if (rechargeEnabled) ImeAction.Done else ImeAction.None
@@ -118,22 +117,8 @@ private fun RechargeScreenContent(
                 .fillMaxWidth(),
         )
     }
-
-    if (state.showSheet) {
-        NfcModalBottomSheet(
-            onDismiss = onDismiss,
-            title = stringResource(R.string.recharge_confirm_title),
-            description = stringResource(
-                id = R.string.recharge_confirm_description,
-                fieldValue.toString(),
-            ),
-            sheetState = sheetState,
-            nfcReadingState = state.sheetState,
-        )
-    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 private fun RechargeScreenContentPreview() {
@@ -142,7 +127,6 @@ private fun RechargeScreenContentPreview() {
             fieldValue = CurrencyValue(0),
             onFieldValueChange = { },
             onConfirmRechargeButtonTapped = { },
-            state = RechargeViewModel.RechargeUiState(),
         )
     }
 }

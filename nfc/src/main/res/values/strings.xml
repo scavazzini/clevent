@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="nfc_modal_waiting_message">Hold the NFC tag near to this device</string>
     <string name="nfc_modal_error_message">Something went wrong. Please, try again</string>

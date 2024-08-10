@@ -30,14 +30,11 @@ import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -53,19 +50,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import dev.scavazzini.clevent.core.ui.OnNewIntentHandler
-import dev.scavazzini.clevent.core.ui.components.NfcModalBottomSheet
 import dev.scavazzini.clevent.core.ui.theme.CleventTheme
 import dev.scavazzini.clevent.crypto.KeyInfo
+import dev.scavazzini.clevent.nfc.NfcHandlerPrompt
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel,
     modifier: Modifier = Modifier,
 ) {
-    OnNewIntentHandler { viewModel.eraseTag(it) }
-
     val openFileLauncher = rememberLauncherForActivityResult(GetContent()) { uri ->
         uri?.let { viewModel.importSecretKey(it) }
     }
@@ -78,11 +71,19 @@ fun SettingsScreen(
 
     val state by viewModel.uiState.collectAsState()
 
+    NfcHandlerPrompt(
+        title = stringResource(R.string.settings_erase_tag_title),
+        description = stringResource(R.string.settings_erase_tag_description),
+        readingStatus = state.nfcReadingStatus,
+        readingMessage = state.nfcReadingMessage,
+        onDismiss = viewModel::onCancelErase,
+        onTagRead = viewModel::eraseTag,
+    )
+
     SettingsScreenContent(
         state = state,
         onSyncClick = viewModel::sync,
         onEraseClick = viewModel::onEraseTagClick,
-        onDismiss = viewModel::onCancelErase,
         onGenerateSecretKeyClick = viewModel::generateSecretKey,
         onImportSecretKeyClick = { openFileLauncher.launch("*/*") },
         onDownloadSecretKeyClick = { saveFileLauncher.launch("${state.secretKeyInfo?.id}.aes") },
@@ -93,19 +94,17 @@ fun SettingsScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SettingsScreenContent(
     state: SettingsViewModel.SettingsUiState,
     modifier: Modifier = Modifier,
     onSyncClick: () -> Unit = { },
     onEraseClick: () -> Unit = { },
-    onDismiss: () -> Unit = { },
     onGenerateSecretKeyClick: () -> Unit = { },
     onImportSecretKeyClick: () -> Unit = { },
     onDownloadSecretKeyClick: () -> Unit = { },
     onDeleteSecretKeyClick: () -> Unit = { },
-    sheetState: SheetState = rememberModalBottomSheetState(),
 ) {
     val lastSyncDescription = state.lastSync?.let { lastSyncRes ->
         stringResource(lastSyncRes, *state.lastSyncArgs.toTypedArray())
@@ -162,16 +161,6 @@ private fun SettingsScreenContent(
             icon = Icons.Filled.Nfc,
             clickable = true,
             onClick = onEraseClick,
-        )
-    }
-
-    if (state.showSheet) {
-        NfcModalBottomSheet(
-            onDismiss = onDismiss,
-            title = stringResource(R.string.settings_erase_tag_title),
-            description = stringResource(R.string.settings_erase_tag_description),
-            sheetState = sheetState,
-            nfcReadingState = state.sheetState,
         )
     }
 }
@@ -315,7 +304,6 @@ private fun SettingsButtonIcon(
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 private fun SettingsScreenContentPreview() {

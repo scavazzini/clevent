@@ -27,4 +27,5 @@ include(
     ":feature:recharge:ui",
     ":feature:settings:ui",
     ":feature:settings:domain",
+    ":nfc",
 )

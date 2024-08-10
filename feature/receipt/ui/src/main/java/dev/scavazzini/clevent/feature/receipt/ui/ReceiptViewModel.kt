@@ -13,7 +13,7 @@ import dev.scavazzini.clevent.core.data.repository.NonCleventTagException
 import dev.scavazzini.clevent.core.data.repository.ProductRepository
 import dev.scavazzini.clevent.core.domain.FormatDateToStringUseCase
 import dev.scavazzini.clevent.core.domain.GetCustomerFromTagUseCase
-import dev.scavazzini.clevent.core.ui.R.string.non_clevent_tag_error
+import dev.scavazzini.clevent.nfc.R.string.non_clevent_tag_error
 import dev.scavazzini.clevent.core.ui.components.PrimaryButtonState
 import dev.scavazzini.clevent.feature.receipt.domain.GenerateQrCodeBitmapUseCase
 import kotlinx.coroutines.Job

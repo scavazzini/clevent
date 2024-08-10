@@ -12,10 +12,10 @@ import dev.scavazzini.clevent.core.data.repository.NonCleventTagException
 import dev.scavazzini.clevent.core.data.repository.ProductRepository
 import dev.scavazzini.clevent.core.domain.GetCustomerFromTagUseCase
 import dev.scavazzini.clevent.core.domain.WriteCustomerOnTagUseCase
-import dev.scavazzini.clevent.core.ui.R.string.non_clevent_tag_error
-import dev.scavazzini.clevent.core.ui.components.NfcBottomSheetReadingState
-import dev.scavazzini.clevent.core.ui.components.NfcReadingState
 import dev.scavazzini.clevent.core.ui.components.PrimaryButtonState
+import dev.scavazzini.clevent.nfc.R.string.non_clevent_tag_error
+import dev.scavazzini.clevent.nfc.component.NfcHandlerReadingStatus
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -39,6 +39,8 @@ class OrderViewModel @Inject constructor(
     companion object {
         private const val MODAL_CHANGE_STATE_DELAY = 2500L
     }
+
+    private var orderJob: Job? = null
 
     private val _orderUiState: MutableStateFlow<OrderUiState> = MutableStateFlow(OrderUiState())
     val orderUiState: StateFlow<OrderUiState> = _orderUiState
@@ -92,48 +94,45 @@ class OrderViewModel @Inject constructor(
         }
     }
 
-    fun performPurchase(intent: Intent) = viewModelScope.launch {
-        if (!_orderUiState.value.isReadyToOrder()) {
-            return@launch
-        }
+    fun performPurchase(intent: Intent) {
+        orderJob?.cancel()
+        orderJob = viewModelScope.launch {
+            try {
+                val customer = readCustomerFromTagUseCase(intent)
 
-        try {
-            val customer = readCustomerFromTagUseCase(intent)
+                productsOnCart.value.forEach {
+                    customer.addProduct(it.key, it.value)
+                }
 
-            productsOnCart.value.forEach {
-                customer.addProduct(it.key, it.value)
-            }
+                writeCustomerOnTagUseCase(customer, intent)
 
-            writeCustomerOnTagUseCase(customer, intent)
-
-            _orderUiState.value = _orderUiState.value.copy(
-                sheetState = NfcReadingState(
-                    state = NfcBottomSheetReadingState.SUCCESS,
-                    message = application.getString(
+                _orderUiState.value = _orderUiState.value.copy(
+                    nfcReadingStatus = NfcHandlerReadingStatus.SUCCESS,
+                    nfcReadingMessage = application.getString(
                         R.string.order_success_description,
                         CurrencyValue(customer.balance).toString(),
                     ),
-                ),
-            )
-            delay(MODAL_CHANGE_STATE_DELAY)
-            clearOrder()
+                )
+                delay(MODAL_CHANGE_STATE_DELAY)
+                clearOrder()
 
-        } catch (e: Exception) {
-            val message = when (e) {
-                is InsufficientBalanceException -> {
-                    application.getString(R.string.order_not_enough_credits_description)
+            } catch (e: Exception) {
+                val message = when (e) {
+                    is InsufficientBalanceException -> {
+                        application.getString(R.string.order_not_enough_credits_description)
+                    }
+
+                    is NonCleventTagException -> {
+                        application.getString(non_clevent_tag_error)
+                    }
+
+                    else -> {
+                        e.message ?: application.getString(R.string.order_error_title)
+                    }
                 }
 
-                is NonCleventTagException -> {
-                    application.getString(non_clevent_tag_error)
-                }
-
-                else -> {
-                    e.message ?: application.getString(R.string.order_error_title)
-                }
+                _orderUiState.value.updateNfcStateToError(message)
             }
-
-            _orderUiState.value.updateSheetToError(message)
         }
     }
 
@@ -141,20 +140,24 @@ class OrderViewModel @Inject constructor(
         _products.update { it.keys.associateWith { 0 } }
 
         _orderUiState.value = _orderUiState.value.copy(
-            showSheet = false,
+            nfcReadingStatus = NfcHandlerReadingStatus.HALTED,
             confirmOrderButtonState = PrimaryButtonState.DISABLED,
             orderValue = 0,
         )
     }
 
+
     fun confirmOrder() {
-        _orderUiState.value.updateSheetToWaiting()
+        _orderUiState.value.updateNfcStateToListening()
     }
 
     fun cancelOrder() {
-        _orderUiState.value = _orderUiState.value.copy(
-            showSheet = false,
-        )
+        orderJob?.cancel()
+        orderJob = viewModelScope.launch {
+            _orderUiState.value = _orderUiState.value.copy(
+                nfcReadingStatus = NfcHandlerReadingStatus.HALTED,
+            )
+        }
     }
 
     fun increase(product: Product) {
@@ -191,33 +194,25 @@ class OrderViewModel @Inject constructor(
     }
 
     data class OrderUiState(
-        val sheetState: NfcReadingState = NfcReadingState(),
-        val showSheet: Boolean = false,
+        val nfcReadingStatus: NfcHandlerReadingStatus = NfcHandlerReadingStatus.HALTED,
+        val nfcReadingMessage: String? = null,
         val confirmOrderButtonState: PrimaryButtonState = PrimaryButtonState.DISABLED,
         val orderValue: Int = 0,
-    ) {
-        fun isReadyToOrder(): Boolean {
-            return sheetState.state == NfcBottomSheetReadingState.WAITING && showSheet
-        }
-    }
+    )
 
-    private suspend fun OrderUiState.updateSheetToError(message: String) {
+    private suspend fun OrderUiState.updateNfcStateToError(message: String) {
         _orderUiState.value = copy(
-            sheetState = NfcReadingState(
-                state = NfcBottomSheetReadingState.ERROR,
-                message = message,
-            ),
+            nfcReadingStatus = NfcHandlerReadingStatus.ERROR,
+            nfcReadingMessage = message,
         )
         delay(MODAL_CHANGE_STATE_DELAY)
-        _orderUiState.value.updateSheetToWaiting()
+        _orderUiState.value.updateNfcStateToListening()
     }
 
-    private fun OrderUiState.updateSheetToWaiting() {
+    private fun OrderUiState.updateNfcStateToListening() {
         _orderUiState.value = copy(
-            sheetState = NfcReadingState(
-                state = NfcBottomSheetReadingState.WAITING,
-            ),
-            showSheet = true,
+            nfcReadingStatus = NfcHandlerReadingStatus.LISTENING,
+            nfcReadingMessage = null,
         )
     }
 }

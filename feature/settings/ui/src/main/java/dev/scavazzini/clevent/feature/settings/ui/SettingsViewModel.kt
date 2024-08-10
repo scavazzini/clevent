@@ -17,8 +17,6 @@ import dev.scavazzini.clevent.core.data.repository.ProductRepository
 import dev.scavazzini.clevent.core.data.workers.SyncProductsWorker
 import dev.scavazzini.clevent.core.data.workers.SyncProductsWorker.Companion.SYNC_PRODUCTS_WORK_NAME
 import dev.scavazzini.clevent.core.domain.FormatDateToStringUseCase
-import dev.scavazzini.clevent.core.ui.components.NfcBottomSheetReadingState
-import dev.scavazzini.clevent.core.ui.components.NfcReadingState
 import dev.scavazzini.clevent.crypto.KeyInfo
 import dev.scavazzini.clevent.feature.settings.domain.CreateSecretKeyUseCase
 import dev.scavazzini.clevent.feature.settings.domain.DeleteSecretKeyUseCase
@@ -26,7 +24,9 @@ import dev.scavazzini.clevent.feature.settings.domain.DownloadSecretKeyUseCase
 import dev.scavazzini.clevent.feature.settings.domain.EraseTagUseCase
 import dev.scavazzini.clevent.feature.settings.domain.GetSecretKeyInfoUseCase
 import dev.scavazzini.clevent.feature.settings.domain.ImportSecretKeyUseCase
+import dev.scavazzini.clevent.nfc.component.NfcHandlerReadingStatus
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -48,6 +48,8 @@ class SettingsViewModel @Inject constructor(
     private val downloadSecretKeyUseCase: DownloadSecretKeyUseCase,
     private val deleteSecretKeyUseCase: DeleteSecretKeyUseCase,
 ) : AndroidViewModel(application) {
+
+    private var eraseJob: Job? = null
 
     private val _uiState: MutableStateFlow<SettingsUiState> = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState
@@ -167,50 +169,47 @@ class SettingsViewModel @Inject constructor(
     fun onEraseTagClick() {
         _uiState.update {
             it.copy(
-                sheetState = NfcReadingState(state = NfcBottomSheetReadingState.WAITING),
-                showSheet = true,
+                nfcReadingStatus = NfcHandlerReadingStatus.LISTENING,
+                nfcReadingMessage = null,
             )
         }
     }
 
     fun onCancelErase() {
-        _uiState.update {
-            it.copy(showSheet = false)
+        eraseJob?.cancel()
+        eraseJob = viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    nfcReadingStatus = NfcHandlerReadingStatus.HALTED,
+                )
+            }
         }
     }
 
-    fun eraseTag(intent: Intent) = viewModelScope.launch {
-        if (!_uiState.value.isReadyToErase()) {
-            return@launch
-        }
+    fun eraseTag(intent: Intent) {
+        eraseJob?.cancel()
+        eraseJob = viewModelScope.launch {
+            try {
+                eraseTagUseCase(intent)
 
-        try {
-            eraseTagUseCase(intent)
-
-            _uiState.value = _uiState.value.copy(
-                sheetState = NfcReadingState(
-                    state = NfcBottomSheetReadingState.SUCCESS,
-                    message = application.getString(
+                _uiState.value = _uiState.value.copy(
+                    nfcReadingStatus = NfcHandlerReadingStatus.SUCCESS,
+                    nfcReadingMessage = application.getString(
                         R.string.settings_erase_tag_modal_success_description,
-                    )
-                ),
-            )
-            delay(1500)
-            _uiState.value = _uiState.value.copy(showSheet = false)
+                    ),
+                )
+                delay(1500)
+                _uiState.value = _uiState.value.copy(
+                    nfcReadingStatus = NfcHandlerReadingStatus.HALTED,
+                )
 
-        } catch (e: Exception) {
-            _uiState.value = _uiState.value.copy(
-                sheetState = NfcReadingState(
-                    state = NfcBottomSheetReadingState.ERROR,
+            } catch (e: Exception) {
+                _uiState.value.updateNfcStateToError(
                     message = application.getString(
                         R.string.settings_erase_tag_modal_error_description
                     ),
-                ),
-            )
-            delay(1500)
-            _uiState.value = _uiState.value.copy(
-                sheetState = NfcReadingState(state = NfcBottomSheetReadingState.WAITING),
-            )
+                )
+            }
         }
     }
 
@@ -222,16 +221,30 @@ class SettingsViewModel @Inject constructor(
     }
 
     data class SettingsUiState(
-        val sheetState: NfcReadingState = NfcReadingState(NfcBottomSheetReadingState.WAITING),
-        val showSheet: Boolean = false,
+        val nfcReadingStatus: NfcHandlerReadingStatus = NfcHandlerReadingStatus.HALTED,
+        val nfcReadingMessage: String? = null,
         val lastSync: Int? = null,
         val lastSyncArgs: List<String> = emptyList(),
         val isSyncing: Boolean? = false,
         val secretKeyInfo: KeyInfo? = null,
-    ) {
-        fun isReadyToErase(): Boolean {
-            return sheetState.state == NfcBottomSheetReadingState.WAITING && showSheet
-        }
+    )
+
+    private suspend fun SettingsUiState.updateNfcStateToError(message: String) {
+        _uiState.value = copy(
+            nfcReadingStatus = NfcHandlerReadingStatus.ERROR,
+            nfcReadingMessage = application.getString(
+                R.string.settings_erase_tag_modal_error_description
+            ),
+        )
+        delay(1500)
+        _uiState.value.updateNfcStateToListening()
+    }
+
+    private fun SettingsUiState.updateNfcStateToListening() {
+        _uiState.value = copy(
+            nfcReadingStatus = NfcHandlerReadingStatus.LISTENING,
+            nfcReadingMessage = null,
+        )
     }
 
 }

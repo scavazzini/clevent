@@ -44,10 +44,10 @@ import androidx.compose.ui.unit.sp
 import dev.scavazzini.clevent.core.data.model.CurrencyValue
 import dev.scavazzini.clevent.core.data.model.Customer
 import dev.scavazzini.clevent.core.data.model.Product
-import dev.scavazzini.clevent.core.ui.OnNewIntentHandler
 import dev.scavazzini.clevent.core.ui.components.PrimaryButton
 import dev.scavazzini.clevent.core.ui.theme.CleventTheme
 import dev.scavazzini.clevent.feature.receipt.ui.components.QrCodeModalBottomSheet
+import dev.scavazzini.clevent.nfc.OnTagDiscoveredHandler
 import kotlinx.coroutines.launch
 
 @Composable
@@ -62,7 +62,7 @@ fun ReceiptScreen(
     val qrCodeSize = 240.dp
     val qrCodeSizePx = with(density) { qrCodeSize.toPx().toInt() }
 
-    OnNewIntentHandler {
+    OnTagDiscoveredHandler {
         coroutineScope.launch { viewModel.onNfcTagRead(it) }
     }
 

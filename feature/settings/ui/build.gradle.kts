@@ -49,6 +49,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":crypto"))
     implementation(project(":feature:settings:domain"))
+    implementation(project(":nfc"))
 
     // WorkManager
     implementation(libs.workManager)

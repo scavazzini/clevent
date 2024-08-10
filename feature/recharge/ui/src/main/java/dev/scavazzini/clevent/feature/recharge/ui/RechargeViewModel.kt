@@ -9,9 +9,9 @@ import dev.scavazzini.clevent.core.data.model.CurrencyValue
 import dev.scavazzini.clevent.core.data.repository.NonCleventTagException
 import dev.scavazzini.clevent.core.domain.GetCustomerFromTagUseCase
 import dev.scavazzini.clevent.core.domain.WriteCustomerOnTagUseCase
-import dev.scavazzini.clevent.core.ui.R.string.non_clevent_tag_error
-import dev.scavazzini.clevent.core.ui.components.NfcBottomSheetReadingState
-import dev.scavazzini.clevent.core.ui.components.NfcReadingState
+import dev.scavazzini.clevent.nfc.R.string.non_clevent_tag_error
+import dev.scavazzini.clevent.nfc.component.NfcHandlerReadingStatus
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +24,8 @@ class RechargeViewModel @Inject constructor(
     private val writeCustomerOnTagUseCase: WriteCustomerOnTagUseCase,
     private val application: Application,
 ) : ViewModel() {
+
+    private var rechargeJob: Job? = null
 
     private val _rechargeUiState = MutableStateFlow(RechargeUiState())
     val uiState: StateFlow<RechargeUiState> = _rechargeUiState
@@ -42,75 +44,69 @@ class RechargeViewModel @Inject constructor(
         }
     }
 
-    fun recharge(intent: Intent) = viewModelScope.launch {
-        if (!_rechargeUiState.value.isReadyToRecharge()) {
-            return@launch
-        }
+    fun recharge(intent: Intent) {
+        rechargeJob?.cancel()
+        rechargeJob = viewModelScope.launch {
+            try {
+                val customer = readCustomerFromTagUseCase(intent)
+                customer.recharge(_fieldValue.value.rawValue)
 
-        try {
-            val customer = readCustomerFromTagUseCase(intent)
-            customer.recharge(_fieldValue.value.rawValue)
+                writeCustomerOnTagUseCase(customer, intent)
 
-            writeCustomerOnTagUseCase(customer, intent)
-
-            _rechargeUiState.value = _rechargeUiState.value.copy(
-                sheetState = NfcReadingState(
-                    state = NfcBottomSheetReadingState.SUCCESS,
-                    message = application.getString(
+                _rechargeUiState.value = _rechargeUiState.value.copy(
+                    nfcReadingStatus = NfcHandlerReadingStatus.SUCCESS,
+                    nfcReadingMessage = application.getString(
                         R.string.recharge_success_description,
                         CurrencyValue(customer.balance).toString(),
-                    )
-                ),
-            )
-            delay(1500)
-            _rechargeUiState.value = _rechargeUiState.value.copy(showSheet = false)
+                    ),
+                )
+                delay(1500)
+                _rechargeUiState.value = _rechargeUiState.value.copy(
+                    nfcReadingStatus = NfcHandlerReadingStatus.HALTED,
+                )
 
-        } catch (e: Exception) {
-            val message: String = when (e) {
-                is NonCleventTagException -> application.getString(non_clevent_tag_error)
-                else -> e.message ?: application.getString(R.string.recharge_error_title)
+            } catch (e: Exception) {
+                val message: String = when (e) {
+                    is NonCleventTagException -> application.getString(non_clevent_tag_error)
+                    else -> e.message ?: application.getString(R.string.recharge_error_title)
+                }
+
+                _rechargeUiState.value.updateNfcStateToError(message)
             }
-
-            _rechargeUiState.value.emitErrorState(message)
         }
-    }
-
-    private suspend fun RechargeUiState.emitErrorState(message: String) {
-        _rechargeUiState.value = copy(
-            sheetState = NfcReadingState(
-                state = NfcBottomSheetReadingState.ERROR,
-                message = message,
-            ),
-        )
-        delay(1500)
-        emitWaitingState()
-    }
-
-    private fun RechargeUiState.emitWaitingState() {
-        _rechargeUiState.value = copy(
-            sheetState = NfcReadingState(state = NfcBottomSheetReadingState.WAITING),
-        )
     }
 
     fun confirmRecharge() {
-        _rechargeUiState.value = _rechargeUiState.value.copy(
-            sheetState = NfcReadingState(state = NfcBottomSheetReadingState.WAITING),
-            showSheet = true,
-        )
+        _rechargeUiState.value.updateNfcStateToListening()
     }
 
     fun cancelRecharge() {
-        _rechargeUiState.value = _rechargeUiState.value.copy(
-            showSheet = false,
-        )
+        rechargeJob?.cancel()
+        rechargeJob = viewModelScope.launch {
+            _rechargeUiState.value = _rechargeUiState.value.copy(
+                nfcReadingStatus = NfcHandlerReadingStatus.HALTED,
+            )
+        }
     }
 
     data class RechargeUiState(
-        val sheetState: NfcReadingState = NfcReadingState(state = NfcBottomSheetReadingState.WAITING),
-        val showSheet: Boolean = false,
-    ) {
-        fun isReadyToRecharge(): Boolean {
-            return sheetState.state == NfcBottomSheetReadingState.WAITING && showSheet
-        }
+        val nfcReadingStatus: NfcHandlerReadingStatus = NfcHandlerReadingStatus.HALTED,
+        val nfcReadingMessage: String? = null,
+    )
+
+    private suspend fun RechargeUiState.updateNfcStateToError(message: String) {
+        _rechargeUiState.value = copy(
+            nfcReadingStatus = NfcHandlerReadingStatus.ERROR,
+            nfcReadingMessage = message,
+        )
+        delay(1500)
+        _rechargeUiState.value.updateNfcStateToListening()
+    }
+
+    private fun RechargeUiState.updateNfcStateToListening() {
+        _rechargeUiState.value = copy(
+            nfcReadingStatus = NfcHandlerReadingStatus.LISTENING,
+            nfcReadingMessage = null,
+        )
     }
 }

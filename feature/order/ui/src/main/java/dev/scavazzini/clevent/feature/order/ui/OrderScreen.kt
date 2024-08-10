@@ -24,12 +24,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.ShapeDefaults
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -50,30 +48,35 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.scavazzini.clevent.core.data.model.CurrencyValue
 import dev.scavazzini.clevent.core.data.model.Product
-import dev.scavazzini.clevent.core.ui.OnNewIntentHandler
-import dev.scavazzini.clevent.core.ui.components.BottomSheetProductListContent
-import dev.scavazzini.clevent.core.ui.components.NfcModalBottomSheet
 import dev.scavazzini.clevent.core.ui.components.PrimaryButton
 import dev.scavazzini.clevent.core.ui.components.PrimaryButtonState
 import dev.scavazzini.clevent.core.ui.theme.CleventTheme
+import dev.scavazzini.clevent.feature.order.ui.component.NfcHandlerBottomSheetProductListContent
+import dev.scavazzini.clevent.nfc.NfcHandlerPrompt
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderScreen(
     viewModel: OrderViewModel,
     modifier: Modifier = Modifier,
 ) {
-    OnNewIntentHandler { viewModel.performPurchase(it) }
-
     val state by viewModel.orderUiState.collectAsState()
     val categories by viewModel.categories.collectAsState()
     val searchFieldValue by viewModel.searchFieldValue.collectAsState()
     val products by viewModel.products.collectAsState()
     val productsOnCart by viewModel.productsOnCart.collectAsState()
 
+    NfcHandlerPrompt(
+        title = stringResource(R.string.order_confirm_title),
+        description = stringResource(R.string.order_confirm_description),
+        readingStatus = state.nfcReadingStatus,
+        readingMessage = state.nfcReadingMessage,
+        onDismiss = viewModel::cancelOrder,
+        onTagRead = viewModel::performPurchase,
+        sheetContent = { NfcHandlerBottomSheetProductListContent(productsOnCart) },
+    )
+
     OrderScreenContent(
         products = products,
-        productsOnCart = productsOnCart,
         categories = categories,
         onIncreaseQuantity = viewModel::increase,
         onDecreaseQuantity = viewModel::decrease,
@@ -82,26 +85,21 @@ fun OrderScreen(
         modifier = modifier.fillMaxWidth(),
         state = state,
         onCategoryClick = viewModel::onCategoryChange,
-        onDismiss = viewModel::cancelOrder,
         searchFieldValue = searchFieldValue,
         onSearchFieldValueChange = viewModel::onSearchFieldValueChange,
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun OrderScreenContent(
     products: Map<Product, Int>,
-    productsOnCart: Map<Product, Int>,
     categories: List<Pair<String, Boolean>>,
     onIncreaseQuantity: (product: Product) -> Unit,
     onDecreaseQuantity: (product: Product) -> Unit,
     onConfirmOrderButtonTapped: () -> Unit,
     onClearOrderButtonTapped: () -> Unit,
     modifier: Modifier = Modifier,
-    onDismiss: () -> Unit = { },
     state: OrderViewModel.OrderUiState = OrderViewModel.OrderUiState(),
-    sheetState: SheetState = rememberModalBottomSheetState(),
     onCategoryClick: (String?) -> Unit = { },
     searchFieldValue: String = "",
     onSearchFieldValueChange: (String) -> Unit = { },
@@ -122,17 +120,6 @@ private fun OrderScreenContent(
             modifier = Modifier.weight(1f),
             searchFieldValue = searchFieldValue,
             onSearchFieldValueChange = onSearchFieldValueChange,
-        )
-    }
-
-    if (state.showSheet) {
-        NfcModalBottomSheet(
-            onDismiss = onDismiss,
-            title = stringResource(R.string.order_confirm_title),
-            description = stringResource(R.string.order_confirm_description),
-            sheetState = sheetState,
-            nfcReadingState = state.sheetState,
-            content = { BottomSheetProductListContent(productsOnCart) },
         )
     }
 }
@@ -398,7 +385,6 @@ private fun ChangeQuantityButton(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 private fun OrderScreenContentPreview() {
@@ -410,7 +396,6 @@ private fun OrderScreenContentPreview() {
     CleventTheme {
         OrderScreenContent(
             products = products,
-            productsOnCart = products,
             categories = listOf("Beer" to false, "Food" to false),
             onIncreaseQuantity = { },
             onDecreaseQuantity = { },

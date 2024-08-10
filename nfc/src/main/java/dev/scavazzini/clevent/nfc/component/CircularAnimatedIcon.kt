@@ -1,4 +1,4 @@
-package dev.scavazzini.clevent.core.ui.components
+package dev.scavazzini.clevent.nfc.component
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "dev.scavazzini.clevent.feature.recharge.ui"
+    namespace = "dev.scavazzini.clevent.nfc"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
@@ -44,21 +44,11 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:data"))
-    implementation(project(":core:domain"))
-    implementation(project(":core:ui"))
-    implementation(project(":nfc"))
-
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.navigation.compose)
+    // Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 
     // Compose
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)
-
-    // Hilt
-    implementation(libs.hilt.android)
-    implementation(libs.androidx.hilt.navigation.compose)
-    kapt(libs.hilt.compiler)
 }

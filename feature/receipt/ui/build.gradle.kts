@@ -48,6 +48,7 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:ui"))
     implementation(project(":feature:receipt:domain"))
+    implementation(project(":nfc"))
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
