@@ -1,5 +1,7 @@
 package dev.scavazzini.clevent.feature.order.ui
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,7 +38,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -171,6 +176,7 @@ private fun CategoryTabs(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ProductList(
     products: Map<Product, Int>,
@@ -184,7 +190,17 @@ private fun ProductList(
     searchFieldValue: String = "",
     onSearchFieldValueChange: (String) -> Unit = { },
 ) {
-    val productList = remember(products) { products.entries.toList() }
+    val categorizedProducts: Map<String, List<Map.Entry<Product, Int>>> = remember(products) {
+        buildMap<String, MutableList<Map.Entry<Product, Int>>> {
+            products.forEach {
+                if (!containsKey(it.key.category)) {
+                    this[it.key.category] = mutableListOf()
+                }
+                this[it.key.category]?.add(it)
+            }
+        }
+    }
+
     val localDensity = LocalDensity.current
     var listBottomPadding by remember { mutableIntStateOf(0) }
 
@@ -213,13 +229,18 @@ private fun ProductList(
                     } else null,
                 )
             }
-            items(productList, key = { it.key.id }) { item ->
-                ListItem(
-                    product = item.key,
-                    quantity = item.value,
-                    onIncreaseQuantity = { onIncreaseQuantity(item.key) },
-                    onDecreaseQuantity = { onDecreaseQuantity(item.key) },
-                )
+            categorizedProducts.forEach { (category, productEntry) ->
+                stickyHeader("category=${category}") {
+                    ListCategoryItem(category)
+                }
+                items(productEntry, key = { it.key.id }) { item ->
+                    ListItem(
+                        product = item.key,
+                        quantity = item.value,
+                        onIncreaseQuantity = { onIncreaseQuantity(item.key) },
+                        onDecreaseQuantity = { onDecreaseQuantity(item.key) },
+                    )
+                }
             }
         }
         val buttonText = if (buttonValue <= 0)
@@ -316,6 +337,32 @@ private fun ClearOrderButton(
     ) {
         Text(stringResource(id = R.string.order_clear_order_button))
     }
+}
+
+@Composable
+private fun ListCategoryItem(
+    name: String,
+    modifier: Modifier = Modifier,
+) {
+    val outlineColor = MaterialTheme.colorScheme.outline
+    Text(
+        text = name,
+        style = MaterialTheme.typography.titleLarge,
+        fontWeight = FontWeight.Bold,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp)
+            .background(MaterialTheme.colorScheme.background)
+            .padding(top = 8.dp)
+            .drawBehind {
+                drawLine(
+                    color = outlineColor,
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(5f, 5f), 0f),
+                    start = Offset(0f, size.height),
+                    end = Offset(size.width, size.height),
+                )
+            },
+    )
 }
 
 @Composable
