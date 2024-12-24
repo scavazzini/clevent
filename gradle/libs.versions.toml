@@ -22,7 +22,7 @@ protobuf-version = "3.25.2"
 retrofit-version = "2.9.0"
 room-version = "2.6.1"
 zxing-version = "3.5.3"
-workManagerVersion = "2.9.0"
+workManagerVersion = "2.10.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose-version" }

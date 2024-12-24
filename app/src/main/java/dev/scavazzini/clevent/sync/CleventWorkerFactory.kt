@@ -13,14 +13,14 @@ class CleventWorkerFactory @Inject constructor(
 ) : WorkerFactory() {
 
     override fun createWorker(
-        context: Context,
+        appContext: Context,
         workerClassName: String,
         workerParameters: WorkerParameters,
     ): ListenableWorker? {
         return when (workerClassName) {
             SyncProductsWorker::class.java.name -> {
                 SyncProductsWorker(
-                    context = context,
+                    context = appContext,
                     workerParams = workerParameters,
                     productRepository = productRepository,
                 )
