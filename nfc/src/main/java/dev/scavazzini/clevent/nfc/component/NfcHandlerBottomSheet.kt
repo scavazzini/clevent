@@ -62,7 +62,7 @@ internal fun NfcHandlerBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         containerColor = Color.White,
-        windowInsets = WindowInsets.navigationBars,
+        contentWindowInsets = { WindowInsets.navigationBars },
         sheetState = sheetState,
         modifier = modifier,
     ) {

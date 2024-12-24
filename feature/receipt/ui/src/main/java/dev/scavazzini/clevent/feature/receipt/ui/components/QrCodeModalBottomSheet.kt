@@ -46,7 +46,7 @@ fun QrCodeModalBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         containerColor = Color.White,
-        windowInsets = WindowInsets.navigationBars,
+        contentWindowInsets = { WindowInsets.navigationBars },
         modifier = modifier,
     ) {
         QrCodeReceiptModalBottomSheetContent(
