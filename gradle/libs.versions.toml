@@ -1,9 +1,9 @@
 [versions]
 minSdk = "23"
-targetSdk = "34"
-compileSdk = "34"
+targetSdk = "35"
+compileSdk = "35"
 
-agp-version = "8.3.2"
+agp-version = "8.7.3"
 kotlin-version = "1.8.0"
 activity-compose-version = "1.9.1"
 compose-bom-version = "2024.06.00"
