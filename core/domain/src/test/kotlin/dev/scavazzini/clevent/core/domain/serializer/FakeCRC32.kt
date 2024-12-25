@@ -1,14 +1,9 @@
 package dev.scavazzini.clevent.core.domain.serializer
 
-import java.nio.ByteBuffer
-import java.util.zip.CRC32
+class FakeCrcCalculator : CrcCalculator {
+    override val sizeInBytes: Int = 4
 
-
-class FakeCRC32 : CRC32() {
-    override fun update(b: Int) {}
-    override fun update(b: ByteArray?, off: Int, len: Int) {}
-    override fun update(b: ByteArray?) {}
-    override fun update(buffer: ByteBuffer?) {}
-    override fun reset() {}
-    override fun getValue(): Long = 1234
+    override fun calculate(payload: ByteArray) = 1234.toUInt()
+    override fun matches(payload: ByteArray, crc: ByteArray) = true
+    override fun matches(payload: ByteArray, crc: UInt) = true
 }

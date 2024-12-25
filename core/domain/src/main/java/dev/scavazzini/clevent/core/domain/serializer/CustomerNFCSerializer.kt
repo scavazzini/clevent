@@ -6,7 +6,6 @@ import dev.scavazzini.clevent.core.domain.serializer.exception.DeserializationEx
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
 import java.nio.ByteBuffer
-import java.util.zip.CRC32
 import javax.inject.Inject
 
 /**
@@ -23,7 +22,9 @@ import javax.inject.Inject
  *   - Region 3 (4 bytes): CRC as an integer value
  *
  */
-class CustomerNFCSerializer @Inject constructor(private val crc: CRC32) : CustomerSerializer {
+class CustomerNFCSerializer @Inject constructor(
+    private val crcCalculator: CrcCalculator,
+) : CustomerSerializer {
 
     override fun serialize(customer: Customer): ByteArray {
         val outputStream = ByteArrayOutputStream()
@@ -41,29 +42,26 @@ class CustomerNFCSerializer @Inject constructor(private val crc: CRC32) : Custom
                 }
             }
 
-            val crcValue = outputStream.toByteArray().calculateCrc()
-            dataOutputStream.writeInt(crcValue)
+            val crcValue = crcCalculator.calculate(outputStream.toByteArray())
+            dataOutputStream.writeInt(crcValue.toInt())
         }
         return outputStream.toByteArray()
     }
 
-    private fun ByteArray.calculateCrc(): Int {
-        crc.update(this)
-        val crcValue = crc.value.toInt()
-        crc.reset()
-
-        return crcValue
-    }
-
     @Throws(DeserializationException::class)
     override fun deserialize(data: ByteArray): Customer {
-
-        if (data.size < 8 || data.isCorrupted()) {
+        if (data.size < 4 + crcCalculator.sizeInBytes) {
             throw DeserializationException()
         }
 
-        val byteBuffer = ByteBuffer.wrap(data.getPayloadBytes())
+        val payload = data.copyOfRange(0, data.size - crcCalculator.sizeInBytes)
+        val crc = data.takeLast(crcCalculator.sizeInBytes).toByteArray()
 
+        if (!crcCalculator.matches(payload, crc)) {
+            throw DeserializationException()
+        }
+
+        val byteBuffer = ByteBuffer.wrap(payload)
         val balance = byteBuffer.int
 
         var productEntriesQuantity = 0
@@ -80,21 +78,6 @@ class CustomerNFCSerializer @Inject constructor(private val crc: CRC32) : Custom
         }
 
         return Customer(balance, products)
-    }
-
-    private fun ByteArray.isCorrupted(): Boolean {
-        val calculatedCrc = getPayloadBytes().calculateCrc()
-        val receivedCrc = ByteBuffer.wrap(getCrcBytes()).getInt()
-
-        return calculatedCrc != receivedCrc
-    }
-
-    private fun ByteArray.getCrcBytes(): ByteArray {
-        return takeLast(Int.SIZE_BYTES).toByteArray()
-    }
-
-    private fun ByteArray.getPayloadBytes(): ByteArray {
-        return sliceArray(0 until size - Int.SIZE_BYTES)
     }
 
 }

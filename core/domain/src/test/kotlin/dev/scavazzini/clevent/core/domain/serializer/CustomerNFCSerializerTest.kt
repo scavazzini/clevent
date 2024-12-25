@@ -18,7 +18,7 @@ class CustomerNFCSerializerTest {
     private val expectedSerializedCrc = byteArrayOf(0x0, 0x0, 0x4, 0xD2.toByte())
     private val expectedSerializedCustomer = expectedSerializedBalance + expectedSerializedProducts + expectedSerializedCrc
 
-    private val customerSerializer = CustomerNFCSerializer(crc = FakeCRC32())
+    private val customerSerializer = CustomerNFCSerializer(crcCalculator = FakeCrcCalculator())
 
     @Before
     fun setUp() {
