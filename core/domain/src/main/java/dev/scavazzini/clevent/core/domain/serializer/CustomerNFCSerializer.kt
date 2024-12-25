@@ -35,7 +35,7 @@ class CustomerNFCSerializer @Inject constructor(
                 var remainingToAdd = quantity
 
                 while (remainingToAdd > 0) {
-                    val toBeAdded = remainingToAdd.coerceAtMost(Byte.MAX_VALUE.toInt())
+                    val toBeAdded = remainingToAdd.coerceAtMost(UByte.MAX_VALUE.toInt())
                     dataOutputStream.writeShort(product.id.toInt())
                     dataOutputStream.writeByte(toBeAdded)
                     remainingToAdd -= toBeAdded
@@ -69,7 +69,7 @@ class CustomerNFCSerializer @Inject constructor(
 
         while (byteBuffer.remaining() >= 3) {
             val productId = byteBuffer.short
-            val quantity = byteBuffer.get().toInt()
+            val quantity = byteBuffer.get().toUByte().toInt()
             if (productId > 0) {
                 val product = Product(productId, "", 0, "")
                 products[product] = products[product]?.plus(quantity) ?: quantity
