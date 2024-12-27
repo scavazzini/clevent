@@ -71,4 +71,39 @@ class CustomerTest {
     fun shouldFailToAddProductWithInsufficientBalance() {
         customer.addProduct(product1)
     }
+
+    @Test
+    fun shouldReturnTotalValueOfAddedProducts() {
+        val customer = Customer(20000).also {
+            it.addProduct(Product(1.toShort(), "p1", 1000, "Beer"), 5)
+            it.addProduct(Product(2.toShort(), "p2", 2000, "Beer2"), 2)
+            it.addProduct(Product(3.toShort(), "p3", 9000, "Beer3"), 1)
+        }
+
+        assertEquals(18000, customer.total)
+    }
+
+    @Test
+    fun shouldReturnTrueIfEqualsIsCalledOnEqualCustomers() {
+        val customer1 = Customer(5000).also { it.addProduct(product1) }
+        val customer2 = Customer(5000).also { it.addProduct(product1) }
+
+        assertEquals(true, customer1 == customer2)
+    }
+
+    @Test
+    fun shouldReturnFalseIfEqualsIsCalledOnCustomerWithDifferentBalance() {
+        val customer1 = Customer(5000).also { it.addProduct(product1) }
+        val customer2 = Customer(3000).also { it.addProduct(product1) }
+
+        assertEquals(false, customer1 == customer2)
+    }
+
+    @Test
+    fun shouldReturnFalseIfEqualsIsCalledOnCustomerWithDifferentProducts() {
+        val customer1 = Customer(5000).also { it.addProduct(product1) }
+        val customer2 = Customer(5000).also { it.addProduct(product2) }
+
+        assertEquals(false, customer1 == customer2)
+    }
 }
