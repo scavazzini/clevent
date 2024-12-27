@@ -49,7 +49,7 @@ class Customer(
      * @throws InsufficientBalanceException
      */
     fun charge(value: Int) {
-        if (value < 0) {
+        if (value <= 0) {
             throw IllegalArgumentException("Charge value must be a positive value.")
         }
 
