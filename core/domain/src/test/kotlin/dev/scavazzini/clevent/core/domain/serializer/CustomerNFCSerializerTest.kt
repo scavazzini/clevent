@@ -2,10 +2,12 @@ package dev.scavazzini.clevent.core.domain.serializer
 
 import dev.scavazzini.clevent.core.data.model.Customer
 import dev.scavazzini.clevent.core.data.model.Product
+import dev.scavazzini.clevent.core.domain.serializer.exception.DeserializationException
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import java.nio.ByteBuffer
 
 class CustomerNFCSerializerTest {
 
@@ -39,6 +41,38 @@ class CustomerNFCSerializerTest {
         val deserializedCustomer = customerSerializer.deserialize(expectedSerializedCustomer)
 
         assertEquals(deserializedCustomer, customer)
+    }
+
+    @Test(expected = DeserializationException::class)
+    fun shouldThrowDeserializationExceptionIfDataHasLessThan4Bytes() {
+        customerSerializer.deserialize(data = byteArrayOf(0xF, 0x0, 0x5))
+    }
+
+    @Test(expected = DeserializationException::class)
+    fun shouldThrowDeserializationExceptionIfCrcMismatches() {
+        val customerSerializer = CustomerNFCSerializer(
+            crcCalculator = FakeCrcCalculator(matchResult = false),
+        )
+        customerSerializer.deserialize(expectedSerializedCustomer)
+    }
+
+    @Test
+    fun shouldNotDeserializeProductsWithNegativeIds() {
+        // Creates a serialized Customer with a positive balance and two products,
+        // however one of them has an invalid ID that should be ignored from deserialization.
+        val positiveBalance = ByteBuffer.allocate(4).putInt(50000).array()
+        val validProduct = ByteBuffer.allocate(3).putShort(20).put(3).array()
+        val invalidProduct = ByteBuffer.allocate(3).putShort(-10).put(1).array()
+        val crc = ByteBuffer.allocate(4).putInt(1234).array()
+
+        val customer = customerSerializer.deserialize(
+            data = positiveBalance + validProduct + invalidProduct + crc
+        )
+
+        // Assert that only the valid product were deserialized
+        assertEquals(1, customer.products.size)
+        assertEquals(20.toShort(), customer.products.keys.first().id)
+        assertEquals(3, customer.products.values.first())
     }
 
     @Test
