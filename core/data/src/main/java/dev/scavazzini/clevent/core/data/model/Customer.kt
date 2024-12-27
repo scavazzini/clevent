@@ -57,14 +57,7 @@ class Customer(
             throw InsufficientBalanceException()
         }
 
-        val newBalance: Long = balance.toLong() - value
-
-        if (newBalance < Int.MIN_VALUE) {
-            // Balance underflow, reject
-            throw BalanceLimitExceededException()
-        }
-
-        balance = newBalance.toInt()
+        balance -= value
     }
 
     /**
@@ -91,8 +84,3 @@ class Customer(
         return Objects.hash(_products, balance)
     }
 }
-
-val EMPTY_CUSTOMER = Customer(
-    balance = 0,
-    products = emptyMap(),
-)
