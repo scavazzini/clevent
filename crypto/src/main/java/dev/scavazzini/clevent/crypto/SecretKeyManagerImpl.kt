@@ -46,12 +46,13 @@ class SecretKeyManagerImpl @Inject constructor(
         return Base64.decode(this, Base64.NO_WRAP)
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
     override suspend fun getKeyInfo(): KeyInfo? {
         val secretKey = getKey() ?: return null
 
         val secretKeyHash = MessageDigest.getInstance("SHA-1").run {
             update(secretKey.encoded, 0, secretKey.encoded.size)
-            digest().toHex()
+            digest().toHexString()
         }
 
         return KeyInfo(
@@ -59,10 +60,6 @@ class SecretKeyManagerImpl @Inject constructor(
             algorithm = secretKey.algorithm,
             size = secretKey.encoded.size * 8,
         )
-    }
-
-    private fun ByteArray.toHex(): String {
-        return joinToString(separator = "") { byte -> "%02x".format(byte) }
     }
 
     override suspend fun createKey(
