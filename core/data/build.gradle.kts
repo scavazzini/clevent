@@ -1,7 +1,8 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin)
-    id("kotlin-kapt")
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -22,10 +23,6 @@ android {
 
     buildFeatures {
         compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.version.get().toString()
     }
 
     compileOptions {
@@ -56,7 +53,7 @@ dependencies {
     implementation(libs.hilt.common)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.workManager)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 
     // Protobuf
     implementation(libs.protobuf.javalite)
@@ -64,7 +61,7 @@ dependencies {
     // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    kapt(libs.room.compiler)
+    ksp(libs.room.compiler)
 
     // Retrofit
     implementation(libs.bundles.retrofit)

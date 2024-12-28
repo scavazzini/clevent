@@ -4,12 +4,12 @@ targetSdk = "35"
 compileSdk = "35"
 
 agp-version = "8.7.3"
-kotlin-version = "1.8.0"
+kotlin-version = "2.1.0"
+ksp-version = "2.1.0-1.0.29"
 activity-compose-version = "1.9.3"
 compose-bom-version = "2024.12.01"
-compose-compiler-version = "1.4.1"
 espresso-core-version = "3.6.1"
-hilt-version = "2.50"
+hilt-version = "2.54"
 androidx-hilt-version = "1.2.0"
 androidx-junit-version = "1.2.1"
 junit-version = "4.13.2"
@@ -75,5 +75,7 @@ retrofit = [
 agp = { id = "com.android.application", version.ref = "agp-version" }
 android-library = { id = "com.android.library", version.ref = "agp-version" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin-version" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-version" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt-version" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf-plugin-version" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin-version" }

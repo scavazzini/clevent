@@ -2,7 +2,8 @@ plugins {
     alias(libs.plugins.agp)
     alias(libs.plugins.kotlin)
     alias(libs.plugins.hilt)
-    id("kotlin-kapt")
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -19,10 +20,6 @@ android {
 
     buildFeatures {
         compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.version.get().toString()
     }
 
     compileOptions {
@@ -74,7 +71,7 @@ dependencies {
     implementation(libs.hilt.common)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.workManager)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 
     // Tests (JUnit, Mockito and Espresso)
     testImplementation(libs.junit)

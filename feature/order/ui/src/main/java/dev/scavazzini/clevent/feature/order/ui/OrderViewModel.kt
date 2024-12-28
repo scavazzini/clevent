@@ -68,7 +68,7 @@ class OrderViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     val productsOnCart: StateFlow<Map<Product, Int>> = _products
-        .transform { products -> emit(products.filter { it.value > 0 }) }
+        .transform { products -> emit(products.filter { (_, quantity) -> quantity > 0 }) }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     init {
