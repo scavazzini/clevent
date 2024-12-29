@@ -42,6 +42,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":notification"))
+
     // Preferences
     implementation(libs.androidx.preference.ktx)
 

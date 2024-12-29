@@ -51,6 +51,7 @@ dependencies {
     implementation(project(":feature:receipt:ui"))
     implementation(project(":feature:recharge:ui"))
     implementation(project(":feature:settings:ui"))
+    implementation(project(":notification"))
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)

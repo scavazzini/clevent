@@ -28,4 +28,5 @@ include(
     ":feature:settings:ui",
     ":feature:settings:domain",
     ":nfc",
+    ":notification"
 )
